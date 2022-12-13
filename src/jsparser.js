@@ -84,6 +84,7 @@ scope.eval$(`
     'digit      digit
     'inequality inequality
     'equality   equality
+    // All of the above "'sym sym"'s could be eliminated if I had access to the compile-time scope at runtime
     { o | " Formula Parser Unknown Method " m + print }
   end }
 } :FormulaParser
@@ -95,7 +96,7 @@ scope.eval$(`
   { m | m switch
     'super      { m o | o m super () () () }
     'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join () } { | a 0  @ } ifelse }  action () }
-    'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action () }
+    'assignment { | m super { a | a 2 @ "  dup () :" a 0 @ + + } action () }
     'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action () }
     'expr4      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action () }
     'expr8      { | m super infix action () }
@@ -170,4 +171,21 @@ result.value
 */
 
 
+`);
+
+scope['js{'] = code => {
+  var start = scope.ip, end;
+  while ( scope.readSym() != '}js' ) end = scope.ip;
+  var s = scope.input.substring(start, end);
+  stack.push(s);
+  scope.eval$('FormulaCompiler () .parse$ eval');
+//  scope.eval$();
+};
+
+scope.eval$(`
+" Embedded Javascript" section ()
+
+{ let 3 :i |
+  js{ 1+2*3 }js print
+} ()
 `);
