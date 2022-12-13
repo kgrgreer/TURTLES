@@ -1,2 +1,4 @@
 # TURTLES
-Language Creation System
+TURTLES Ultra-Recursive Tool for Language EnvironemntS
+
+An experimental language creation system.

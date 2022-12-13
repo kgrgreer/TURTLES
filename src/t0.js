@@ -37,19 +37,18 @@ var scope = {
       var sym = line.substring(1);
       code.push(function() { var value = stack.pop(); scope[sym] = function(code) { code.push(function() { stack.push(value); }); } });
     } else if ( line.charAt(0) >= '0' && line.charAt(0) <= '9' || ( line.charAt(0) == '-' && line.length > 1 ) ) {
-      code.push(function() { stack.push(Number.parseFloat(line)); });
+      code.push(() => stack.push(Number.parseFloat(line)));
     } else if ( line.startsWith("'") ) {
       var s = line.substring(1);
-      code.push(function() { stack.push(s); });
+      code.push(()=>stack.push(s));
     } else {
       console.log('Warning: Unknown Symbol or Forward Reference "' + line + '" at:', scope.input.substring(scope.ip, scope.ip+40).replaceAll('\n', '\\n'), ' ...');
-      code.push(function() { scope[line]({ push: function(f) { f(); }})});
+      code.push(()=>scope[line]({ push: function(f) { f(); }}));
     }
   },
   '{': function(code) {
     var start = scope.ip, oldScope = scope, vars = [], fncode = [], paramCount;
     var curScope = scope = Object.create(scope);
-
     function countDepth() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
     function moveUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
     function defineVar(v, index) {
@@ -58,14 +57,12 @@ var scope = {
       scope[v + '++'] = function(code) { var d = countDepth(); code.push(() => { var p = moveUp(d); heap[p+index]++; }); };
       scope[v + '--'] = function(code) { var d = countDepth(); code.push(() => { var p = moveUp(d); heap[p+index]--; }); };
     }
-
     while ( ( l = scope.readSym() ) != '|' && l != 'let' ) vars.push(l); // read var names
     for ( let i = 0 ; i < vars.length ; i++ ) {
       let index = vars.length-i;
       defineVar(vars[i], index);
     }
     paramCount = vars.length;
-
     if ( l === 'let' ) { // handle local variables
       outer: while ( l !== '|' ) {
         while ( ! ( l = scope.readSym() ).startsWith(':') ) {
@@ -78,7 +75,6 @@ var scope = {
         scope.evalSym(l, fncode);
       }
     }
-
     while ( ( l = scope.readSym() ) != '}' ) scope.evalSym(l, fncode);
     oldScope.ip = scope.ip;
     scope = oldScope;
@@ -146,7 +142,7 @@ var scope = {
   '"':    code => { var s = '', c; while ( (c = scope.readChar()) != '"' ) s += c; code.push(() => stack.push(s)); },
   '//':   () => { while ( (c = scope.readChar()) != '\n' ); },
   '/*':   () => { while ( (c = scope.readSym()) != '*/' ); },
-  not:    fn(() => { stack.push( ! stack.pop()); }),
+  '!':    fn(() => { stack.push( ! stack.pop()); }),
   '&':    bfn((a,b) => a && b),
   '|':    bfn((a,b) => a || b),
   '&&':   fn(() => { var aFn = stack.pop(), b = stack.pop(); if ( ! b ) stack.push(false); else aFn(); }),
@@ -167,7 +163,6 @@ var scope = {
   '()':   fn(() => { var f = stack.pop(); /*console.log('running: ', f.toString());*/ f(); })
 };
 
-
 // Parser Helpers
 scope['string?'] = fn(() => { stack.push(typeof stack.pop() === 'string'); });
 scope['array?']  = fn(() => { stack.push(Array.isArray(stack.pop())); });
@@ -178,36 +173,27 @@ scope.input_     = fn(() => { stack.push(scope.input); });
 scope.ip_        = fn(() => { stack.push(scope.ip); });
 scope.emit       = function() { var v = stack.pop(); outerCode.push(() => stack.push(v)); };
 
-
-// Language
 scope.eval$(`
 1 1 = :true        // define true
 1 2 = :false       // define false
 { | } :nil         // define 'nil', like doing nil = new Object() in Java/JS
 { n | 0 n - } :neg // negate
 
-{ start end block |
-  { | start end <= } { | start block () start++ } while
-} :for
+{ start end block | { | start end <= } { | start block () start++ } while } :for
 
 { f let 0 :v false :created |
   { this |
-    created not { | true :created  this f () :v } if
+    created ! { | true :created  this f () :v } if
     v
   }
 } :factory
 
 { a f | 0 a len 1 - { i | a i @ f () } for () } :forEach // works as reduce also
-
-
 { a f | [ a f forEach () ] } :map
-
 { a | " " a { c | c + } forEach () } :join
 
 // Standard Forth-like functions
-{ v | v v } :dup
-{ _ | } :drop
-{ a b | b a } :swap
+{ v | v v } :dup  { _ | } :drop  { a b | b a } :swap
 
 // A helper function for displaying section titles
 { t | " " print t print } :section

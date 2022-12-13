@@ -55,8 +55,8 @@ Tester () :t
 
 
 'Logic section ()
-" false not" true  t .test
-" true not"  false t .test
+" false !" true  t .test
+" true  !"  false t .test
 
 " false false |"  false t .test
 " false true  |"  true  t .test
