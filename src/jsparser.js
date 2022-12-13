@@ -170,16 +170,15 @@ ps formulaparser.parse () .toString print
 result.value
 */
 
-
 `);
 
+// TODO: recode in T0
 scope['js{'] = code => {
   var start = scope.ip, end;
   while ( scope.readSym() != '}js' ) end = scope.ip;
   var s = scope.input.substring(start, end);
   stack.push(s);
   scope.eval$('FormulaCompiler () .parse$ eval');
-//  scope.eval$();
 };
 
 scope.eval$(`
