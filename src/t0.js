@@ -140,13 +140,13 @@ var scope = {
   }),
   'i[':   code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
   '"':    code => { var s = '', c; while ( (c = scope.readChar()) != '"' ) s += c; code.push(() => stack.push(s)); },
-  '//':   () => { while ( (c = scope.readChar()) != '\n' ); },
-  '/*':   () => { while ( (c = scope.readSym()) != '*/' ); },
+  '//':   () => { while ( scope.readChar() != '\n' );},
+  '/*':   () => { while ( scope.readSym() != '*/' );},
   '!':    fn(() => { stack.push( ! stack.pop()); }),
   '&':    bfn((a,b) => a && b),
   '|':    bfn((a,b) => a || b),
-  '&&':   fn(() => { var aFn = stack.pop(), b = stack.pop(); if ( ! b ) stack.push(false); else aFn(); }),
-  '||':   fn(() => { var aFn = stack.pop(), b = stack.pop(); if (   b ) stack.push(true);  else aFn(); }),
+  '&&':   fn(() => { var aFn = stack.pop(); if ( ! stack.pop() ) stack.push(false); else aFn(); }),
+  '||':   fn(() => { var aFn = stack.pop(); if (   stack.pop() ) stack.push(true);  else aFn(); }),
   mod:    bfn((a,b) => a % b),
   '=':    bfn((a,b) => a === b),
   '!=':   bfn((a,b) => a !== b),
@@ -154,7 +154,7 @@ var scope = {
   '<=':   bfn((a,b) => a <= b),
   '>':    bfn((a,b) => a > b),
   '>=':   bfn((a,b) => a >= b),
-  '+':    bfn((a,b) => { return a + b }), // Should be a different concat for strings
+  '+':    bfn((a,b) => a + b), // Should be a different concat for strings
   '*':    bfn((a,b) => a * b),
   '-':    bfn((a,b) => a - b),
   '/':    bfn((a,b) => a / b),
@@ -214,6 +214,8 @@ TODO:
   - don't put heap in an array to allow for JS GC?
   - Add in-line cache for method lookups, needs faster access to an object's class
   - Add a recursive array toString method
+
+  { :outer a b c | ^outer ... }
 
   - ifelse is the same as ? ()
 */

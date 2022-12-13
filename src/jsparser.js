@@ -119,13 +119,9 @@ scope.eval$(`
     " " print
     " JS Code: " code   + print
     " T0 Code: " result + print
-    { let result eval :v |
-      " Result: " v + print
-      v
-    } ()
+    { let result eval :v | " Result: " v + print v } ()
   } ()
 } :jsEval
-
 
 
 " 1+2*3 "          jsEval ()
