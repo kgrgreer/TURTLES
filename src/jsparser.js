@@ -54,8 +54,7 @@ scope.eval$(`
       [ '_ 'a 'z' range () 'A 'Z range () ] alt ()
       [ '_ 'a 'z' range () 'A 'Z range () '0 '9 range () ] alt () 0 repeat () join mapp ()
     ] seq () join mapp () }                                     :lhs
-  |
-  { m | m ?? }
+  | { m | m ?? }
 } :FormulaParser
 
 
