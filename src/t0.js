@@ -80,20 +80,18 @@ var scope = {
     scope = oldScope;
     var src = scope.input.substring(start-2, scope.ip-1);
     code.push(function() {
-      stack.push((function() {
-        var p = hp;
-        var f = function() {
-          // console.log('executing: ', src);
-          var old = hp;
-          hp = heap.length;
-          heap.push(p);
-          for ( var i = 0 ; i < paramCount ; i++ ) heap.push(stack.pop());
-          for ( var i = 0 ; i < fncode.length ; i++ ) fncode[i]();
-          hp = old;
-        };
-        f.toString = function() { return src; }
-        return f;
-      })());
+      var p = hp;
+      var f = function() {
+        // console.log('executing: ', src);
+        var old = hp;
+        hp = heap.length;
+        heap.push(p);
+        for ( var i = 0 ; i < paramCount ; i++ ) heap.push(stack.pop());
+        for ( var i = 0 ; i < fncode.length ; i++ ) fncode[i]();
+        hp = old;
+      };
+      f.toString = function() { return src; }
+      stack.push(f);
     });
   },
   switch: function(code) {
@@ -111,8 +109,8 @@ var scope = {
       return options[options.length-1]();
     });
   },
-  debugger:fn(() => { debugger; }),
-  print:   fn(() => { console.log('' + stack.pop()); }),
+  debugger:fn(() => {debugger;}),
+  print:   fn(() => console.log('' + stack.pop())),
   if:      fn(() => { var block = stack.pop(); var cond = stack.pop(); if ( cond ) block(); }),
   ifelse:  fn(() => { var fBlock = stack.pop(), tBlock = stack.pop(), cond = stack.pop(); (cond ? tBlock : fBlock)(); }),
   while:   fn(() => { var block = stack.pop(), cond = stack.pop(); while ( true ) { cond(); if ( ! stack.pop() ) break; block(); } }),
@@ -159,8 +157,24 @@ var scope = {
   '-':    bfn((a,b) => a - b),
   '/':    bfn((a,b) => a / b),
   '^':    bfn((a,b) => Math.pow(a,b)),
-  '%':    fn(() => { stack.push(stack.pop() / 100); }),
-  '()':   fn(() => { var f = stack.pop(); /*console.log('running: ', f.toString());*/ f(); })
+  '%':    fn(() => stack.push(stack.pop() / 100)),
+  '()':   fn(() => { var f = stack.pop(); /*console.log('running: ', f.toString());*/ f(); }),
+
+
+  '??': code => {
+    var s = scope, p = hp;
+    debugger;
+    code.push(() => {
+      var ohp = hp, oldScope = scope, key = stack.pop();
+//      hp = p;
+      scope = s;
+      var word = s[key];
+      console.log('*******************', key, hp, word);
+      word({push: function(f) { console.log('**** emitting', f, hp); f(); }});
+  //    hp = ohp;
+      scope = oldScope;
+    });
+  }
 };
 
 // Parser Helpers

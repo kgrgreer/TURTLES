@@ -85,7 +85,7 @@ scope.eval$(`
     'inequality inequality
     'equality   equality
     // All of the above "'sym sym"'s could be eliminated if I had access to the compile-time scope at runtime
-    { o | " Formula Parser Unknown Method " m + print }
+    { o | m print m ?? }
   end }
 } :FormulaParser
 
