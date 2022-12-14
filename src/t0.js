@@ -49,10 +49,10 @@ var scope = {
   '{': function(code) {
     var start = scope.ip, oldScope = scope, vars = [], fncode = [], paramCount;
     var curScope = scope = Object.create(scope);
-    function countDepth() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
-    function moveUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
+    function countFrames() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
+    function framesUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
     function accessor(index, f) {
-      return function(code) { var d = countDepth(); code.push(() => f(moveUp(d) + index)); }
+      return function(code) { var d = countFrames(); code.push(() => f(framesUp(d) + index)); }
     }
     function defineVar(v, index) {
       scope[v]        = accessor(index, (i) => stack.push(heap[i]));
