@@ -191,29 +191,19 @@ scope.eval$(`
 
 { start end block | { | start end <= } { | start block () start++ } while } :for
 
-{ f let 0 :v false :created |
-  { this |
-    created ! { | true :created  this f () :v } if
-    v
-  }
-} :factory
-
-{ a f | 0 a len 1 - { i | a i @ f () } for () } :forEach // works as reduce also
-{ a f | [ a f forEach () ] } :map
-{ a | " " a { c | c + } forEach () } :join
-
-// Standard Forth-like functions
+// Standard Forth-like Functions
 { v | v v } :dup  { _ | } :drop  { a b | b a } :swap
+
+// Standard High-Order Functions
+{ a f | 0 a len 1 - { i | a i @ f () } for () } :forEach
+{ a f | [ a f forEach () ] } :map
+{ a v f | v a f forEach () } :reduce
+{ a p | [  a { c | c p () { | c } if } forEach () ] } :filter
+{ a | " " a { c | c + } forEach () } :join
 
 // A helper function for displaying section titles
 { t | " " print t print } :section
 
-{ m let 42 :a 66 :b | m ?? print } :dispatch
-{ |
-  'a dispatch ()
-  'b dispatch ()
-  'm dispatch ()
-} ()
 `);
 
 

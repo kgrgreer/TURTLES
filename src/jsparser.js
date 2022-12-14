@@ -57,7 +57,6 @@ scope.eval$(`
   | { | ?? }
 } :FormulaParser
 
-
 // Add semantic actions to parser to create a JS to T0 compiler
 { | { let FormulaParser () :super |
   // TODO: factor out common actions
@@ -116,27 +115,6 @@ scope.eval$(`
   " i++  " jsEval ()
   */
 } ()
-
-
-
-/*
-" 5*2^(2+3)+100 " 0 nil PStream () :ps
-
-'a print
-'b print
-FormulaParser () :formulaparser
-// ps formulaparser 'digit formulaparser ()  () print
-'c print
-// ps formulaparser.digit () print
-'d print
-// ps formulaparser.number () print
-'e print
-'b print
-ps formulaparser.parse () .toString print
-
-// ps 'test formulaparser.call () print
-result.value
-*/
 
 `);
 

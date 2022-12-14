@@ -294,9 +294,6 @@ powersOf2 print
 powersOf2 4 @ print
 [ 1 2 3 'abc " def" true false ] print
 
-{ | 'thinking print 42 } factory () :meaning
-meaning () print
-meaning () print
 
 // Code evaulation at compile-time:
 { | i[ 'fooing print 1 2 + emit ] } :foo
@@ -314,6 +311,19 @@ foo () print
 
 'Map section ()
 [ 1 2 3 ] { v | v v * } map () print
+
+
+" Function Programming" section ()
+[ 1 10 { | } for () ]  { c | c 2 mod 0 = } filter ()  " " { c | "  " c + + } reduce () print
+
+
+'Contexts section ()
+{ m let 42 :a 66 :b | m ?? print } :dispatch
+{ |
+  'a dispatch ()
+  'b dispatch ()
+  'm dispatch ()
+} ()
 
 
 t .report
