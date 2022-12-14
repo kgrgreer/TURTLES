@@ -40,10 +40,10 @@ var scope = {
       code.push(() => stack.push(Number.parseFloat(line)));
     } else if ( line.startsWith("'") ) {
       var s = line.substring(1);
-      code.push(()=>stack.push(s));
+      code.push(() => stack.push(s));
     } else {
       console.log('Warning: Unknown Symbol or Forward Reference "' + line + '" at:', scope.input.substring(scope.ip, scope.ip+40).replaceAll('\n', '\\n'), ' ...');
-      code.push(()=>scope[line]({ push: function(f) { f(); }}));
+      code.push(() => scope[line]({ push: f => f()}));
     }
   },
   '{': function(code) {
@@ -51,14 +51,12 @@ var scope = {
     var curScope = scope = Object.create(scope);
     function countFrames() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
     function framesUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
-    function accessor(index, f) {
-      return function(code) { var d = countFrames(); code.push(() => f(framesUp(d) + index)); }
-    }
+    function accessor(index, f) { return code => { var d = countFrames(); code.push(() => f(framesUp(d) + index)); } }
     function defineVar(v, index) {
-      scope[v]        = accessor(index, (i) => stack.push(heap[i]));
-      scope[':' + v]  = accessor(index, (i) => heap[i] = stack.pop());
-      scope[v + '++'] = accessor(index, (i) => heap[i]++);
-      scope[v + '--'] = accessor(index, (i) => heap[i]--);
+      scope[v]        = accessor(index, i => stack.push(heap[i]));
+      scope[':' + v]  = accessor(index, i => heap[i] = stack.pop());
+      scope[v + '++'] = accessor(index, i => heap[i]++);
+      scope[v + '--'] = accessor(index, i => heap[i]--);
     }
     while ( ( l = scope.readSym() ) != '|' && l != 'let' ) vars.push(l); // read var names
     for ( let i = 0 ; i < vars.length ; i++ ) {
@@ -166,7 +164,6 @@ var scope = {
 
   '??': code => {
     var s = scope, p = hp;
-    debugger;
     code.push(() => {
       var ohp = hp, oldScope = scope, key = stack.pop();
 //      hp = p;
