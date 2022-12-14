@@ -1,4 +1,4 @@
-var stack = [], heap = [], hp, __arrayStart__ = '__arrayStart__', __switchStart__ = '__switchStart__', outerCode;
+var stack = [], heap = [], heap2 = [], hp, __arrayStart__ = '__arrayStart__', __switchStart__ = '__switchStart__', outerCode;
 function fn(f) { return code => code.push(f); }
 function bfn(f) { return fn(() => { var b = stack.pop(), a = stack.pop(); stack.push(f(a, b)); }); }
 var scope = {
@@ -54,7 +54,7 @@ var scope = {
     function accessor(index, f) { return code => { var d = countFrames(); code.push(() => f(framesUp(d) + index)); } }
     function defineVar(v, index) {
       scope[v]        = accessor(index, i => stack.push(heap[i]));
-      scope[':' + v]  = accessor(index, i => heap[i] = stack.pop());
+      scope[':' + v]  = accessor(index, i => { heap2[i] = v; heap[i] = stack.pop(); });
       scope[v + '++'] = accessor(index, i => heap[i]++);
       scope[v + '--'] = accessor(index, i => heap[i]--);
     }
@@ -161,17 +161,13 @@ var scope = {
   '%':    fn(() => stack.push(stack.pop() / 100)),
   '()':   fn(() => { var f = stack.pop(); /*console.log('running: ', f.toString());*/ f(); }),
 
-
   '??': code => {
-    var s = scope, p = hp;
+    var s = scope;
     code.push(() => {
-      var ohp = hp, oldScope = scope, key = stack.pop();
-//      hp = p;
+      var oldScope = scope, key = stack.pop();
       scope = s;
       var word = s[key];
-      console.log('*******************', key, hp, word);
-      word({push: function(f) { console.log('**** emitting', f, hp); f(); }});
-  //    hp = ohp;
+      word({push: function(f) { f(); }});
       scope = oldScope;
     });
   }
@@ -211,6 +207,13 @@ scope.eval$(`
 
 // A helper function for displaying section titles
 { t | " " print t print } :section
+
+{ m let 42 :a 66 :b | m ?? print } :dispatch
+{ |
+  'a dispatch ()
+  'b dispatch ()
+  'm dispatch ()
+} ()
 `);
 
 
