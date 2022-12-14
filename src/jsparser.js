@@ -54,7 +54,7 @@ scope.eval$(`
       [ '_ 'a 'z' range () 'A 'Z range () ] alt ()
       [ '_ 'a 'z' range () 'A 'Z range () '0 '9 range () ] alt () 0 repeat () join mapp ()
     ] seq () join mapp () }                                     :lhs
-  | { m | m ?? }
+  | { | ?? }
 } :FormulaParser
 
 
@@ -78,7 +78,7 @@ scope.eval$(`
     'iPrefix { | m super { a | a 1 @ a 0 @ + "  " a 1 @ + + } action () }
     'number     { | m super join  action () }
     'array      { | m super  { a | " [" a { e | "  " + e + } forEach () "  ]" + } action () }
-    { o | o m super () () }
+    { | m super () () }
   end }
 } () } :FormulaCompiler
 
