@@ -51,11 +51,14 @@ var scope = {
     var curScope = scope = Object.create(scope);
     function countDepth() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
     function moveUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
+    function accessor(index, f) {
+      return function(code) { var d = countDepth(); code.push(() => f(moveUp(d) + index)); }
+    }
     function defineVar(v, index) {
-      scope[v]        = function(code) { var d = countDepth(); code.push(() => { var p = moveUp(d); stack.push(heap[p+index]); }); };
-      scope[':' + v]  = function(code) { var d = countDepth(); code.push(() => { var p = moveUp(d); heap[p+index] = stack.pop(); }); };
-      scope[v + '++'] = function(code) { var d = countDepth(); code.push(() => { var p = moveUp(d); heap[p+index]++; }); };
-      scope[v + '--'] = function(code) { var d = countDepth(); code.push(() => { var p = moveUp(d); heap[p+index]--; }); };
+      scope[v]        = accessor(index, (i) => stack.push(heap[i]));
+      scope[':' + v]  = accessor(index, (i) => heap[i] = stack.pop());
+      scope[v + '++'] = accessor(index, (i) => heap[i]++);
+      scope[v + '--'] = accessor(index, (i) => heap[i]--);
     }
     while ( ( l = scope.readSym() ) != '|' && l != 'let' ) vars.push(l); // read var names
     for ( let i = 0 ; i < vars.length ; i++ ) {
@@ -216,6 +219,7 @@ scope.eval$(`
 
 /*
 TODO:
+  - get rid of 'hp'? Put on end of heap.
   - fix 'nil to be falsey
   - make string function naming more consistent
   - have functions auto-call and use quoting to reference without calling?
