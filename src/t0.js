@@ -232,6 +232,7 @@ TODO:
   - don't put heap in an array to allow for JS GC?
   - Add in-line cache for method lookups, needs faster access to an object's class
   - Add a recursive array toString method
+  - Fix associativeness of ** and ? operators
 
   { :outer a b c | ^outer ... }
 
