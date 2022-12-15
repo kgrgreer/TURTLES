@@ -110,12 +110,6 @@ var scope = {
       return options[options.length-1]();
     });
   },
-  debugger:fn(() => {debugger;}),
-  print:   fn(() => console.log('' + stack.pop())),
-  if:      fn(() => { var block = stack.pop(); var cond = stack.pop(); if ( cond ) block(); }),
-  ifelse:  fn(() => { var fBlock = stack.pop(), tBlock = stack.pop(), cond = stack.pop(); (cond ? tBlock : fBlock)(); }),
-  while:   fn(() => { var block = stack.pop(), cond = stack.pop(); while ( true ) { cond(); if ( ! stack.pop() ) break; block(); } }),
-  const:   fn(() => { var sym = stack.pop(), value = stack.pop(); scope[sym] = fn(() => { stack.push(value); }); }),
   '[]WithValue': fn(() => {
     var value = stack.pop(), length = stack.pop(), a = [];
     for ( var i = 0 ; i < length ; i++ ) a[i] = value;
@@ -126,10 +120,10 @@ var scope = {
     for ( var i = 0 ; i < length ; i++ ) { stack.push(i); fn(); a[i] = stack.pop(); }
     stack.push(a);
   }),
-  '@': bfn((a, i) => a[i]),
+  '@':  bfn((a, i) => a[i]),
   ':@': fn(() => { var i = stack.pop(), a = stack.pop(), v = stack.pop(); a[i] = v; }),
-  '[': fn(() => { stack.push(__arrayStart__); }),
-  ']': fn(() => {
+  '[':  fn(() => { stack.push(__arrayStart__); }),
+  ']':  fn(() => {
     var start = stack.length-1;
     for ( ; start && stack[start] !== __arrayStart__ ; start-- );
     var a = new Array(stack.length-start-1);
@@ -137,31 +131,44 @@ var scope = {
     stack.pop(); // remove arrayStart
     stack.push(a);
   }),
-  'i[':   code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
-  '"':    code => { var s = '', c; while ( (c = scope.readChar()) != '"' ) s += c; code.push(() => stack.push(s)); },
-  '//':   () => { while ( scope.readChar() != '\n' );},
-  '/*':   () => { while ( scope.readSym() != '*/' );},
-  '!':    fn(() => { stack.push( ! stack.pop()); }),
-  '&':    bfn((a,b) => a && b),
-  '|':    bfn((a,b) => a || b),
-  '&&':   fn(() => { var aFn = stack.pop(); if ( ! stack.pop() ) stack.push(false); else aFn(); }),
-  '||':   fn(() => { var aFn = stack.pop(); if (   stack.pop() ) stack.push(true);  else aFn(); }),
-  mod:    bfn((a,b) => a % b),
-  '=':    bfn((a,b) => a === b),
-  '!=':   bfn((a,b) => a !== b),
-  '<':    bfn((a,b) => a < b),
-  '<=':   bfn((a,b) => a <= b),
-  '>':    bfn((a,b) => a > b),
-  '>=':   bfn((a,b) => a >= b),
-  '+':    bfn((a,b) => a + b), // Should be a different concat for strings
-  '*':    bfn((a,b) => a * b),
-  '-':    bfn((a,b) => a - b),
-  '/':    bfn((a,b) => a / b),
-  '^':    bfn((a,b) => Math.pow(a,b)),
-  '%':    fn(() => stack.push(stack.pop() / 100)),
-  '()':   fn(() => { var f = stack.pop(); /*console.log('running: ', f.toString());*/ f(); }),
-
-  '??': code => {
+  debugger:  fn(() => {debugger;}),
+  print:     fn(() => console.log('' + stack.pop())),
+  if:        fn(() => { var block = stack.pop(); var cond = stack.pop(); if ( cond ) block(); }),
+  ifelse:    fn(() => { var fBlock = stack.pop(), tBlock = stack.pop(), cond = stack.pop(); (cond ? tBlock : fBlock)(); }),
+  while:     fn(() => { var block = stack.pop(), cond = stack.pop(); while ( true ) { cond(); if ( ! stack.pop() ) break; block(); } }),
+  const:     fn(() => { var sym = stack.pop(), value = stack.pop(); scope[sym] = fn(() => { stack.push(value); }); }),
+  mod:       bfn((a,b) => a % b),
+  charAt:    bfn((s, i) => s.charAt(i)),
+  indexOf:   bfn((s, p) => s.indexOf(p)),
+  len:       fn(() => { stack.push(stack.pop().length); }),
+  input_:    fn(() => { stack.push(scope.input); }),
+  ip_:       fn(() => { stack.push(scope.ip); }),
+  emit:      () => { var v = stack.pop(); outerCode.push(() => stack.push(v)); },
+  'string?': fn(() => { stack.push(typeof stack.pop() === 'string'); }),
+  'array?':  fn(() => { stack.push(Array.isArray(stack.pop())); }),
+  'i[':      code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
+  '"':       code => { var s = '', c; while ( (c = scope.readChar()) != '"' ) s += c; code.push(() => stack.push(s)); },
+  '//':      () => { while ( scope.readChar() != '\n' );},
+  '/*':      () => { while ( scope.readSym() != '*/' );},
+  '!':       fn(() => { stack.push( ! stack.pop()); }),
+  '&':       bfn((a,b) => a && b),
+  '|':       bfn((a,b) => a || b),
+  '&&':      fn(() => { var aFn = stack.pop(); if ( ! stack.pop() ) stack.push(false); else aFn(); }),
+  '||':      fn(() => { var aFn = stack.pop(); if (   stack.pop() ) stack.push(true);  else aFn(); }),
+  '=':       bfn((a,b) => a === b),
+  '!=':      bfn((a,b) => a !== b),
+  '<':       bfn((a,b) => a < b),
+  '<=':      bfn((a,b) => a <= b),
+  '>':       bfn((a,b) => a > b),
+  '>=':      bfn((a,b) => a >= b),
+  '+':       bfn((a,b) => a + b), // Should be a different concat for strings
+  '*':       bfn((a,b) => a * b),
+  '-':       bfn((a,b) => a - b),
+  '/':       bfn((a,b) => a / b),
+  '^':       bfn((a,b) => Math.pow(a,b)),
+  '%':       fn(() => stack.push(stack.pop() / 100)),
+  '()':      fn(() => { var f = stack.pop(); /*console.log('running: ', f.toString());*/ f(); }),
+  '??':      code => {
     var s = scope;
     code.push(() => {
       var oldScope = scope, key = stack.pop();
@@ -172,16 +179,6 @@ var scope = {
     });
   }
 };
-
-// Parser Helpers
-scope['string?'] = fn(() => { stack.push(typeof stack.pop() === 'string'); });
-scope['array?']  = fn(() => { stack.push(Array.isArray(stack.pop())); });
-scope.charAt     = bfn((s, i) => s.charAt(i));
-scope.indexOf    = bfn((s, p) => s.indexOf(p));
-scope.len        = fn(() => { stack.push(stack.pop().length); });
-scope.input_     = fn(() => { stack.push(scope.input); });
-scope.ip_        = fn(() => { stack.push(scope.ip); });
-scope.emit       = function() { var v = stack.pop(); outerCode.push(() => stack.push(v)); };
 
 scope.eval$(`
 1 1 = :true        // define true
