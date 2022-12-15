@@ -15,8 +15,7 @@ var scope = {
     var oldInput = scope.input, oldIp = scope.ip;
     scope.input = src;
     scope.ip    = 0;
-    for ( var sym ; sym = scope.readSym() ; )
-      scope.evalSym(sym, { push: f => f() });
+    for ( var sym ; sym = scope.readSym() ; ) scope.evalSym(sym, { push: f => f() });
     scope.input = oldInput;
     scope.ip    = oldIp
   },
@@ -172,10 +171,7 @@ var scope = {
     var s = scope;
     code.push(() => {
       var oldScope = scope, key = stack.pop();
-      scope = s;
-      var word = s[key];
-      word({push: f => f()});
-      scope = oldScope;
+      scope = s; s[key]({push: f => f()}); scope = oldScope;
     });
   }
 };
