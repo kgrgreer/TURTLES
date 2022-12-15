@@ -46,7 +46,7 @@ var scope = {
     }
   },
   '{': function(code) {
-    var start = scope.ip, oldScope = scope, vars = [], fncode = [], paramCount;
+    var start = scope.ip, oldScope = scope, vars = [], fncode = [], paramCount, name = '';
     var curScope = scope = Object.create(scope);
     function countFrames() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
     function framesUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
@@ -57,7 +57,14 @@ var scope = {
       scope[v + '++'] = accessor(index, i => heap[i]++);
       scope[v + '--'] = accessor(index, i => heap[i]--);
     }
-    while ( ( l = scope.readSym() ) != '|' && l != 'let' ) vars.push(l); // read var names
+    while ( ( l = scope.readSym() ) != '|' && l != 'let' ) {
+      if ( vars.length == 0 && l.startsWith(':') ) {
+        name = l.substring(1);
+        scope[name + '<-'] = accessor(0, i => { throw name; });
+      } else {
+        vars.push(l); // read var names
+      }
+    }
     for ( let i = 0 ; i < vars.length ; i++ ) {
       let index = vars.length-i;
       defineVar(vars[i], index);
@@ -87,7 +94,12 @@ var scope = {
         hp = heap.length;
         heap.push(p);
         for ( var i = 0 ; i < paramCount ; i++ ) heap.push(stack.pop());
-        for ( var i = 0 ; i < fncode.length ; i++ ) fncode[i]();
+        try {
+          for ( var i = 0 ; i < fncode.length ; i++ ) fncode[i]();
+        } catch (x) {
+          debugger;
+          if ( x !== name ) throw x;
+        }
         hp = old;
       };
       f.toString = function() { return src; }
@@ -143,6 +155,7 @@ var scope = {
   input_:    fn(() => { stack.push(scope.input); }),
   ip_:       fn(() => { stack.push(scope.ip); }),
   emit:      () => { var v = stack.pop(); outerCode.push(() => stack.push(v)); },
+  '<-':      fn(() => { throw ''; }),
   'string?': fn(() => { stack.push(typeof stack.pop() === 'string'); }),
   'array?':  fn(() => { stack.push(Array.isArray(stack.pop())); }),
   'i[':      code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
@@ -192,6 +205,7 @@ scope.eval$(`
 { a f | [ a f forEach () ] } :map
 { a v f | v a f forEach () } :reduce
 { a p | [  a { c | c p () { | c } if } forEach () ] } :filter
+
 { a | " " a { c | c + } forEach () } :join
 
 // A helper function for displaying section titles
@@ -201,6 +215,7 @@ scope.eval$(`
 
 /*
 TODO:
+  - ??? 'with' support, to be used with creating sub-contexts: with ( ctx ) { { let ... ?? } }
   - get rid of 'hp'? Put on end of heap.
   - fix 'nil to be falsey
   - make string function naming more consistent
@@ -215,6 +230,7 @@ TODO:
   - Add in-line cache for method lookups, needs faster access to an object's class
   - Add a recursive array toString method
   - Fix associativeness of ** and ? operators
+  - exceptions?
 
   { :outer a b c | ^outer ... }
 

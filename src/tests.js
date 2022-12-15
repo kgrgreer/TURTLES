@@ -199,6 +199,7 @@ class ColourBall extends Ball {
 
 " 10 fact2 ()" 3628800 t .test
 
+
 " Lexical Scoping" section ()
 1 { a | { | a print } () } ()
 
@@ -324,6 +325,12 @@ foo () print
   'b dispatch ()
   'm dispatch ()
 } ()
+
+
+'Return section ()
+'****************************************************************** print
+{ | 1 <- 2 3 4 5 } () print
+{ :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () print // labelled return
 
 
 t .report
