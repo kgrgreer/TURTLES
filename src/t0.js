@@ -137,7 +137,7 @@ var scope = {
   ifelse:    fn(() => { var fBlock = stack.pop(), tBlock = stack.pop(), cond = stack.pop(); (cond ? tBlock : fBlock)(); }),
   while:     fn(() => { var block = stack.pop(), cond = stack.pop(); while ( true ) { cond(); if ( ! stack.pop() ) break; block(); } }),
   const:     fn(() => { var sym = stack.pop(), value = stack.pop(); scope[sym] = fn(() => { stack.push(value); }); }),
-  mod:       bfn((a,b) => a % b),
+  mod:       bfn((a, b) => a % b),
   charAt:    bfn((s, i) => s.charAt(i)),
   indexOf:   bfn((s, p) => s.indexOf(p)),
   len:       fn(() => { stack.push(stack.pop().length); }),
@@ -174,7 +174,7 @@ var scope = {
       var oldScope = scope, key = stack.pop();
       scope = s;
       var word = s[key];
-      word({push: function(f) { f(); }});
+      word({push: f => f()});
       scope = oldScope;
     });
   }
@@ -200,7 +200,6 @@ scope.eval$(`
 
 // A helper function for displaying section titles
 { t | " " print t print } :section
-
 `);
 
 
