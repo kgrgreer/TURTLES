@@ -328,9 +328,8 @@ foo () print
 
 
 'Return section ()
-'****************************************************************** print
-{ | 1 <- 2 3 4 5 } () print
-{ :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () print // labelled return
+{ | 1 <- 2 3 4 5 } () print // returns 1
+{ :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () print // labelled return, returns 10
 
 
 t .report
