@@ -332,5 +332,11 @@ foo () print
 { :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () print // labelled return, returns 10
 
 
+" Auto Functions" section ()
+{ | 'auto print } ::auto
+auto
+&auto print
+&auto () print
+
 t .report
 `);

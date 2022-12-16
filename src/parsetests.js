@@ -1,5 +1,4 @@
 scope.eval$(`
-
 " thisthenthat0123 " 0 nil PStream () :ps
 
 " Literal Parser" section ()
@@ -10,7 +9,7 @@ ps 'this lit () () .toString print
 
 
 " Seq Parser" section ()
-[ 'this 'then 'that ] seq () :seqparser
+[ 'this 'then 'that ] seq :seqparser
 ps seqparser ()  .toString print
 
 
@@ -37,11 +36,11 @@ ps 'this lit () opt () ()  .toString print
 
 
 'that print
-ps [ 'that lit () opt () 'this ] seq () () .toString print
+ps [ 'that lit () opt () 'this ] seq () .toString print
 
 
 'thisthen print
-ps [ 'this lit () opt () 'then ] seq () () .toString print
+ps [ 'this lit () opt () 'then ] seq () .toString print
 
 
 " NotChars Parser" section ()

@@ -36,12 +36,12 @@ var scope = {
       var sym = line.substring(2);
       code.push(function() {
         var value = stack.pop();
-        scope[sym] = function(code) { code.push(() => { stack.push(value); this.evalSym('()', code); }); }
-        scope['^' + sym] = code => { code.push(() => stack.push(value)); }
+        scope[sym] = code => { code.push(code => stack.push(value)); scope.evalSym('()', code); };
+        scope['&' + sym] = code => { code.push(() => stack.push(value)); };
       });
     } else if ( line.startsWith(':') ) {
       var sym = line.substring(1);
-      code.push(function() { var value = stack.pop(); scope[sym] = function(code) { code.push(function() { stack.push(value); }); } });
+      code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
     } else if ( line.charAt(0) >= '0' && line.charAt(0) <= '9' || ( line.charAt(0) == '-' && line.length > 1 ) ) {
       code.push(() => stack.push(Number.parseFloat(line)));
     } else if ( line.startsWith("'") ) {
@@ -216,6 +216,7 @@ scope.eval$(`
 
 // A helper function for displaying section titles
 { t | " " print t print } :section
+
 `);
 
 

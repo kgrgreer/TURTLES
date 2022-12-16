@@ -31,9 +31,9 @@ scope.eval$(`
 { parsers | parsers prepare () :parsers { ps let 0 :i |
   [ { | i parsers len < { | ps parsers i @ () :ps ps } && } { | i++ ps .value } while ]
   parsers len i = { a | a ps .:value } { _ | false } ifelse
-} } :seq
+} } ::seq
 
-{ parsers i | parsers seq () { a | a i @ } mapp () } :seq1
+{ parsers i | parsers seq { a | a i @ } mapp () } :seq1
 
 { parsers | parsers prepare () :parsers { ps let 0 :i false :ret |
   { | i parsers len < { | ps parsers i @ () :ret ret ! } && } { | i++ } while
@@ -46,7 +46,7 @@ scope.eval$(`
 } } :repeat
 
 { parser delim |
-  [ [ parser delim ] 0 seq1 () 0 repeat () parser opt () ] seq ()
+  [ [ parser delim ] 0 seq1 () 0 repeat () parser opt () ] seq
   { a | [ a 0 @  { e | e } forEach () a 1 @ ] } mapp ()
 } :delim
 
