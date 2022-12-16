@@ -201,13 +201,13 @@ scope.eval$(`
 { | } :nil         // define 'nil', like doing nil = new Object() in Java/JS
 { n | 0 n - } :neg // negate
 
-{ start end block | { | start end <= } { | start block () start++ } while } :for
+{ start end block | { | start end <= } { | start block () start++ } while } ::for
 
 // Standard Forth-like Functions
 { v | v v } :dup  { _ | } :drop  { a b | b a } :swap
 
 // Standard High-Order Functions
-{ a f | 0 a len 1 - { i | a i @ f () } for () } :forEach
+{ a f | 0 a len 1 - { i | a i @ f () } for } :forEach
 { a f | [ a f forEach () ] } :map
 { a v f | v a f forEach () } :reduce
 { a p | [  a { c | c p () { | c } if } forEach () ] } :filter

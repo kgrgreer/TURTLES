@@ -251,7 +251,7 @@ false { | " if true" print } { | " if false" print } ifelse
   { | i 10 <= } { | " loop: " i + print i 1 + :i } while
 } ()
 
-5 15 { i | " for: " i + print } for ()
+5 15 { i | " for: " i + print } for
 
 
 'Nil section ()
@@ -315,7 +315,7 @@ foo () print
 
 
 " Function Programming" section ()
-[ 1 10 { | } for () ]  { c | c 2 mod 0 = } filter ()  " " { c | "  " c + + } reduce () print
+[ 1 10 { | } for ]  { c | c 2 mod 0 = } filter ()  " " { c | "  " c + + } reduce () print
 
 
 'Contexts section ()
