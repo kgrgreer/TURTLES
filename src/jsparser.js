@@ -1,15 +1,15 @@
 scope.eval$(`
 
 { l op r |
-  { o | [ l o .call [ op r o .call ] seq opt () ] seq }
-} :bin // binary operator, ie. expr +/0 expr13
+  { o | [ l o .call [ op r o .call ] seq opt ] seq }
+} ::bin // binary operator, ie. expr +/0 expr13
 
 { v |
   v 0 @
   v 1 @ { | "  " v 1 @ 1 @ "  " v 1 @ 0 @ + + + + } if
 } :infix // convert an infix operator to postfix
 
-{ o m super f | { ps | ps o m super () () f mapp () () } } :action
+{ o m super f | { ps | ps o m super () () f mapp () } } ::action
 
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
@@ -19,39 +19,39 @@ scope.eval$(`
   { s o | s 0 nil PStream () o .start () .value }               :parse$
   { m o | o m o () () }                                         :call
   { o | o .expr }                                               :start
-  [ '== '= litMap () '!= ] alt ()                               :equality
-  [ '<= '< '>= '> ] alt ()                                      :inequality
-  '&& lit ()                                                    :and
-  '|| lit ()                                                    :or
-  { o | [ o .expr3 [ '? o .expr3 ': o .expr3 ] seq opt () ] seq } :ternary
-  { o | [ o .lhs '= o .expr ] seq }                          :assignment
+  [ '== '= litMap '!= ] alt                                     :equality
+  [ '<= '< '>= '> ] alt                                         :inequality
+  '&& lit                                                       :and
+  '|| lit                                                       :or
+  { o | [ o .expr3 [ '? o .expr3 ': o .expr3 ] seq opt ] seq }  :ternary
+  { o | [ o .lhs '= o .expr ] seq }                             :assignment
   { o | o .expr2 }                                              :expr
-  { o | [ o .assignment o .ternary o .expr3 ] alt () }          :expr2
-  'expr4 or 'expr3  bin ()                                      :expr3
-  'expr5 and 'expr4 bin ()                                      :expr4
+  { o | [ o .assignment o .ternary o .expr3 ] alt }             :expr2
+  'expr4 or 'expr3  bin                                         :expr3
+  'expr5 and 'expr4 bin                                         :expr4
   { o | o .expr8 }                                              :expr5
-  'expr9 equality 'expr8  bin ()                                :expr8
-  'expr10 inequality 'expr9  bin ()                             :expr9
+  'expr9 equality 'expr8  bin                                   :expr8
+  'expr10 inequality 'expr9  bin                                :expr9
   { o | o .expr11 }                                             :expr10
-  'expr12 '+- anyChar () 'expr11  bin ()                        :expr11
-  'expr13 '*/%  anyChar () 'expr12  bin ()                      :expr12
-  'expr14 '** '^ litMap () 'expr13 bin ()                       :expr13
-  { o | [ o .notPrefix o .iPrefix o .expr15 ] alt () }          :expr14
-  { o | [ o .expr16 [ '++ '-- ] alt () opt () ] seq }        :expr15
+  'expr12 '+- anyChar 'expr11  bin                              :expr11
+  'expr13 '*/%  anyChar 'expr12  bin                            :expr12
+  'expr14 '** '^ litMap 'expr13 bin                             :expr13
+  { o | [ o .notPrefix o .iPrefix o .expr15 ] alt }             :expr14
+  { o | [ o .expr16 [ '++ '-- ] alt opt ] seq }                 :expr15
   { o | o .expr17 }                                             :expr16
-  { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 () 1 repeat () opt () ] seq } :expr17
-  { o | [ o .lhs o .number o .bool o .group o .array ] alt () } :expr18
-  { o | [ '! o .expr15 ] 1 seq1 () }                            :notPrefix
-  { o | [ [ '-- '++ ] alt () o .expr15 ] seq }               :iPrefix
-  { o | [ '( o .expr ') ] 1 seq1 () }                           :group
-  { o | o .digit 1 repeat () }                                  :number
-  { o | '0 '9 range () }                                        :digit
-  { o | [ 'true 'false ] alt () }                               :bool
-  { o | [ '[ o .expr ', lit () delim () '] ] 1 seq1 () }        :array
+  { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 1 repeat opt ] seq } :expr17
+  { o | [ o .lhs o .number o .bool o .group o .array ] alt }    :expr18
+  { o | [ '! o .expr15 ] 1 seq1 }                               :notPrefix
+  { o | [ [ '-- '++ ] alt o .expr15 ] seq }                     :iPrefix
+  { o | [ '( o .expr ') ] 1 seq1 }                              :group
+  { o | o .digit 1 repeat }                                     :number
+  { o | '0 '9 range }                                           :digit
+  { o | [ 'true 'false ] alt }                                  :bool
+  { o | [ '[ o .expr ', lit delim '] ] 1 seq1 }                 :array
   { o | [
-      [ '_ 'a 'z' range () 'A 'Z range () ] alt ()
-      [ '_ 'a 'z' range () 'A 'Z range () '0 '9 range () ] alt () 0 repeat () join mapp ()
-    ] seq join mapp () }                                     :lhs
+      [ '_ 'a 'z' range 'A 'Z range ] alt
+      [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt 0 repeat join mapp
+    ] seq join mapp }                                           :lhs
   | { | ?? }
 } :FormulaParser
 
@@ -60,21 +60,21 @@ scope.eval$(`
   // TODO: factor out common actions
   { m | m switch
     'super      { m o | o m super () () () }
-    'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join () } { | a 0  @ } ifelse }  action () }
-    'assignment { | m super { a | a 2 @ "  dup () :" a 0 @ + + } action () }
-    'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action () }
-    'expr4      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action () }
-    'expr8      { | m super infix action () }
-    'expr9      { | m super infix action () }
-    'expr11     { | m super infix action () }
-    'expr12     { | m super infix action () }
-    'expr13     { | m super infix action () }
-    'expr15     { | m super { a | a 0 @ a 1 @ { | "  " a 0 @ a 1 @ + + + } if } action () }
-    'expr17     { | m super  { a | a 0 @ a 1 @ { | "  " + a 1 @ { e | e + "  @ " + } forEach } if } action () }
-    'notPrefix  { | m super { | "  !" + } action () }
-    'iPrefix    { | m super { a | a 1 @ a 0 @ + "  " a 1 @ + + } action () }
-    'number     { | m super join  action () }
-    'array      { | m super  { a | " [" a { e | "  " + e + } forEach "  ]" + } action () }
+    'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join () } { | a 0  @ } ifelse }  action }
+    'assignment { | m super { a | a 2 @ "  dup () :" a 0 @ + + } action }
+    'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
+    'expr4      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
+    'expr8      { | m super infix action }
+    'expr9      { | m super infix action }
+    'expr11     { | m super infix action }
+    'expr12     { | m super infix action }
+    'expr13     { | m super infix action }
+    'expr15     { | m super { a | a 0 @ a 1 @ { | "  " a 0 @ a 1 @ + + + } if } action }
+    'expr17     { | m super  { a | a 0 @ a 1 @ { | "  " + a 1 @ { e | e + "  @ " + } forEach } if } action }
+    'notPrefix  { | m super { | "  !" + } action }
+    'iPrefix    { | m super { a | a 1 @ a 0 @ + "  " a 1 @ + + } action }
+    'number     { | m super join  action }
+    'array      { | m super  { a | " [" a { e | "  " + e + } forEach "  ]" + } action }
     { | m super () () }
   end }
 } () } :FormulaCompiler
