@@ -338,5 +338,68 @@ auto
 &auto print
 &auto () print
 
+
+'Tree section
+
+{ id fName lName |
+  { m | m switch
+    'id       { o | id }
+    'toString { o | [ id "  " fName "  " lName ] join }
+    { | " User unknown method: " m + print }
+  end }
+} ::User
+
+{ obj l r let l .count r .count 1 + + :count |
+  { m | m switch
+    'find  { :f id o |
+      id obj .id = { | obj f<- } if
+      id obj .id < { | id l .find f<- } if
+      id r .find
+    }
+    'put   { :p newObj o |
+      newObj .id obj .id = { | newObj l r TreeNode p<- } if
+      newObj .id obj .id < { | obj newObj l .put r TreeNode p<- } if
+      obj l newObj r .put TreeNode
+    }
+    'forEach { f o | f l .forEach obj f () f r .forEach }
+    'count { o | count }
+    { | " TreeNode unknown method: " m + print }
+  end }
+} ::TreeNode
+
+
+{ m |
+  m switch
+    'find  { id o | false }
+    'put   { obj o | obj Tree Tree TreeNode }
+    'forEach { f o | }
+    'count { o | 0 }
+    { m | " Tree unknown method: " m + print }
+  end
+} :Tree
+
+Tree :t
+
+42 'Kevin 'Greer User :u1
+10 'John  'Doe   User :u2
+50 'Jane  'Doe   User :u3
+5  'Adam  'Smith User :u4
+
+t .count print
+u1 t .put :t
+t .count print
+u2 t .put :t
+t .count print
+u3 t .put :t
+t .count print
+u4 t .put :t
+t .count print
+{ u | " forEach: " u .toString + print } t .forEach
+5 t .find .toString print
+
+[ { o | o .toString } t .forEach ] print
+
+debugger
+
 t .report
 `);
