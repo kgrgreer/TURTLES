@@ -349,6 +349,7 @@ auto
   end }
 } ::User
 
+
 { obj l r let l .count r .count 1 + + :count |
   { m | m switch
     'find  { :f id o |
@@ -362,6 +363,18 @@ auto
       obj l newObj r .put TreeNode
     }
     'forEach { f o | f l .forEach obj f () f r .forEach }
+    'skip  { :s s o |
+      s 0 <= { | o s<- } if
+      s count >= { | Tree s<- } if
+      { let l .count :lCount s l .skip :l |
+        s lCount - :s
+        s 0 <=
+          { | obj l r TreeNode }
+          { | --s r .skip }
+          ifelse
+      } ()
+    }
+    'limit  { l o | o }
     'count { o | count }
     { | " TreeNode unknown method: " m + print }
   end }
@@ -373,6 +386,8 @@ auto
     'find  { id o | false }
     'put   { obj o | obj Tree Tree TreeNode }
     'forEach { f o | }
+    'skip  { s o | o }
+    'limit  { l o | o }
     'count { o | 0 }
     { m | " Tree unknown method: " m + print }
   end
@@ -398,6 +413,8 @@ t .count print
 5 t .find .toString print
 
 [ { o | o .toString } t .forEach ] print
+
+[ { o | o .toString } 2 t .skip .forEach ] print
 
 debugger
 
