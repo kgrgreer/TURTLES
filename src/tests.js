@@ -363,6 +363,15 @@ auto
       obj l newObj r .put TreeNode
     }
     'forEach { f o | f l .forEach obj f () f r .forEach }
+    'select { :m skip limit f o |
+      limit 0 <= skip count >= | { | m<- } if
+      skip 0 <= limit count >= & { | f o .forEach m<- } if
+      skip limit f l .select
+      skip  l .count - :skip
+      skip 0 < { | limit skip + :limit 0 :skip } if
+      skip 0 <= limit 1 >= & { | obj f () limit-- } { | skip-- } ifelse
+      skip limit f r .select
+    }
     'skip { :s s o |
       s 0 <= { | o s<- } if
       s count >= { | Tree s<- } if
@@ -390,6 +399,7 @@ auto
     'find  { id o | false }
     'put   { obj o | obj Tree Tree TreeNode }
     'forEach { f o | }
+    'select { s l f o | }
     'skip  { s o | o }
     'limit  { l o | o }
     'count { o | 0 }
@@ -420,6 +430,13 @@ t .count print
 
 [ { o | o .toString } 2 t .skip  .forEach ] print
 [ { o | o .toString } 2 t .limit .forEach ] print
+
+'select section
+[ 0 1000 { o | o .toString } t .select ] print
+[ 1 1000 { o | o .toString } t .select ] print
+[ 0 1 { o | o .toString } t .select ] print
+[ 0 2 { o | o .toString } t .select ] print
+[ 1 2 { o | o .toString } t .select ] print
 
 debugger
 
