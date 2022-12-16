@@ -311,11 +311,11 @@ foo () print
 
 
 'Map section ()
-[ 1 2 3 ] { v | v v * } map () print
+[ 1 2 3 ] { v | v v * } map print
 
 
 " Function Programming" section ()
-[ 1 10 { | } for ]  { c | c 2 mod 0 = } filter ()  " " { c | "  " c + + } reduce () print
+[ 1 10 { | } for ]  { c | c 2 mod 0 = } filter  " " { c | "  " c + + } reduce print
 
 
 'Contexts section ()

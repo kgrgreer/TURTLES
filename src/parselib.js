@@ -26,7 +26,7 @@ scope.eval$(`
   start end ps .head inRange () { | ps .tail } { | false } ifelse
 } } ::range
 
-{ parsers | parsers { p | p string? { | p lit } { | p } ifelse } map () } ::prepare
+{ parsers | parsers { p | p string? { | p lit } { | p } ifelse } map } ::prepare
 
 { parsers | parsers prepare :parsers { ps let 0 :i |
   [ { | i parsers len < { | ps parsers i @ () :ps ps } && } { | i++ ps .value } while ]
