@@ -2,7 +2,7 @@ scope.eval$(`
 
 { l op r |
   { o | [ l o .call [ op r o .call ] seq opt ] seq }
-} ::bin // binary operator, ie. expr +/0 expr13
+} ::binary // binary operator, ie. expr +/0 expr13
 
 { v |
   v 0 @
@@ -27,15 +27,15 @@ scope.eval$(`
   { o | [ o .lhs '= o .expr ] seq }                               :assignment
   { o | o .expr2 }                                                :expr
   { o | [ o .assignment o .ternary o .expr3 ] alt }               :expr2
-  'expr4 or 'expr3 bin                                            :expr3
-  'expr5 and 'expr4 bin                                           :expr4
+  'expr4 or 'expr3 binary                                         :expr3
+  'expr5 and 'expr4 binary                                        :expr4
   { o | o .expr8 }                                                :expr5
-  'expr9 equality 'expr8 bin                                      :expr8
-  'expr10 inequality 'expr9 bin                                   :expr9
+  'expr9 equality 'expr8 binary                                   :expr8
+  'expr10 inequality 'expr9 binary                                :expr9
   { o | o .expr11 }                                               :expr10
-  'expr12 '+- anyChar 'expr11 bin                                 :expr11
-  'expr13 '*/%  anyChar 'expr12 bin                               :expr12
-  'expr14 '** '^ litMap 'expr13 bin                               :expr13
+  'expr12 '+- anyChar 'expr11 binary                              :expr11
+  'expr13 '*/%  anyChar 'expr12 binary                            :expr12
+  'expr14 '** '^ litMap 'expr13 binary                            :expr13
   { o | [ o .notPrefix o .iPrefix o .expr15 ] alt }               :expr14
   { o | [ o .expr16 [ '++ '-- ] alt opt ] seq }                   :expr15
   { o | o .expr17 }                                               :expr16
@@ -61,10 +61,10 @@ scope.eval$(`
   // TODO: factor out common actions
   { m | m switch
     'super      { m o | o m super () () () }
-    'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse }  action }
+    'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse } action }
     'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action }
-    'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
-    'expr4      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
+    'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () } action }
+    'expr4      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () } action }
     'expr8      { | m super infix action }
     'expr9      { | m super infix action }
     'expr11     { | m super infix action }
