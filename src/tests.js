@@ -352,18 +352,18 @@ auto
 
 { obj l r let l .count r .count 1 + + :count |
   { m | m switch
-    'find  { :f id o |
+    'find { :f id o |
       id obj .id = { | obj f<- } if
       id obj .id < { | id l .find f<- } if
       id r .find
     }
-    'put   { :p newObj o |
+    'put { :p newObj o |
       newObj .id obj .id = { | newObj l r TreeNode p<- } if
       newObj .id obj .id < { | obj newObj l .put r TreeNode p<- } if
       obj l newObj r .put TreeNode
     }
     'forEach { f o | f l .forEach obj f () f r .forEach }
-    'skip  { :s s o |
+    'skip { :s s o |
       s 0 <= { | o s<- } if
       s count >= { | Tree s<- } if
       { let l .count :lCount s l .skip :l |
@@ -371,7 +371,14 @@ auto
         s 0 <= { | obj l r TreeNode } { | --s r .skip } ifelse
       } ()
     }
-    'limit  { l o | o } // TODO
+    'limit { :m limit o |
+      limit count >= { | o m<- } if
+      limit 0 <= { | Tree m<- } if
+      { let r .count :rCount l r .limit :r |
+        limit rCount - :limit
+        limit 0 >= { | --limit l .limit } { | obj l r TreeNode } ifelse
+      } ()
+    }
     'count { o | count }
     { | " TreeNode unknown method: " m + print }
   end }
@@ -411,7 +418,8 @@ t .count print
 
 [ { o | o .toString } t .forEach ] print
 
-[ { o | o .toString } 2 t .skip .forEach ] print
+[ { o | o .toString } 2 t .skip  .forEach ] print
+[ { o | o .toString } 2 t .limit .forEach ] print
 
 debugger
 
