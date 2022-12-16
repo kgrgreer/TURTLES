@@ -405,7 +405,7 @@ auto
     'count   { o | 0 }
     { m | " Tree unknown method: " m + print }
   end
-} :Tree
+} :Tree // Empty Tree Singleton
 
 Tree :t
 
@@ -415,14 +415,11 @@ Tree :t
 5  'Adam  'Smith User :u4
 
 t .count print
-u1 t .put :t
-t .count print
-u2 t .put :t
-t .count print
-u3 t .put :t
-t .count print
-u4 t .put :t
-t .count print
+u1 t .put :t  t .count print
+u2 t .put :t  t .count print
+u3 t .put :t  t .count print
+u4 t .put :t  t .count print
+
 { u | " forEach: " u .toString + print } t .forEach
 5 t .find .toString print
 
@@ -434,9 +431,9 @@ t .count print
 'select section
 [ 0 1000 { o | o .toString } t .select ] print
 [ 1 1000 { o | o .toString } t .select ] print
-[ 0 1 { o | o .toString } t .select ] print
-[ 0 2 { o | o .toString } t .select ] print
-[ 1 2 { o | o .toString } t .select ] print
+[ 0 1    { o | o .toString } t .select ] print
+[ 0 2    { o | o .toString } t .select ] print
+[ 1 2    { o | o .toString } t .select ] print
 
 debugger
 
