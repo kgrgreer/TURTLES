@@ -32,6 +32,13 @@ var scope = {
       });
       this.evalSym('()', code);
       this.evalSym('()', code);
+    } else if ( line.startsWith('::') ) {
+      var sym = line.substring(2);
+      code.push(function() {
+        var value = stack.pop();
+        scope[sym] = function(code) { code.push(() => { stack.push(value); this.evalSym('()', code); }); }
+        scope['^' + sym] = code => { code.push(() => stack.push(value)); }
+      });
     } else if ( line.startsWith(':') ) {
       var sym = line.substring(1);
       code.push(function() { var value = stack.pop(); scope[sym] = function(code) { code.push(function() { stack.push(value); }); } });
@@ -97,7 +104,6 @@ var scope = {
         try {
           for ( var i = 0 ; i < fncode.length ; i++ ) fncode[i]();
         } catch (x) {
-          debugger;
           if ( x !== name ) throw x;
         }
         hp = old;
