@@ -352,22 +352,42 @@ auto
 
 { obj l r let l .count r .count 1 + + :count |
   { m | m switch
-    'find { :f id o |
-      id obj .id = { | obj f<- } if
-      id obj .id < { | id l .find f<- } if
-      id r .find
+    'obj { o | obj }
+    'compare_ { id lf f rf o |
+      id obj .id = f { |
+        id obj .id < lf rf ifelse
+      } ifelse
+    }
+    'find { id o |
+      id { | id l .find } { | obj } { | id r .find } o .compare_
     }
     'put { :p newObj o |
       newObj .id obj .id = { | newObj l r TreeNode p<- } if
       newObj .id obj .id < { | obj newObj l .put r TreeNode p<- } if
       obj l newObj r .put TreeNode
     }
+    'remove { id o |
+        id
+        { let id l .remove :l2 | l l2 = { | o } { | obj l2 r TreeNode } ifelse }
+        { :r |
+          l Tree = { | r r<- } if
+          r Tree = { | l r<- } if
+            // Remove from the larger side to help balance the tree
+            l .count r .count >
+            { | l .obj l .obj .id l .remove r TreeNode }
+            { | r .obj l r .obj .id r .remove TreeNode }
+          ifelse
+        }
+        { let id r .remove :r2 | r r2 = { | o } { | obj l r2 TreeNode } ifelse }
+      o .compare_
+    }
+    'removeAll { o | Tree }
     'forEach { f o | f l .forEach obj f () f r .forEach }
     'select { :m skip limit f o |
       limit 0 <= skip count >= | { | m<- } if
       skip 0 <= limit count >= & { | f o .forEach m<- } if
       skip limit f l .select
-      skip  l .count - :skip
+      skip l .count - :skip
       skip 0 < { | limit skip + :limit 0 :skip } if
       skip 0 <= limit 1 >= & { | obj f () limit-- } { | skip-- } ifelse
       skip limit f r .select
@@ -396,13 +416,15 @@ auto
 
 { m |
   m switch
-    'find    { id o | false }
-    'put     { obj o | obj Tree Tree TreeNode }
-    'forEach { f o | }
-    'select  { s l f o | }
-    'skip    { s o | o }
-    'limit   { l o | o }
-    'count   { o | 0 }
+    'find      { id o | false }
+    'put       { newObj o | newObj Tree Tree TreeNode }
+    'remove    { id o | o }
+    'removeAll { o | o }
+    'forEach   { f o | }
+    'select    { s l f o | }
+    'skip      { s o | o }
+    'limit     { l o | o }
+    'count     { o | 0 }
     { m | " Tree unknown method: " m + print }
   end
 } :Tree // Empty Tree Singleton
@@ -421,6 +443,7 @@ u3 t .put :t  t .count print
 u4 t .put :t  t .count print
 
 { u | " forEach: " u .toString + print } t .forEach
+'find print
 5 t .find .toString print
 
 [ { o | o .toString } t .forEach ] print
@@ -434,6 +457,12 @@ u4 t .put :t  t .count print
 [ 0 1    { o | o .toString } t .select ] print
 [ 0 2    { o | o .toString } t .select ] print
 [ 1 2    { o | o .toString } t .select ] print
+
+'remove print
+42 t .remove :t t .count print
+[ { o | o .toString } t .forEach ] print
+5 t .remove :t t .count print
+[ { o | o .toString } t .forEach ] print
 
 debugger
 
