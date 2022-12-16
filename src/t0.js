@@ -49,7 +49,10 @@ var scope = {
       code.push(() => stack.push(s));
     } else {
       console.log('Warning: Unknown Symbol or Forward Reference "' + line + '" at:', scope.input.substring(scope.ip, scope.ip+40).replaceAll('\n', '\\n'), ' ...');
-      code.push(() => scope[line]({ push: f => f()}));
+      code.push(() => {
+        if ( typeof scope[line] !== 'function' ) console.log('Error, invalid symbol: ', line);
+        scope[line]({ push: f => f()})
+      });
     }
   },
   '{': function(code) {
@@ -185,7 +188,7 @@ var scope = {
   '/':       bfn((a,b) => a / b),
   '^':       bfn((a,b) => Math.pow(a,b)),
   '%':       fn(() => stack.push(stack.pop() / 100)),
-  '()':      fn(() => { var f = stack.pop(); /*console.log('running: ', f.toString());*/ f(); }),
+  '()':      fn(() => { var f = stack.pop(); /* console.log('running: ', f.toString());*/ f(); }),
   '??':      code => {
     var s = scope;
     code.push(() => {
