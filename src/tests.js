@@ -368,13 +368,10 @@ auto
       s count >= { | Tree s<- } if
       { let l .count :lCount s l .skip :l |
         s lCount - :s
-        s 0 <=
-          { | obj l r TreeNode }
-          { | --s r .skip }
-          ifelse
+        s 0 <= { | obj l r TreeNode } { | --s r .skip } ifelse
       } ()
     }
-    'limit  { l o | o }
+    'limit  { l o | o } // TODO
     'count { o | count }
     { | " TreeNode unknown method: " m + print }
   end }
