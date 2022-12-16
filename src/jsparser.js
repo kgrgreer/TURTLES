@@ -88,17 +88,17 @@ scope.eval$(`
     " T0 Code: " result + print
     { let result eval :v | " Result: " v + print v } ()
   } ()
-} :jsEval
+} ::jsEval
 
 
-" 1+2*3 "          jsEval ()
-" 5*2**(2+3)+100 " jsEval ()
-" 1<2 "            jsEval ()
-" 1>2 "            jsEval ()
-" 1>2||1<2 "       jsEval ()
-" [1,[1,2],3][1][0] " jsEval ()
-" answer=42 " jsEval ()
-" answer=[[1,0],[0,1]][1][1]+((99<=99?1:0)+1)>2||1<2&&5==3&&!true " jsEval ()
+" 1+2*3 "          jsEval
+" 5*2**(2+3)+100 " jsEval
+" 1<2 "            jsEval
+" 1>2 "            jsEval
+" 1>2||1<2 "       jsEval
+" [1,[1,2],3][1][0] " jsEval
+" answer=42 " jsEval
+" answer=[[1,0],[0,1]][1][1]+((99<=99?1:0)+1)>2||1<2&&5==3&&!true " jsEval
 
 { let 1 :a 2 :b 3 :c | [ '****** a '- b '- c ] join print } ()
 4 { z let 1 :a 2 :b 3 :c | [ '****** z a '- b '- c '- z ] join print } () // TODO: fix
@@ -106,12 +106,12 @@ scope.eval$(`
 1 { i |
   i i++ print
   i++ i print
-  " i=5  " jsEval ()
-  " i    " jsEval ()
-  " i+1  " jsEval ()
+  " i=5  " jsEval
+  " i    " jsEval
+  " i+1  " jsEval
   /* Next two compile correctly but don't run because there is no 'i' in their scope.
-  " ++i  " jsEval ()
-  " i++  " jsEval ()
+  " ++i  " jsEval
+  " i++  " jsEval
   */
 } ()
 
