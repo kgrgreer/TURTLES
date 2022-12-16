@@ -29,7 +29,7 @@ scope.eval$(`
 Tester () :t
 
 
-'Arithmetic section ()
+'Arithmetic section
 " 1 1 +" 2 t .test
 " 0 1 +" 1 t .test
 " 2 1 -" 1 t .test
@@ -43,7 +43,7 @@ Tester () :t
 " 5 neg" -5 t .test // it's inconsistent that some operators require () and others don't
 
 
-'Comparators section ()
+'Comparators section
 " 1 1 ="  true  t .test
 " 1 2 ="  false t .test
 " 1 1 !=" false t .test
@@ -54,7 +54,7 @@ Tester () :t
 " 2 3 <=" true  t .test
 
 
-'Logic section ()
+'Logic section
 " false !" true  t .test
 " true  !"  false t .test
 
@@ -81,7 +81,7 @@ Tester () :t
 " true false | true false & |" true t .test
 
 
-'Functions section ()
+'Functions section
 { a | a print } :A
 4 A ()
 { b | b A () } :B
@@ -96,12 +96,12 @@ helloWorld ()
 2 double () double () print
 
 
-" Functions as Parameters" section ()
+" Functions as Parameters" section
 { f | " running callFiveTimes" print f f f f f i[ " compiling callFiveTimes" print ] () f () f () f () f () } :callFiveTimes
 helloWorld callFiveTimes ()
 
 
-" Own Variables" section ()
+" Own Variables" section
 // a precursor to OO
 1 { count |
   { | count 1 + :count count }
@@ -112,7 +112,7 @@ counter () print
 counter () print
 
 
-'OO section ()
+'OO section
 // Create a Lisp-like CONS operator, but use head/tail instead of car/cdr
 // Is a simple class.
 { h t |
@@ -190,7 +190,7 @@ class ColourBall extends Ball {
 */
 
 
-'Recursion section ()
+'Recursion section
 { n | n 1 <= { | 1 } { | n n 1 - fact () * } ifelse } :fact
 " 20 fact ()" 2432902008176640000 t .test
 
@@ -200,7 +200,7 @@ class ColourBall extends Ball {
 " 10 fact2 ()" 3628800 t .test
 
 
-" Lexical Scoping" section ()
+" Lexical Scoping" section
 1 { a | { | a print } () } ()
 
 " hello world"  { a | { | a print } } () :sayhello
@@ -209,7 +209,7 @@ sayhello () sayhello ()
 " 3 deep"  { a | { | { | a print } } } () () ()
 
 
-'Variables section ()
+'Variables section
 3 14 100 / + :PI // PI = 3.14, need to do this way until doubles are supported
 PI print
 PI 2 * print
@@ -226,7 +226,7 @@ PI 2 * print
 } ()
 
 
-'Conditionals section ()
+'Conditionals section
 true  { | " is true"  print } if
 false { | " is false" print } if
 
@@ -234,7 +234,7 @@ true  { | " if true" print } { | " if false" print } ifelse
 false { | " if true" print } { | " if false" print } ifelse
 
 
-'Eval section ()
+'Eval section
 " 1 + 2 print" eval
 
 { script answer |
@@ -246,7 +246,7 @@ false { | " if true" print } { | " if false" print } ifelse
 " 1 2 +" 4 expect ()
 
 
-'Looping section ()
+'Looping section
 1 { i |
   { | i 10 <= } { | " loop: " i + print i 1 + :i } while
 } ()
@@ -254,12 +254,12 @@ false { | " if true" print } { | " if false" print } ifelse
 5 15 { i | " for: " i + print } for
 
 
-'Nil section ()
+'Nil section
 " nil nil =" true  t .test
 " nil 5   =" false t .test
 
 
-'Switch section ()
+'Switch section
 3 switch
   1 { | " one"   }
   2 { | " two"   }
@@ -279,13 +279,13 @@ end () print
 7 lookupNumber () print
 
 
-'Const section ()
+'Const section
 3.1415926 'PI const
 " PI" 3.1415926 t .test
 PI print
 
 
-'Arrays section ()
+'Arrays section
 10 'hello []WithValue :hellos
 hellos print
 " good bye" hellos 5 :@
@@ -310,15 +310,15 @@ foo () print
 3 bar () () print
 
 
-'Map section ()
+'Map section
 [ 1 2 3 ] { v | v v * } map print
 
 
-" Function Programming" section ()
+" Function Programming" section
 [ 1 10 { | } for ]  { c | c 2 mod 0 = } filter  " " { c | "  " c + + } reduce print
 
 
-'Contexts section ()
+'Contexts section
 { m let 42 :a 66 :b | m ?? print } :dispatch
 { |
   'a dispatch ()
@@ -327,12 +327,12 @@ foo () print
 } ()
 
 
-'Return section ()
+'Return section
 { | 1 <- 2 3 4 5 } () print // returns 1
 { :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () print // labelled return, returns 10
 
 
-" Auto Functions" section ()
+" Auto Functions" section
 { | 'auto print } ::auto
 auto
 &auto print

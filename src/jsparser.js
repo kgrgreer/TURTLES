@@ -127,7 +127,7 @@ scope['js{'] = code => {
 };
 
 scope.eval$(`
-" Embedded Javascript" section ()
+" Embedded Javascript" section
 
 { let 3 :i |
   js{ 1+2*3 }js print

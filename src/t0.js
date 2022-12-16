@@ -215,7 +215,7 @@ scope.eval$(`
 { a | " " a { c | c + } forEach } ::join
 
 // A helper function for displaying section titles
-{ t | " " print t print } :section
+{ t | " " print t print } ::section
 
 `);
 
