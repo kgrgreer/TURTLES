@@ -204,7 +204,7 @@ scope.eval$(`
 { start end block | { | start end <= } { | start block () start++ } while } ::for
 
 // Standard Forth-like Functions
-{ v | v v } :dup  { _ | } :drop  { a b | b a } :swap
+{ v | v v } ::dup  { _ | } ::drop  { a b | b a } ::swap
 
 // Standard High-Order Functions
 { a f | 0 a len 1 - { i | a i @ f () } for } ::forEach

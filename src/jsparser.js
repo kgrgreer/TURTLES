@@ -61,7 +61,7 @@ scope.eval$(`
   { m | m switch
     'super      { m o | o m super () () () }
     'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join () } { | a 0  @ } ifelse }  action }
-    'assignment { | m super { a | a 2 @ "  dup () :" a 0 @ + + } action }
+    'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action }
     'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
     'expr4      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
     'expr8      { | m super infix action }
