@@ -396,13 +396,13 @@ auto
 
 { m |
   m switch
-    'find  { id o | false }
-    'put   { obj o | obj Tree Tree TreeNode }
+    'find    { id o | false }
+    'put     { obj o | obj Tree Tree TreeNode }
     'forEach { f o | }
-    'select { s l f o | }
-    'skip  { s o | o }
-    'limit  { l o | o }
-    'count { o | 0 }
+    'select  { s l f o | }
+    'skip    { s o | o }
+    'limit   { l o | o }
+    'count   { o | 0 }
     { m | " Tree unknown method: " m + print }
   end
 } :Tree
