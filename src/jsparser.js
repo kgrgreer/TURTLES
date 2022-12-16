@@ -51,8 +51,8 @@ scope.eval$(`
   { o | [
     [ '_ 'a 'z' range 'A 'Z range ] alt
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
-    0 repeat join mapp
-  ] seq join mapp }                                               :lhs
+    0 repeat &join mapp
+  ] seq &join mapp }                                              :lhs
   | { | ?? }
 } :FormulaParser
 
@@ -61,7 +61,7 @@ scope.eval$(`
   // TODO: factor out common actions
   { m | m switch
     'super      { m o | o m super () () () }
-    'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join () } { | a 0  @ } ifelse }  action }
+    'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse }  action }
     'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action }
     'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
     'expr4      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () }  action }
@@ -74,7 +74,7 @@ scope.eval$(`
     'expr17     { | m super  { a | a 0 @ a 1 @ { | "  " + a 1 @ { e | e + "  @ " + } forEach } if } action }
     'notPrefix  { | m super { | "  !" + } action }
     'iPrefix    { | m super { a | a 1 @ a 0 @ + "  " a 1 @ + + } action }
-    'number     { | m super join  action }
+    'number     { | m super &join action }
     'array      { | m super  { a | " [" a { e | "  " + e + } forEach "  ]" + } action }
     { | m super () () }
   end }
@@ -100,8 +100,8 @@ scope.eval$(`
 " answer=42 " jsEval ()
 " answer=[[1,0],[0,1]][1][1]+((99<=99?1:0)+1)>2||1<2&&5==3&&!true " jsEval ()
 
-{ let 1 :a 2 :b 3 :c | [ '****** a '- b '- c ] join () print } ()
-4 { z let 1 :a 2 :b 3 :c | [ '****** z a '- b '- c '- z ] join () print } () // TODO: fix
+{ let 1 :a 2 :b 3 :c | [ '****** a '- b '- c ] join print } ()
+4 { z let 1 :a 2 :b 3 :c | [ '****** z a '- b '- c '- z ] join print } () // TODO: fix
 
 1 { i |
   i i++ print

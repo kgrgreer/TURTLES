@@ -212,7 +212,7 @@ scope.eval$(`
 { a v f | v a f forEach } :reduce
 { a p | [  a { c | c p () { | c } if } forEach ] } :filter
 
-{ a | " " a { c | c + } forEach } :join
+{ a | " " a { c | c + } forEach } ::join
 
 // A helper function for displaying section titles
 { t | " " print t print } :section
