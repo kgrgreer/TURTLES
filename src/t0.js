@@ -188,7 +188,7 @@ var scope = {
   '/':       bfn((a,b) => a / b),
   '^':       bfn((a,b) => Math.pow(a,b)),
   '%':       fn(() => stack.push(stack.pop() / 100)),
-  '()':      fn(() => { var f = stack.pop(); /* console.log('running: ', f.toString());*/ f(); }),
+  '()':      fn(() => { var f = stack.pop(); /* console.log('running: ', f.toString());*/ if ( typeof f !== 'function' ) console.error('Error, not a function', f); f(); }),
   '??':      code => {
     var s = scope;
     code.push(() => {
