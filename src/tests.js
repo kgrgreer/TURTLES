@@ -40,7 +40,7 @@ Tester () :t
 " 2 8 ^" 256 t .test
 " 15 %" 0.15 t .test
 " 15 10 10 ^ *" 150000000000 t .test // scientific notation, distance from earth to sun in meters
-" 5 neg ()" -5 t .test // it's inconsistent that some operators require () and others don't
+" 5 neg" -5 t .test // it's inconsistent that some operators require () and others don't
 
 
 'Comparators section ()

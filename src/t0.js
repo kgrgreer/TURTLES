@@ -196,10 +196,10 @@ var scope = {
 };
 
 scope.eval$(`
-1 1 = :true        // define true
-1 2 = :false       // define false
-{ | } :nil         // define 'nil', like doing nil = new Object() in Java/JS
-{ n | 0 n - } :neg // negate
+1 1 = :true         // define true
+1 2 = :false        // define false
+{ | } :nil          // define 'nil', like doing nil = new Object() in Java/JS
+{ n | 0 n - } ::neg // negate
 
 { start end block | { | start end <= } { | start block () start++ } while } ::for
 
