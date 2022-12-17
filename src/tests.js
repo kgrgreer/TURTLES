@@ -350,17 +350,31 @@ auto
 } ::User
 
 
+{ m |
+  m switch
+    'find      { id o | false }
+    'put       { newObj o | newObj Tree Tree TreeNode }
+    'remove    { id o | o }
+    'removeAll { o | o }
+    'forEach   { f o | }
+    'select    { s l f o | }
+    'skip      { s o | o }
+    'limit     { l o | o }
+    'count     { o | 0 }
+    { m | " Tree unknown method: " m + print }
+  end
+} :Tree // Empty Tree Singleton
+
+
 { obj l r let l .count r .count 1 + + :count |
   { m | m switch
     'obj { o | obj }
-    'compare_ { id lf f rf o |
+    'ifLCR_ { id lf f rf o |
       id obj .id = f { |
         id obj .id < lf rf ifelse
       } ifelse
-    }
-    'find { id o |
-      id { | id l .find } { | obj } { | id r .find } o .compare_
-    }
+    } // if Left Center Right
+    'find { id o | id { | id l .find } { | obj } { | id r .find } o .ifLCR_ }
     'put { :p newObj o |
       newObj .id obj .id = { | newObj l r TreeNode p<- } if
       newObj .id obj .id < { | obj newObj l .put r TreeNode p<- } if
@@ -379,7 +393,7 @@ auto
           ifelse
         }
         { let id r .remove :r2 | r r2 = { | o } { | obj l r2 TreeNode } ifelse }
-      o .compare_
+      o .ifLCR_
     }
     'removeAll { o | Tree }
     'forEach { f o | f l .forEach obj f () f r .forEach }
@@ -408,63 +422,44 @@ auto
         limit 0 >= { | --limit l .limit } { | obj l r TreeNode } ifelse
       } ()
     }
+    // TODO: lt, lte, gt, gte
     'count { o | count }
     { | " TreeNode unknown method: " m + print }
   end }
 } ::TreeNode
 
 
-{ m |
-  m switch
-    'find      { id o | false }
-    'put       { newObj o | newObj Tree Tree TreeNode }
-    'remove    { id o | o }
-    'removeAll { o | o }
-    'forEach   { f o | }
-    'select    { s l f o | }
-    'skip      { s o | o }
-    'limit     { l o | o }
-    'count     { o | 0 }
-    { m | " Tree unknown method: " m + print }
-  end
-} :Tree // Empty Tree Singleton
+{ let Tree :tr |
+  [
+    42 'Kevin 'Greer    User
+    10 'John  'Doe      User
+    50 'Jane  'Doe      User
+    5  'Adam  'Smith    User
+    99 'Wayne 'Gretzsky User
+  ] { u | u .toString print u tr .put :tr tr .count print } forEach
 
-Tree :t
+  { u | " forEach: " u .toString + print } tr .forEach
+  'find print
+  5 tr .find .toString print
 
-42 'Kevin 'Greer User :u1
-10 'John  'Doe   User :u2
-50 'Jane  'Doe   User :u3
-5  'Adam  'Smith User :u4
+  [ { o | o .toString } tr .forEach ] print
 
-t .count print
-u1 t .put :t  t .count print
-u2 t .put :t  t .count print
-u3 t .put :t  t .count print
-u4 t .put :t  t .count print
+  [ { o | o .toString } 2 tr .skip  .forEach ] print
+  [ { o | o .toString } 2 tr .limit .forEach ] print
 
-{ u | " forEach: " u .toString + print } t .forEach
-'find print
-5 t .find .toString print
+  'select section
+  [ 0 1000 { o | o .toString } tr .select ] print
+  [ 1 1000 { o | o .toString } tr .select ] print
+  [ 0 1    { o | o .toString } tr .select ] print
+  [ 0 2    { o | o .toString } tr .select ] print
+  [ 1 2    { o | o .toString } tr .select ] print
 
-[ { o | o .toString } t .forEach ] print
-
-[ { o | o .toString } 2 t .skip  .forEach ] print
-[ { o | o .toString } 2 t .limit .forEach ] print
-
-'select section
-[ 0 1000 { o | o .toString } t .select ] print
-[ 1 1000 { o | o .toString } t .select ] print
-[ 0 1    { o | o .toString } t .select ] print
-[ 0 2    { o | o .toString } t .select ] print
-[ 1 2    { o | o .toString } t .select ] print
-
-'remove print
-42 t .remove :t t .count print
-[ { o | o .toString } t .forEach ] print
-5 t .remove :t t .count print
-[ { o | o .toString } t .forEach ] print
-
-debugger
+  'remove print
+  42 tr .remove :tr tr .count print
+  [ { o | o .toString } tr .forEach ] print
+  5 tr .remove :tr tr .count print
+  [ { o | o .toString } tr .forEach ] print
+} ()
 
 t .report
 `);

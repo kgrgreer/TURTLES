@@ -242,6 +242,9 @@ TODO:
   - Fix associativeness of ** and ? operators
   - exceptions?
 
+BUGS:
+  - Can't update global variables inside of blocks
+
   { :outer a b c | ^outer ... }
 
   - ifelse is the same as ? ()
