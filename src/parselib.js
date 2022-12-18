@@ -5,31 +5,31 @@ scope.eval$(`
   { m |
     m switch
       'head   { this | str pos charAt }
-      'tail   { this | str pos 1 + this .head PStream () }
+      'tail   { this | str pos 1 + this .head PStream }
       'value  { this | value }
-      ':value { value this | str pos value PStream () }
+      ':value { value this | str pos value PStream }
       'toString { this | " PStream: " pos " , '" value '' + + + + }
       { this | " PStream Unknown Method '" m + '' + print }
     end
   }
-} :PStream
+} ::PStream
 
 
 { delegate |
   { m |
     m switch
       'head   { this |
-        " head-> " str pos charAt + print
+        " head-> " delegate .head + print
         delegate .head
       }
       'tail   { this | delegate .tail }
       'value  { this | delegate .value }
-      ':value { value this | value delegate .value Tracing }
-      'toString { this | " IgnoreWSPStream " delegate .toString + }
-      { this | " IgnoreWSPStream Unknown Method '" m + '' + print } // TODO: make generic
+      ':value { value this | value delegate .value TracingPStream }
+      'toString { this | " TracingPStream " delegate .toString + }
+      { this | " TracingPStream Unknown Method '" m + '' + print } // TODO: make generic
     end
   }
-} ::Tracing
+} ::TracingPStream
 
 
 { delegate |
