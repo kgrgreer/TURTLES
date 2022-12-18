@@ -19,9 +19,9 @@ ps altparser () .toString print
 
 
 " Range Parser" section
-'0 '9 range () :rangeparser
+'0 '9 range :rangeparser
 ps rangeparser () print
-'a 'z range () :rangeparser
+'a 'z range :rangeparser
 ps rangeparser () .toString print
 
 

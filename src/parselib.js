@@ -34,19 +34,19 @@ scope.eval$(`
 } ::TracingPStream
 
 
-{ delegate wsParser |
+{ delegate ignore |
   { m |
     m switch
       'pos    { this | delegate .pos }
       'head   { this | delegate .head }
-      'tail   { this | delegate .tail }
+      'tail   { this | delegate .tail IgnorePStream }
       'value  { this | delegate .value }
-      ':value { value this | value delegate .value IgnoreWSPStream }
-      'toString { this | " IgnoreWSPStream " delegate .toString + }
-      { this | " IgnoreWSPStream Unknown Method '" m + '' + print }
+      ':value { value this | value delegate .:value IgnorePStream }
+      'toString { this | " IgnorePStream " delegate .toString + }
+      { this | " IgnorePStream Unknown Method '" m + '' + print }
     end
   }
-} ::IgnoreWSPStream
+} ::IgnorePStream
 
 
 { str v | { ps let 0 :i |
