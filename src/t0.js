@@ -203,6 +203,7 @@ scope.eval$(`
 1 2 = :false        // define false
 { | } :nil          // define 'nil', like doing nil = new Object() in Java/JS
 { n | 0 n - } ::neg // negate
+'  :tab
 '
 :nl
 

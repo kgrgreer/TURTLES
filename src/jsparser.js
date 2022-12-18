@@ -53,7 +53,7 @@ scope.eval$(`
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
     0 repeat &join mapp
   ] seq &join mapp }                                              :lhs
-  { o | [ "  " `  nl ] alt 0 repeat }                             :space
+  { o | [ "  " tab nl ] alt 0 repeat }                            :space
   { o | [ '// nl notChars 0 repeat nl ] seq }                     :comment
   { o | [ o .space  o .comment ] 0 repeat }                       :ignore
   | { | ?? }

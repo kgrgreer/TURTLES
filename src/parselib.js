@@ -4,7 +4,7 @@ scope.eval$(`
 { str pos value |
   { m |
     m switch
-      'head   { this | /* " head-> " str pos charAt + print */ str pos charAt }
+      'head   { this | str pos charAt }
       'tail   { this | str pos 1 + this .head PStream () }
       'value  { this | value }
       ':value { value this | str pos value PStream () }
@@ -13,6 +13,38 @@ scope.eval$(`
     end
   }
 } :PStream
+
+
+{ delegate |
+  { m |
+    m switch
+      'head   { this |
+        " head-> " str pos charAt + print
+        delegate .head
+      }
+      'tail   { this | delegate .tail }
+      'value  { this | delegate .value }
+      ':value { value this | value delegate .value Tracing }
+      'toString { this | " IgnoreWSPStream " delegate .toString + }
+      { this | " IgnoreWSPStream Unknown Method '" m + '' + print } // TODO: make generic
+    end
+  }
+} ::Tracing
+
+
+{ delegate |
+  { m |
+    m switch
+      'head   { this | delegate .head }
+      'tail   { this | delegate .tail }
+      'value  { this | delegate .value }
+      ':value { value this | value delegate .value IgnoreWSPStream }
+      'toString { this | " IgnoreWSPStream " delegate .toString + }
+      { this | " IgnoreWSPStream Unknown Method '" m + '' + print }
+    end
+  }
+} ::IgnoreWSPStream
+
 
 { str v | { ps let 0 :i |
   { | ps .head str i charAt = } { | ps .tail :ps  i++ } while
