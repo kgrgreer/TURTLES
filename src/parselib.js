@@ -4,6 +4,7 @@ scope.eval$(`
 { str pos value |
   { m |
     m switch
+      'pos    { this | pos }
       'head   { this | str pos charAt }
       'tail   { this | str pos 1 + this .head PStream }
       'value  { this | value }
@@ -18,13 +19,14 @@ scope.eval$(`
 { delegate |
   { m |
     m switch
+      'pos    { this | delegate .pos }
       'head   { this |
-        " head-> " delegate .head + print
+        [ " pos: " delegate .pos " , head-> " delegate .head ] join print
         delegate .head
       }
-      'tail   { this | delegate .tail }
+      'tail   { this | delegate .tail TracingPStream }
       'value  { this | delegate .value }
-      ':value { value this | value delegate .value TracingPStream }
+      ':value { value this | value delegate .:value TracingPStream }
       'toString { this | " TracingPStream " delegate .toString + }
       { this | " TracingPStream Unknown Method '" m + '' + print } // TODO: make generic
     end
@@ -32,9 +34,10 @@ scope.eval$(`
 } ::TracingPStream
 
 
-{ delegate |
+{ delegate wsParser |
   { m |
     m switch
+      'pos    { this | delegate .pos }
       'head   { this | delegate .head }
       'tail   { this | delegate .tail }
       'value  { this | delegate .value }
