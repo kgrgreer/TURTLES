@@ -1,7 +1,7 @@
 scope.eval$(`
 
- // A Parser Stream - used as input for parsers
- { str pos value |
+// A Parser Stream - used as input for parsers
+{ str pos value |
   { m |
     m switch
       'head   { this | /* " head-> " str pos charAt + print */ str pos charAt }
