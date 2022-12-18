@@ -39,9 +39,9 @@ scope.eval$(`
     m switch
       'pos    { this | delegate .pos }
       'head   { this | delegate .head }
-      'tail   { this | delegate .tail IgnorePStream }
+      'tail   { this | delegate .tail ignore IgnorePStream }
       'value  { this | delegate .value }
-      ':value { value this | value delegate .:value IgnorePStream }
+      ':value { value this | value delegate .:value ignore IgnorePStream }
       'toString { this | " IgnorePStream " delegate .toString + }
       { this | " IgnorePStream Unknown Method '" m + '' + print }
     end
