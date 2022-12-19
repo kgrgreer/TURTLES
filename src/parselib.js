@@ -52,10 +52,12 @@ scope.eval$(`
 } ::IgnorePStream
 
 
+{ p | { ps | ps p () } } ::tok
+
 { str v | { ps let 0 :i |
   { | ps .head str i charAt = } { | ps .tail :ps  i++ } while
   str len i = { | v ps .:value } { | false } ifelse
-} } ::litMap
+} tok } ::litMap
 
 { str | str str litMap } ::lit
 

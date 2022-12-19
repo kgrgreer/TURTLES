@@ -44,7 +44,7 @@ scope.eval$(`
   { o | [ '! o .expr15 ] 1 seq1 }                                 :notPrefix
   { o | [ [ '-- '++ ] alt o .expr15 ] seq }                       :iPrefix
   { o | [ '( o .expr ') ] 1 seq1 }                                :group
-  { o | o .digit 1 repeat }                                       :number
+  { o | o .digit 1 repeat tok }                                   :number
   { o | '0 '9 range }                                             :digit
   { o | [ 'true 'false ] alt }                                    :bool
   { o | [ '[ o .expr ', lit delim '] ] 1 seq1 }                   :array
