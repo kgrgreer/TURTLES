@@ -4,6 +4,7 @@ scope.eval$(`
 { str pos value |
   { m |
     m switch
+      'parse  { parser this | this parser () }
       'pos    { this | pos }
       'head   { this | str pos charAt }
       'tail   { this | str pos 1 + this .head PStream }
@@ -19,6 +20,7 @@ scope.eval$(`
 { delegate |
   { m |
     m switch
+      'parse  { parser this | this parser () }
       'pos    { this | delegate .pos }
       'head   { this |
         [ " pos: " delegate .pos " , head-> " delegate .head ] join print
@@ -37,6 +39,7 @@ scope.eval$(`
 { delegate ignore |
   { m |
     m switch
+      'parse  { parser this | this parser () }
       'pos    { this | delegate .pos }
       'head   { this | delegate .head }
       'tail   { this | delegate .tail ignore IgnorePStream }
@@ -56,27 +59,27 @@ scope.eval$(`
 
 { str | str str litMap } ::lit
 
-{ start end c | c start >=  c end <= & } :inRange
+{ start end c | c start >=  c end <= & } ::inRange
 { start end | { ps |
-  start end ps .head inRange () { | ps .tail } { | false } ifelse
+  start end ps .head inRange { | ps .tail } { | false } ifelse
 } } ::range
 
 { parsers | parsers { p | p string? { | p lit } { | p } ifelse } map } ::prepare
 
 { parsers | parsers prepare :parsers { ps let 0 :i |
-  [ { | i parsers len < { | ps parsers i @ () :ps ps } && } { | i++ ps .value } while ]
+  [ { | i parsers len < { | parsers i @ ps .parse :ps ps } && } { | i++ ps .value } while ]
   parsers len i = { a | a ps .:value } { _ | false } ifelse
 } } ::seq
 
 { parsers i | parsers seq { a | a i @ } mapp } ::seq1
 
 { parsers | parsers prepare :parsers { ps let 0 :i false :ret |
-  { | i parsers len < { | ps parsers i @ () :ret ret ! } && } { | i++ } while
+  { | i parsers len < { | parsers i @ ps .parse :ret ret ! } && } { | i++ } while
   ret
 } } ::alt
 
 { parser min | { ps let 0 :i false :ret |
-  [ { | ps :ret  ps parser () :ps ps } { | i++ ps .value } while ]
+  [ { | ps :ret  parser ps .parse :ps ps } { | i++ ps .value } while ]
   i min >=  { a | a ret .:value } { _ | false } ifelse
 } } ::repeat
 
@@ -86,7 +89,7 @@ scope.eval$(`
 } ::delim
 
 { parser | { ps let ps :ret |
-  ps parser () :ret
+  parser ps .parse :ret
   ret { | ret } { | false ps .:value } ifelse
 } } ::opt
 
@@ -94,7 +97,7 @@ scope.eval$(`
 
 { str | { ps | str ps .head indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar
 
-{ p f | { ps | ps p () :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
+{ p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
 
 `);
 
