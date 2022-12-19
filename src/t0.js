@@ -9,6 +9,7 @@ var scope = {
       if ( /\s/.test(c) ) { if ( sym ) break; else continue; }
       sym += c;
     }
+    console.log('sym: ', sym);
     return sym;
   },
   eval$: src => {
@@ -188,7 +189,9 @@ var scope = {
   '/':       bfn((a,b) => a / b),
   '^':       bfn((a,b) => Math.pow(a,b)),
   '%':       fn(() => stack.push(stack.pop() / 100)),
-  '()':      fn(() => { var f = stack.pop(); /* console.log('running: ', f.toString());*/ if ( typeof f !== 'function' ) console.error('Error, not a function', f); f(); }),
+  '()':      fn(() => { var f = stack.pop();
+    // console.log('running: ', f.toString());
+    if ( typeof f !== 'function' ) console.error('Error: "' + f + '" not a function.'); f(); }),
   '??':      code => {
     var s = scope;
     code.push(() => {

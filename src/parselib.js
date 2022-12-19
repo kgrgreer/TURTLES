@@ -1,15 +1,28 @@
 scope.eval$(`
 
 // A Parser Stream - used as input for parsers
-{ str pos value |
+{ str pos value ignore |
   { m |
     m switch
       'parse  { parser this | this parser () }
+      'parseToken { parser this
+        let this .ignoreOff parser () :result |
+        result
+          { | ignore result .ignoreOn }
+          { | result }
+        ifelse
+      }
+      'ignoreOff { this | str pos value false PStream }
+      'ignoreOn { ignore this | str pos value ignore PStream }
       'pos    { this | pos }
-      'head   { this | str pos charAt }
-      'tail   { this | str pos 1 + this .head PStream }
+      'head   { this |
+
+      [ " pos: " pos " , head-> " str pos charAt ] join print
+
+         str pos charAt }
+      'tail   { this | str pos 1 + this .head ignore PStream }
       'value  { this | value }
-      ':value { value this | str pos value PStream }
+      ':value { value this | str pos value ignore PStream }
       'toString { this | " PStream: " pos " , '" value '' + + + + }
       { this | " PStream Unknown Method '" m + '' + print }
     end
@@ -17,42 +30,7 @@ scope.eval$(`
 } ::PStream
 
 
-{ delegate |
-  { m |
-    m switch
-      'parse  { parser this | this parser () }
-      'pos    { this | delegate .pos }
-      'head   { this |
-        [ " pos: " delegate .pos " , head-> " delegate .head ] join print
-        delegate .head
-      }
-      'tail   { this | delegate .tail TracingPStream }
-      'value  { this | delegate .value }
-      ':value { value this | value delegate .:value TracingPStream }
-      'toString { this | " TracingPStream " delegate .toString + }
-      { this | " TracingPStream Unknown Method '" m + '' + print } // TODO: make generic
-    end
-  }
-} ::TracingPStream
-
-
-{ delegate ignore |
-  { m |
-    m switch
-      'parse  { parser this | this parser () }
-      'pos    { this | delegate .pos }
-      'head   { this | delegate .head }
-      'tail   { this | delegate .tail ignore IgnorePStream }
-      'value  { this | delegate .value }
-      ':value { value this | value delegate .:value ignore IgnorePStream }
-      'toString { this | " IgnorePStream " delegate .toString + }
-      { this | " IgnorePStream Unknown Method '" m + '' + print }
-    end
-  }
-} ::IgnorePStream
-
-
-{ p | { ps | ps p () } } ::tok
+{ p | { ps | p ps .parseToken } } ::tok
 
 { str v | { ps let 0 :i |
   { | ps .head str i charAt = } { | ps .tail :ps  i++ } while

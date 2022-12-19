@@ -1,5 +1,5 @@
 scope.eval$(`
-" thisthenthat0123 " 0 nil PStream :ps
+" thisthenthat0123 " 0 nil false PStream :ps
 
 " Literal Parser" section
 ps 'this lit () print

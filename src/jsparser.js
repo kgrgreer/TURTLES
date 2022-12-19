@@ -9,14 +9,14 @@ scope.eval$(`
   v 1 @ { | "  " v 1 @ 1 @ "  " v 1 @ 0 @ + + + + } if
 } :infix // convert an infix operator to postfix
 
-{ o m super f | { ps | ps o m super () () f mapp () } } ::action
+{ o m super f | { ps | o m super () () f mapp ps .parse } } ::action
 
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
 
 // Just a Parser, validates but has no semantic actions
 { let
-  { s o | s 0 nil PStream { ps | o .ignore } IgnorePStream o .start () .value }    :parse$
+  { s o | s 0 nil o .space PStream o .start () .value }           :parse$
   { m o | o m o () () }                                           :call
   { o | o .expr }                                                 :start
   [ '== '= litMap '!= ] alt                                       :equality
@@ -53,9 +53,9 @@ scope.eval$(`
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
     0 repeat &join mapp
   ] seq &join mapp }                                              :lhs
-  { o | [ "  " tab nl ] alt 0 repeat }                            :space
+  { o | [ "  " tab nl ] alt 1 repeat }                            :space
   { o | [ '// nl notChars 0 repeat nl ] seq }                     :comment
-  { o | [ o .space  o .comment ] 0 repeat }                       :ignore
+  { o | [ o .space  o .comment ] alt 1 repeat tok }               :ignore
   | { | ?? }
 } :FormulaParser
 
@@ -94,7 +94,8 @@ scope.eval$(`
 } ::jsEval
 
 
-" 1+2*3 "          jsEval
+" 1 +2*3 "          jsEval
+debugger
 " 5*2**(2+3)+100 " jsEval
 " 1<2 "            jsEval
 " 1>2 "            jsEval
