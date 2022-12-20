@@ -16,13 +16,18 @@ scope.eval$(`
       'ignoreOn { ignore this | str pos value ignore PStream }
       'pos    { this | pos }
       'head   { this |
-
-      [ " pos: " pos " , head-> " str pos charAt ] join print
-
-         str pos charAt }
-      'tail   { this | str pos 1 + this .head ignore PStream }
+      //  [ " pos: " pos " , head-> " str pos charAt ] join print
+        str pos charAt }
+      'tail   { this | str pos 1 + this .head ignore PStream ignore { | .maybeIgnore } if }
+      'maybeIgnore { this let this ignore () :ps |
+        ps
+          { | [ '**********************************IGNORED "  " pos ] print this .value ps .:value  }
+          { | this }
+        ifelse
+      }
       'value  { this | value }
-      ':value { value this | str pos value ignore PStream }
+//      ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
+      ':value { v2 this | str pos v2 ignore PStream }
       'toString { this | " PStream: " pos " , '" value '' + + + + }
       { this | " PStream Unknown Method '" m + '' + print }
     end
@@ -33,9 +38,9 @@ scope.eval$(`
 { p | { ps | p ps .parseToken } } ::tok
 
 { str v | { ps let 0 :i |
-  { | ps .head str i charAt = } { | ps .tail :ps  i++ } while
+  { | i str len <  { | ps .head str i charAt = } && } { | ps .tail :ps  i++ } while
   str len i = { | v ps .:value } { | false } ifelse
-} tok } ::litMap
+} /* tok */ } ::litMap
 
 { str | str str litMap } ::lit
 
@@ -68,8 +73,7 @@ scope.eval$(`
   { a | [ a 0 @  { e | e } forEach a 1 @ ] } mapp
 } ::delim
 
-{ parser | { ps let ps :ret |
-  parser ps .parse :ret
+{ parser | { ps let parser ps .parse :ret |
   ret { | ret } { | false ps .:value } ifelse
 } } ::opt
 
@@ -78,7 +82,6 @@ scope.eval$(`
 { str | { ps | str ps .head indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar
 
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
-
 `);
 
 // Access to current input:

@@ -9,7 +9,7 @@ var scope = {
       if ( /\s/.test(c) ) { if ( sym ) break; else continue; }
       sym += c;
     }
-    console.log('sym: ', sym);
+    // console.log('sym: ', sym);
     return sym;
   },
   eval$: src => {
@@ -50,6 +50,7 @@ var scope = {
       code.push(() => stack.push(s));
     } else {
       console.log('Warning: Unknown Symbol or Forward Reference "' + line + '" at:', scope.input.substring(scope.ip, scope.ip+40).replaceAll('\n', '\\n'), ' ...');
+      if ( line === '' ) debugger;
       code.push(() => {
         if ( typeof scope[line] !== 'function' ) console.log('Error, invalid symbol: ', line);
         scope[line]({ push: f => f()})
@@ -159,7 +160,8 @@ var scope = {
   while:     fn(() => { var block = stack.pop(), cond = stack.pop(); while ( true ) { cond(); if ( ! stack.pop() ) break; block(); } }),
   const:     fn(() => { var sym = stack.pop(), value = stack.pop(); scope[sym] = fn(() => { stack.push(value); }); }),
   mod:       bfn((a, b) => a % b),
-  charAt:    bfn((s, i) => s.charAt(i)),
+  charAt:    bfn((s, i) => i < s.length ? s.charAt(i) : 'EOF'),
+  charCode:  fn(() => stack.push(String.fromCharCode(stack.pop()))),
   indexOf:   bfn((s, p) => s.indexOf(p)),
   len:       fn(() => { stack.push(stack.pop().length); }),
   input_:    fn(() => { stack.push(scope.input); }),
@@ -190,8 +192,9 @@ var scope = {
   '^':       bfn((a,b) => Math.pow(a,b)),
   '%':       fn(() => stack.push(stack.pop() / 100)),
   '()':      fn(() => { var f = stack.pop();
-    // console.log('running: ', f.toString());
-    if ( typeof f !== 'function' ) console.error('Error: "' + f + '" not a function.'); f(); }),
+   //  console.log('running: ', f.toString());
+    if ( typeof f !== 'function' )
+      console.error('Error: "' + f + '" not a function.'); f(); }),
   '??':      code => {
     var s = scope;
     code.push(() => {
@@ -206,9 +209,8 @@ scope.eval$(`
 1 2 = :false        // define false
 { | } :nil          // define 'nil', like doing nil = new Object() in Java/JS
 { n | 0 n - } ::neg // negate
-'  :tab
-'
-:nl
+
+9 charCode :tab  10 charCode :nl  13 charCode :cr
 
 { start end block | { | start end <= } { | start block () start++ } while } ::for
 

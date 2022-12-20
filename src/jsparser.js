@@ -44,7 +44,7 @@ scope.eval$(`
   { o | [ '! o .expr15 ] 1 seq1 }                                 :notPrefix
   { o | [ [ '-- '++ ] alt o .expr15 ] seq }                       :iPrefix
   { o | [ '( o .expr ') ] 1 seq1 }                                :group
-  { o | o .digit 1 repeat tok }                                   :number
+  { o | o .digit 1 repeat }                                       :number
   { o | '0 '9 range }                                             :digit
   { o | [ 'true 'false ] alt }                                    :bool
   { o | [ '[ o .expr ', lit delim '] ] 1 seq1 }                   :array
@@ -53,9 +53,9 @@ scope.eval$(`
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
     0 repeat &join mapp
   ] seq &join mapp }                                              :lhs
-  { o | [ "  " tab nl ] alt 1 repeat }                            :space
+  { o | [ tab nl "  " ] alt 1 repeat }                            :space
   { o | [ '// nl notChars 0 repeat nl ] seq }                     :comment
-  { o | [ o .space  o .comment ] alt 1 repeat tok }               :ignore
+  { o | [ o .space  o .comment ] alt 1 repeat  }                  :ignore
   | { | ?? }
 } :FormulaParser
 
@@ -94,8 +94,8 @@ scope.eval$(`
 } ::jsEval
 
 
-" 1 +2*3 "          jsEval
-debugger
+" 1 +     2 *
+3 "          jsEval
 " 5*2**(2+3)+100 " jsEval
 " 1<2 "            jsEval
 " 1>2 "            jsEval
@@ -107,12 +107,13 @@ debugger
 { let 1 :a 2 :b 3 :c | [ '****** a '- b '- c ] join print } ()
 4 { z let 1 :a 2 :b 3 :c | [ '****** z a '- b '- c '- z ] join print } () // TODO: fix
 
+
 1 { i |
   i i++ print
   i++ i print
   " i=5  " jsEval
-  " i    " jsEval
-  " i+1  " jsEval
+//   " i " jsEval // TODO: doesn't work
+  " i+1 " jsEval
   /* Next two compile correctly but don't run because there is no 'i' in their scope.
   " ++i  " jsEval
   " i++  " jsEval
@@ -134,6 +135,6 @@ scope.eval$(`
 " Embedded Javascript" section
 
 { let 3 :i |
-  js{ 1+2*3 }js print
+  js{ 1+2*3**4 }js print
 } ()
 `);

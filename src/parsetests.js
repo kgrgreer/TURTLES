@@ -1,5 +1,6 @@
 scope.eval$(`
-" thisthenthat0123 " 0 nil false PStream :ps
+  " Parser Tests" section
+" thisthenthat0123 " 0 false false PStream :ps
 
 " Literal Parser" section
 ps 'this lit () print
@@ -7,6 +8,13 @@ ps 'this lit () print
 ps 'that lit () print
 ps 'this lit () .toString print
 
+" " 0 false false PStream :ps
+ps "  " lit 1 repeat ()
+print
+
+"  " 0 false false PStream :ps
+ps "  " lit () .toString
+print
 
 " Seq Parser" section
 [ 'this 'then 'that ] seq :seqparser
@@ -45,5 +53,4 @@ ps [ 'this lit opt 'then ] seq () .toString print
 
 " NotChars Parser" section
 ps " 0123456789" notChars 0 repeat () .toString print
-
 `);
