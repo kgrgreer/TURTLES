@@ -16,9 +16,9 @@ scope.eval$(`
 
 // Just a Parser, validates but has no semantic actions
 { let
-  { s o | s 0 nil o .ignore PStream o .start () .value }           :parse$
+  { s o | s 0 nil o .ignore PStream [ o .ignore opt o .start ] 1 seq1 () .value } :parse$
   { m o | o m o () () }                                           :call
-  { o | [ o .ignore opt o .expr ] 1 seq1 }                                                 :start // HACK: fix
+  { o | o .expr }                                                 :start
   [ '== '= litMap '!= ] alt                                       :equality
   [ '<= '< '>= '> ] alt                                           :inequality
   '&& lit                                                         :and
