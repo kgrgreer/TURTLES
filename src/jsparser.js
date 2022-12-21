@@ -22,11 +22,13 @@ scope.eval$(`
   { o |
     [
       o .if
+      o .while
       o .expr
       o .block
     ] alt
   }                                                               :stmt
   { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } :if
+  { o | [ 'while '( o .expr ') o .stmt ] seq }                    :while
   { o | [ '{ o .stmt '; lit delim '} ] 1 seq1 }                   :block
   [ '== '= litMap '!= ] alt                                       :equality
   [ '<= '< '>= '> ] alt                                           :inequality
@@ -75,6 +77,9 @@ scope.eval$(`
     'super      { m o | o m super () () () }
     'if         { | m super { a | [
       a 2 @ "  { | " a 4 @  "  }" a 5 @ { | "  { | " a 5 @ "  } ifelse " } { | "  if " } ifelse
+    ] join } action }
+    'while         { | m super { a | [
+      "  { | " a 2 @ "  } { | " a 4 @  "  } while "
     ] join } action }
     'block      { | m super { a | a " " { i | "  " i + + } reduce } action } // TODO: fix add an extra space prefix
     'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse } action }
@@ -154,6 +159,10 @@ if ( 2 > 1 ) 1 else 2
 
 "
 if ( 2 > 1 ) { 1+2 } else { 3*4 }
+" jsEval print
+
+"
+while ( false ) { 1; 2 }
 " jsEval print
 
 `);
