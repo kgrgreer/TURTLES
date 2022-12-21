@@ -31,8 +31,7 @@ scope.eval$(`
         ifelse
       }
       'value  { this | value }
-//      ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
-      ':value { v2 this | str pos v2 ignore PStream }
+      ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
       'toString { this | " PStream: " pos " , '" value '' + + + + }
       { this | " PStream Unknown Method '" m + '' + print }
     end
