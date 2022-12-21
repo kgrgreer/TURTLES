@@ -76,7 +76,7 @@ scope.eval$(`
     'if         { | m super { a | [
       a 2 @ "  { | " a 4 @  "  }" a 5 @ { | "  { | " a 5 @ "  } ifelse " } { | "  if " } ifelse
     ] join } action }
-    'block      { | m super { a | a "  " { i | "  " i + + } reduce } action }
+    'block      { | m super { a | a " " { i | "  " i + + } reduce } action } // TODO: fix add an extra space prefix
     'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse } action }
     'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action }
     'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () } action }
@@ -150,6 +150,10 @@ if ( true ) 1+1;
 
 "
 if ( 2 > 1 ) 1 else 2
+" jsEval print
+
+"
+if ( 2 > 1 ) { 1+2 } else { 3*4 }
 " jsEval print
 
 `);
