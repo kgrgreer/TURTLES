@@ -16,7 +16,7 @@ scope.eval$(`
       'ignoreOn { ignore this | str pos value ignore PStream }
       'pos    { this | pos }
       'head   { this |
-      //  [ " pos: " pos " , head-> " str pos charAt ] join print
+//         [ " pos: " pos " , head-> " str pos charAt ] join print
         str pos charAt }
       'tail   { this |
         tail !

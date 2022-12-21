@@ -26,7 +26,7 @@ scope.eval$(`
       o .block
     ] alt
   }                                                               :stmt
-  { o | [ 'if '( o .expr ') o .stmt ] seq }                       :if
+  { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } :if
   { o | [ '{ o .stmt '; lit delim '} ] 1 seq1 }                   :block
   [ '== '= litMap '!= ] alt                                       :equality
   [ '<= '< '>= '> ] alt                                           :inequality
@@ -73,7 +73,9 @@ scope.eval$(`
   // TODO: factor out common actions
   { m | m switch
     'super      { m o | o m super () () () }
-    'if         { | m super { a | [ a 2 @ "  { | " a 4 @ "  } if" ] join } action }
+    'if         { | m super { a | [
+      a 2 @ "  { | " a 4 @  "  }" a 5 @ { | "  { | " a 5 @ "  } ifelse " } { | "  if " } ifelse
+    ] join } action }
     'block      { | m super { a | a "  " { i | "  " i + + } reduce } action }
     'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse } action }
     'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action }
@@ -140,8 +142,15 @@ scope.eval$(`
   */
 } ()
 
-" if ( true ) 1+1 " jsEval
 
+"
+if ( true ) 1+1;
+
+" jsEval print
+
+"
+if ( 2 > 1 ) 1 else 2
+" jsEval print
 
 `);
 
