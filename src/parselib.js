@@ -1,7 +1,7 @@
 scope.eval$(`
 
 // A Parser Stream - used as input for parsers
-{ str pos value ignore |
+{ str pos value ignore let false :tail |
   { m |
     m switch
       'parse  { parser this | this parser () }
@@ -18,7 +18,12 @@ scope.eval$(`
       'head   { this |
       //  [ " pos: " pos " , head-> " str pos charAt ] join print
         str pos charAt }
-      'tail   { this | str pos 1 + this .head ignore PStream ignore { | .maybeIgnore } if }
+      'tail   { this |
+        tail !
+          { | str pos 1 + this .head ignore PStream ignore { | .maybeIgnore } if :tail }
+        if
+        tail
+      }
       'maybeIgnore { this let this ignore () :ps |
         ps
           { | [ '**********************************IGNORED "  " pos ] print this .value ps .:value  }
