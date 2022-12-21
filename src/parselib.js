@@ -26,7 +26,7 @@ scope.eval$(`
       }
       'maybeIgnore { this let this ignore () :ps |
         ps
-          { | [ '**********************************IGNORED "  " pos ] print this .value ps .:value  }
+          { | this .value ps .:value  }
           { | this }
         ifelse
       }
