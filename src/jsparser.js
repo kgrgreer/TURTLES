@@ -18,7 +18,16 @@ scope.eval$(`
 { let
   { s o | s 0 nil o .ignore PStream [ o .ignore opt o .start ] 1 seq1 () .value } :parse$
   { m o | o m o () () }                                           :call
-  { o | o .expr }                                                 :start
+  { o | o .stmt }                                                 :start
+  { o |
+    [
+      o .if
+      o .expr
+      o .block
+    ] alt
+  }                                                               :stmt
+  { o | [ 'if '( o .expr ') o .stmt ] seq }                       :if
+  { o | [ '{ o .stmt '; lit delim '} ] 1 seq1 }                   :block
   [ '== '= litMap '!= ] alt                                       :equality
   [ '<= '< '>= '> ] alt                                           :inequality
   '&& lit                                                         :and
@@ -53,9 +62,9 @@ scope.eval$(`
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
     0 repeat &join mapp
   ] seq &join mapp }                                              :lhs
-  { o | [ tab cr nl "  " ] alt 1 repeat }                            :space
+  { o | [ tab cr nl "  " ] alt 1 repeat }                         :space
   { o | [ " //" nl notChars 0 repeat nl ] seq }                   :comment // TODO: needs to be a token
-  { o | [ o .space  o .comment ] alt 1 repeat tok }                  :ignore
+  { o | [ o .space  o .comment ] alt 1 repeat tok }               :ignore
   | { | ?? }
 } :FormulaParser
 
@@ -64,6 +73,8 @@ scope.eval$(`
   // TODO: factor out common actions
   { m | m switch
     'super      { m o | o m super () () () }
+    'if         { | m super { a | [ a 2 @ "  { | " a 4 @ "  } if" ] join } action }
+    'block      { | m super { a | a "  " { i | "  " i + + } reduce } action }
     'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse } action }
     'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action }
     'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () } action }
@@ -129,6 +140,9 @@ scope.eval$(`
   */
 } ()
 
+" if ( true ) 1+1 " jsEval
+
+
 `);
 
 // TODO: recode in T0
@@ -146,8 +160,10 @@ scope.eval$(`
 { let 3 :i |
   js{ //
     // this is a comment
-    1 +2
-    *3**4
+    if ( true ) {
+      1 +2*3**4;
+      1+2
+    }
   }js print
 } ()
 `);
