@@ -16,9 +16,9 @@ scope.eval$(`
 
 // Just a Parser, validates but has no semantic actions
 { let
-  { s o | s 0 nil o .space PStream o .start () .value }           :parse$
+  { s o | s 0 nil o .ignore PStream o .start () .value }           :parse$
   { m o | o m o () () }                                           :call
-  { o | o .expr }                                                 :start
+  { o | [ o .ignore opt o .expr ] 1 seq1 }                                                 :start // HACK: fix
   [ '== '= litMap '!= ] alt                                       :equality
   [ '<= '< '>= '> ] alt                                           :inequality
   '&& lit                                                         :and
@@ -53,9 +53,9 @@ scope.eval$(`
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
     0 repeat &join mapp
   ] seq &join mapp }                                              :lhs
-  { o | [ tab nl "  " ] alt 1 repeat }                            :space
-  { o | [ '// nl notChars 0 repeat nl ] seq }                     :comment
-  { o | [ o .space  o .comment ] alt 1 repeat  }                  :ignore
+  { o | [ tab cr nl "  " ] alt 1 repeat }                            :space
+  { o | [ " //" nl notChars 0 repeat nl ] seq }                   :comment // TODO: needs to be a token
+  { o | [ o .space  o .comment ] alt 1 repeat tok }                  :ignore
   | { | ?? }
 } :FormulaParser
 
@@ -81,11 +81,20 @@ scope.eval$(`
     'array      { | m super  { a | " [" a { e | "  " + e + } forEach "  ]" + } action }
     { | m super () () }
   end }
-} () } :FormulaCompiler
+} () } ::FormulaCompiler
+
+'startCommentTest print
+"     // foo bar
+
+
+// more to ignore
+1+2
+" 0 true { | } PStream FormulaCompiler .ignore () .value print
+'endCommentTest print
 
 
 { code |
-  { let code FormulaCompiler () .parse$ :result |
+  { let code FormulaCompiler .parse$ :result |
     " " print
     " JS Code: " code   + print
     " T0 Code: " result + print
@@ -128,13 +137,17 @@ scope['js{'] = code => {
   while ( scope.readSym() != '}js' ) end = scope.ip;
   var s = scope.input.substring(start, end);
   stack.push(s);
-  scope.eval$('FormulaCompiler () .parse$ eval');
+  scope.eval$('FormulaCompiler .parse$ eval');
 };
 
 scope.eval$(`
 " Embedded Javascript" section
 
 { let 3 :i |
-  js{ 1+2*3**4 }js print
+  js{ //
+    // this is a comment
+    1 +2
+    *3**4
+  }js print
 } ()
 `);
