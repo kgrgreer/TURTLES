@@ -18,18 +18,19 @@ scope.eval$(`
 { let
   { s o | s 0 nil o .ignore PStream [ o .ignore opt o .start ] 1 seq1 () .value } :parse$
   { m o | o m o () () }                                           :call
-  { o | o .stmt }                                                 :start
+  { o |  [ o .stmts o .expr ] alt }                                   :start
   { o |
     [
       o .if
       o .while
-      o .expr
+      [ o .expr '; ] 0 seq1
       o .block
     ] alt
   }                                                               :stmt
   { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } :if
   { o | [ 'while '( o .expr ') o .stmt ] seq }                    :while
-  { o | [ '{ o .stmt '; lit delim '} ] 1 seq1 }                   :block
+  { o | [ '{ o .stmts '} ] 1 seq1 }                               :block
+  { o |  o .stmt '; lit delim }                                   :stmts
   [ '== '= litMap '!= ] alt                                       :equality
   [ '<= '< '>= '> ] alt                                           :inequality
   '&& lit                                                         :and
@@ -81,7 +82,7 @@ scope.eval$(`
     'while         { | m super { a | [
       "  { | " a 2 @ "  } { | " a 4 @  "  } while "
     ] join } action }
-    'block      { | m super { a | a " " { i | "  " i + + } reduce } action } // TODO: fix add an extra space prefix
+    'stmts      { | m super { a | a " " { i | "  " i + + } reduce } action } // TODO: fix add an extra space prefix
     'ternary    { | m super { a | a 1 @ { | [ a 0 @ "  { | " a 1 @ 1 @ "  } { | " a 1 @ 3 @ "  } ifelse" ] join } { | a 0  @ } ifelse } action }
     'assignment { | m super { a | a 2 @ "  dup :" a 0 @ + + } action }
     'expr3      { | m super { a | a 1 @ { | [ a 0 @ [ a 1 @ 0 @ " { | " a 1 @ 1 @ "  }" + + ] ] } { | a } ifelse  infix () } action }
@@ -134,18 +135,19 @@ scope.eval$(`
 { let 1 :a 2 :b 3 :c | [ '****** a '- b '- c ] join print } ()
 4 { z let 1 :a 2 :b 3 :c | [ '****** z a '- b '- c '- z ] join print } () // TODO: fix
 
-
+/*
 1 { i |
   i i++ print
   i++ i print
   " i=5  " jsEval
 //   " i " jsEval // TODO: doesn't work
   " i+1 " jsEval
-  /* Next two compile correctly but don't run because there is no 'i' in their scope.
-  " ++i  " jsEval
-  " i++  " jsEval
-  */
+  // Next two compile correctly but don't run because there is no 'i' in their scope.
+  // " ++i  " jsEval
+  // " i++  " jsEval
+  //
 } ()
+*/
 
 
 "
