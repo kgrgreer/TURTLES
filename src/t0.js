@@ -201,9 +201,14 @@ var scope = {
       var oldScope = scope, key = stack.pop();
       scope = s; s[key]({push: f => f()}); scope = oldScope;
     });
+  },
+  include: async function load(fn) {
+    var code = await fetch(fn).then(response => response.text()).catch(x => { debugger; });
+    this.eval$(code);
   }
 };
 
+// scope.include('prefix.t0');
 scope.eval$(`
 1 1 = :true         // define true
 1 2 = :false        // define false
