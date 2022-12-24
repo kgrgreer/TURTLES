@@ -27,47 +27,47 @@ scope.eval$(`
       o .block
     ] alt
   } ;
-  if: { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } ;
-  while: { o | [ 'while '( o .expr ') o .stmt ] seq } ;
-  block: { o | [ '{ o .stmts '} ] 1 seq1 } ;
-  stmts: { o |  o .stmt '; lit delim } ;
-  equality: [ '== '= litMap '!= ] alt ;
+  if:         { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } ;
+  while:      { o | [ 'while '( o .expr ') o .stmt ] seq } ;
+  block:      { o | [ '{ o .stmts '} ] 1 seq1 } ;
+  stmts:      { o |  o .stmt '; lit delim } ;
+  equality:   [ '== '= litMap '!= ] alt ;
   inequality: [ '<= '< '>= '> ] alt ;
-  and: '&& lit ;
-  or: '|| lit ;
-  ternary: { o | [ o .expr3 [ '? o .expr3 ': o .expr3 ] seq opt ] seq } ;
+  and:        '&& lit ;
+  or:          '|| lit ;
+  ternary:    { o | [ o .expr3 [ '? o .expr3 ': o .expr3 ] seq opt ] seq } ;
   assignment: { o | [ o .lhs '= o .expr ] seq } ;
-  expr: { o | o .expr2 } ;
-  expr2: { o | [ o .assignment o .ternary o .expr3 ] alt } ;
-  expr3: 'expr4 or 'expr3 binary ;
-  expr4: 'expr5 and 'expr4 binary ;
-  expr5: { o | o .expr8 } ;
-  expr8: 'expr9 equality 'expr8 binary ;
-  expr9: 'expr10 inequality 'expr9 binary  ;
-  expr10: { o | o .expr11 } ;
-  expr11: 'expr12 '+- anyChar 'expr11 binary ;
-  expr12: 'expr13 '*/%  anyChar 'expr12 binary ;
-  expr13: 'expr14 '** '^ litMap 'expr13 binary ;
-  expr14: { o | [ o .notPrefix o .iPrefix o .expr15 ] alt } ;
-  expr15: { o | [ o .expr16 [ '++ '-- ] alt opt ] seq } ;
-  expr16: { o | o .expr17 } ;
-  expr17: { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 plus opt ] seq } ;
-  expr18: { o | [ o .lhs o .number o .bool o .group o .array ] alt } ;
-  notPrefix: { o | [ '! o .expr15 ] 1 seq1 } ;
-  iPrefix: { o | [ [ '-- '++ ] alt o .expr15 ] seq } ;
-  group: { o | [ '( o .expr ') ] 1 seq1 } ;
-  number: { o | o .digit plus } ;
-  digit: { o | '0 '9 range } ;
-  bool: { o | [ 'true 'false ] alt } ;
-  array: { o | [ '[ o .expr ', lit delim '] ] 1 seq1 } ;
-  lhs: { o | [
+  expr:       { o | o .expr2 } ;
+  expr2:      { o | [ o .assignment o .ternary o .expr3 ] alt } ;
+  expr3:      'expr4 or 'expr3 binary ;
+  expr4:      'expr5 and 'expr4 binary ;
+  expr5:      { o | o .expr8 } ;
+  expr8:      'expr9 equality 'expr8 binary ;
+  expr9:      'expr10 inequality 'expr9 binary  ;
+  expr10:     { o | o .expr11 } ;
+  expr11:     'expr12 '+- anyChar 'expr11 binary ;
+  expr12:     'expr13 '*/%  anyChar 'expr12 binary ;
+  expr13:     'expr14 '** '^ litMap 'expr13 binary ;
+  expr14:     { o | [ o .notPrefix o .iPrefix o .expr15 ] alt } ;
+  expr15:     { o | [ o .expr16 [ '++ '-- ] alt opt ] seq } ;
+  expr16:     { o | o .expr17 } ;
+  expr17:     { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 plus opt ] seq } ;
+  expr18:     { o | [ o .lhs o .number o .bool o .group o .array ] alt } ;
+  notPrefix:  { o | [ '! o .expr15 ] 1 seq1 } ;
+  iPrefix:    { o | [ [ '-- '++ ] alt o .expr15 ] seq } ;
+  group:      { o | [ '( o .expr ') ] 1 seq1 } ;
+  number:     { o | o .digit plus } ;
+  digit:      { o | '0 '9 range } ;
+  bool:       { o | [ 'true 'false ] alt } ;
+  array:      { o | [ '[ o .expr ', lit delim '] ] 1 seq1 } ;
+  space:      { o | [ tab cr nl "  " ] alt plus } ;
+  comment:    { o | [ " //" nl notChars star nl ] seq } ;
+  ignore:     { o | [ o .space  o .comment ] alt plus tok } ;
+  lhs:        { o | [
     [ '_ 'a 'z' range 'A 'Z range ] alt
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
     star &join mapp
   ] seq &join mapp } ;
-  space: { o | [ tab cr nl "  " ] alt plus } ;
-  comment: { o | [ " //" nl notChars star nl ] seq } ;
-  ignore: { o | [ o .space  o .comment ] alt plus tok } ;
   | { | ?? }
 } :FormulaParser
 
