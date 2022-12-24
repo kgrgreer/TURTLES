@@ -29,7 +29,7 @@ scope.eval$(`
 
   keywordPattern: { o | [ o .keyword o .argument ] seq plus } ;
 
-  methodBlock: { o | [ o .NewTerm o .blockContents opt o .EndTerm ) seq } ;
+  methodBlock: { o | [ o .NewTerm o .blockContents opt o .EndTerm ] seq } ;
 
   unarySelector: { o | o .identifier } ;
 
@@ -52,20 +52,20 @@ scope.eval$(`
 
   blockBody: { o | [
     [ o .Exit o .result ] seq
-    [ [ o .expression [ o.Period o. blockBody ] seq opt ] seq opt
+    [ [ o .expression [ o .Period o .blockBody ] seq opt ] seq opt
   ] alt } ;
 
   result: { o | [ o .expression o .Period ] seq opt } ;
 
-  expression: { o | [ o .assignation o evaluation ] alt } ;
+  expression: { o | [ o .assignation o .evaluation ] alt } ;
 
-  assignation: { o | [ o .assignments o evaluation ] seq } ;
+  assignation: { o | [ o .assignments o .evaluation ] seq } ;
 
   assignments: { o | o .assignment plus } ;
 
   assignment: { o | o .variable o .Assign } ;
 
-  evaluation: { o | [ o .primary o messages opt ] seq } ;
+  evaluation: { o | [ o .primary o .messages opt ] seq } ;
 
   primary: { o | [ o .variable o .nestedTerm o .literal ] alt } ;
 
@@ -105,7 +105,7 @@ scope.eval$(`
 
   string: { o | o .STString } ;
 
-  nestedBlock: { o | [ o .NewBlock o .blockPattern opt o.blockContents opt o .EndBlock ] seq } ;
+  nestedBlock: { o | [ o .NewBlock o .blockPattern opt o .blockContents opt o .EndBlock ] seq } ;
 
   blockPattern: { o | [ o .CblockArguments o .Or ] seq } ;
 
@@ -117,7 +117,7 @@ scope.eval$(`
 
   Num: '0 '9 range ;
 
-  AlphaNum: { o | [ o .Alpha o .Num ] Alt } ;
+  AlphaNum: { o | [ o .Alpha o .Num ] alt } ;
 
   Identifier: { o | [ o .Alpha o .AlphaNum star ] seq tok } ;
 
@@ -149,6 +149,7 @@ scope.eval$(`
   Period:   '.  lit ;
   Assign:   ':= lit ;
 
+  //   OperatorSequence: '~&|*/\+<>,@.-= anyChar ;
   OperatorSequence: { o | [
     o .Not  o .And  o .Or    o .Star o .Div o .Mod   o .Plus
     o .More o .Less o .Comma o .At   o .Per o .Minus o .Equal
