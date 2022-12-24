@@ -2,245 +2,184 @@
 scope.eval$(`
   // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
   { let
-    { o | o .classdef plus }
-    :program
+  program: { o | o .classdef plus } ;
 
-    { o | [
-      o .identifier '= o .superclass
-      o .instanceFields o .method star
-      [ o .Separator o .classFields o .method star ] seq opt
-      o .EndTerm
-    ] seq }
-    :classdef
+  classdef: { o | [
+    o .identifier '= o .superclass
+    o .instanceFields o .method star
+    [ o .Separator o .classFields o .method star ] seq opt
+    o .EndTerm
+  ] seq } ;
 
-    { o | [ o .Identifier opt o .NewTerm ] seq }
-    :superclass
+  superclass: { o | [ o .Identifier opt o .NewTerm ] seq } ;
 
-    { o | o .fields }
-    :instanceFields
+  instanceFields: { o | o .fields } ;
 
-    { o | o .fields }
-    :classFields
+  classFields: { o | o .fields } ;
 
-    { o | [ o .Or o .variable star o .Or ] seq opt }
-    :fields
+  fields: { o | [ o .Or o .variable star o .Or ] seq opt } ;
 
-    { o | [ o .pattern o .Equal [ o .StPrimitive o .methodBlock ] alt ] seq }
-    :method
+  method: { o | [ o .pattern o .Equal [ o .StPrimitive o .methodBlock ] alt ] seq } ;
 
-    { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt }
-    :pattern
+  pattern: { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt } ;
 
-    { o | o .unarySelector }
-    :unaryPattern
+  unaryPattern: { o | o .unarySelector } ;
 
-    { o | [ o .binarySelector o .argument ] seq }
-    :binaryPattern
+  binaryPattern: { o | [ o .binarySelector o .argument ] seq } ;
 
-    { o | [ o .keyword o .argument ] seq plus }
-    :keywordPattern
+  keywordPattern: { o | [ o .keyword o .argument ] seq plus } ;
 
-    { o | [ o .NewTerm o .blockContents opt o .EndTerm ) seq }
-    :methodBlock
+  methodBlock: { o | [ o .NewTerm o .blockContents opt o .EndTerm ) seq } ;
 
-    { o | o .identifier }
-    :unarySelector
+  unarySelector: { o | o .identifier } ;
 
-    { o | [
-      o .Or   o .Comma o .Minus o .Equal o .Not o .And o .Star o .Div o .Mod
-      o .Plus o .More  o .Less  o .At    o .Per o .OperatorSequence
-    ] }
-    :binarySelector
+  binarySelector: { o | [
+    o .Or   o .Comma o .Minus o .Equal o .Not o .And o .Star o .Div o .Mod
+    o .Plus o .More  o .Less  o .At    o .Per o .OperatorSequence
+  ] } ;
 
-    // checked until here
+  // checked until here
 
-    { o | [ o .STPrimitive o .Identifier ] alt }
-    :identifier
+  identifier: { o | [ o .STPrimitive o .Identifier ] alt } ;
 
-    { o |  o .Keyword }
-    :keyword
+  keyword: { o |  o .Keyword } ;
 
-    { o | o .variable }
-    :argument
+  argument: { o | o .variable } ;
 
-    { o | [ [ o .Or o .localDefs o .Or ] seq opt ] o .blockBody ] seq }
-    :blockContents
+  blockContents: { o | [ [ o .Or o .localDefs o .Or ] seq opt ] o .blockBody ] seq } ;
 
-    { o | o .variable star }
-    :localDefs
+  localDefs: { o | o .variable star } ;
 
-    { o | [
-      [ o .Exit o .result ] seq
-      [ [ o .expression [ o.Period o. blockBody ] seq opt ] seq opt
-    ] alt }
-    :blockBody
+  blockBody: { o | [
+    [ o .Exit o .result ] seq
+    [ [ o .expression [ o.Period o. blockBody ] seq opt ] seq opt
+  ] alt } ;
 
-    { o | [ o .expression o .Period ] seq opt }
-    :result
+  result: { o | [ o .expression o .Period ] seq opt } ;
 
-    { o | [ o .assignation o evaluation ] alt }
-    :expression
+  expression: { o | [ o .assignation o evaluation ] alt } ;
 
-    { o | [ o .assignments o evaluation ] seq }
-    :assignation
+  assignation: { o | [ o .assignments o evaluation ] seq } ;
 
-    { o | o .assignment plus }
-    :assignments
+  assignments: { o | o .assignment plus } ;
 
-    { o | o .variable o .Assign }
-    :assignment
+  assignment: { o | o .variable o .Assign } ;
 
-    { o | [ o .primary o messages opt ] seq }
-    :evaluation
+  evaluation: { o | [ o .primary o messages opt ] seq } ;
 
-    { o | [
-      o .variable
-      o .nestedTerm
-      o .literal
-    ] alt }
-    :primary
+  primary: { o | [
+    o .variable
+    o .nestedTerm
+    o .literal
+  ] alt } ;
 
-    { o | o .identifier }
-    :variable
+  variable: { o | o .identifier } ;
 
-    { o | [
-      [ o .unaryMessage plus o .binaryMessage star o .keywordMessage opt ] seq
-      [ o .binaryMessage plus o .keywordMessaget opt ] seq
-      o .keywordMessage
-    ] alt }
-    :messages
+  messages: { o | [
+    [ o .unaryMessage plus o .binaryMessage star o .keywordMessage opt ] seq
+    [ o .binaryMessage plus o .keywordMessaget opt ] seq
+    o .keywordMessage
+  ] alt } ;
 
-    { o | o .unarySelector }
-    :unaryMessage
+  unaryMessage: { o | o .unarySelector } ;
 
-    { o | [ o .binarySelector o .binaryOperand ] seq }
-    :binaryMessage
+  binaryMessage: { o | [ o .binarySelector o .binaryOperand ] seq } ;
 
-    { o | [ o .primary o .unaryMessage star ] seq }
-    :binaryOperand
+  binaryOperand: { o | [ o .primary o .unaryMessage star ] seq } ;
 
-    { o | [ o .keyword o .formula ] seq plus }
-    :keywordMessage
+  keywordMessage: { o | [ o .keyword o .formula ] seq plus } ;
 
-    { o | [ o .binaryOperand o .binaryMessage star ] seq }
-    :formula
+  formula: { o | [ o .binaryOperand o .binaryMessage star ] seq } ;
 
-    { o | [ o .NewTerm o .expression o .EndTerm ] seq }
-    :nestedTerm
+  nestedTerm: { o | [ o .NewTerm o .expression o .EndTerm ] seq } ;
 
-    { o | [ o .literalArray o .literalSymbol o .literalString o .literalNumber ] alt }
-    :literal
+  literal: { o | [ o .literalArray o .literalSymbol o .literalString o .literalNumber ] alt } ;
 
-    { o | [ o .Pound o .NewTerm o .literal star o .EndTerm ] seq }
-    :literalArray
+  literalArray: { o | [ o .Pound o .NewTerm o .literal star o .EndTerm ] seq } ;
 
-    { o | o .Number }
-    :literalNumber
+  literalNumber: { o | o .Number } ;
 
-    { o | [ o .Pound [ o .string o .selector ] alt ] seq }
-    :literalSymbol
+  literalSymbol: { o | [ o .Pound [ o .string o .selector ] alt ] seq } ;
 
-    { o | o .STString }
-    :literalString
+  literalString: { o | o .STString } ;
 
-    { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt }
-    :selector
+  selector: { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt } ;
 
-    { o | [ o .Keyword o .KeywordSequence ] alt }
-    :keywordSelector
+  keywordSelector: { o | [ o .Keyword o .KeywordSequence ] alt } ;
 
-    { o | o .STString }
-    :string
+  string: { o | o .STString } ;
 
-    { o | [ o .NewBlock o .blockPattern opt o.blockContents opt o .EndBlock ] seq }
-    :nestedBlock
+  nestedBlock: { o | [ o .NewBlock o .blockPattern opt o.blockContents opt o .EndBlock ] seq } ;
 
-    { o | [ o .CblockArguments o .Or ] seq }
-    :blockPattern
+  blockPattern: { o | [ o .CblockArguments o .Or ] seq } ;
 
-    { o | [ o .Colon o .argument ] seq plus }
-    :blockArguments
+  blockArguments: { o | [ o .Colon o .argument ] seq plus } ;
 
-    { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok }
-    :Number
+  Number: { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
 
-    { o | [ 'a 'z range 'A 'Z range ] alt }
-    :Alpha
+  Alpha: [ 'a 'z range 'A 'Z range ] alt ;
 
-    { o | '0 '9 range }
-    :Num
+  Num: '0 '9 range ;
 
-    { o | [ o .Alpha o .Num ] Alt }
-    :AlphaNum
+  AlphaNum: { o | [ o .Alpha o .Num ] Alt } ;
 
-    { o | [ o .Alpha o .AlphaNum star ] seq tok }
-    :Identifier
+  Identifier: { o | [ o .Alpha o .AlphaNum star ] seq tok } ;
 
-    { o | " primitive lit }
-    :STPrimitive
+  STPrimitive: " primitive lit ;
 
-    { o | '- lit 4 repeat tok }
-    :Separator
+  Separator: '- lit 4 repeat tok ;
 
-    '= lit :Equal
-    '( lit :NewTerm
-    ') lit :EndTerm
-    '| lit :Or
-    ', lit :Comma
-    '- lit :Minus
-    '~ lit :Not
-    '& lit :And
-    '* lit :Star
-    '/ lit :Div
-    '\ lit :Mod
-    '+ lit :Plus
-    '> lit :More
-    '< lit :Less
-    '@ lit :At
-    '% lit :Per
-    ': lit :Colon
-    '[ lit :NewBlock
-    '] lit :EndBlock
-    '# lit :Pound
-    '^ lit :Exit
-    '. lit :Period
-    " :=" lit :Assign
+  Equal:    '= lit ;
+  NewTerm:  '( lit ;
+  EndTerm:  ') lit ;
+  Or:       '| lit ;
+  Comma:    ', lit ;
+  Minus:    '- lit ;
+  Not:      '~ lit ;
+  And:      '& lit ;
+  Star:     '* lit ;
+  Div:      '/ lit ;
+  Mod:      '\ lit ;
+  Plus:     '+ lit ;
+  More:     '> lit ;
+  Less:     '< lit ;
+  At:       '@ lit ;
+  Per:      '% lit ;
+  Colon:    ': lit ;
+  NewBlock: '[ lit ;
+  EndBlock: '] lit ;
+  Pound:    '# lit ;
+  Exit:     '^ lit ;
+  Period:   '. lit ;
+  Assign:   " :=" lit ;
 
-    { o | [
-      o .Not  o .And  o .Or    o .Star o .Div o .Mod   o .Plus
-      o .More o .Less o .Comma o .At   o .Per o .Minus o .Equal
-    ] alt }
-    :OperatorSequence
+  OperatorSequence: { o | [
+    o .Not  o .And  o .Or    o .Star o .Div o .Mod   o .Plus
+    o .More o .Less o .Comma o .At   o .Per o .Minus o .Equal
+  ] alt } ;
 
-    { o | [ o .Identifier o .Colon ] seq tok }
-    :Keyword
+  Keyword: { o | [ o .Identifier o .Colon ] seq tok } ;
 
-    { o | o .Keyword plus }
-    :KeywordSequence
+  KeywordSequence: { o | o .Keyword plus } ;
 
-    { o | [
-      '\b
-      '\n
-      '\r
-      '\f
-      '\0
-      '\'
-      '\\
-      '\' notChars
-    ] alt }
-    :STStringChar
+  STStringChar: [
+    '\b
+    '\n
+    '\r
+    '\f
+    '\0
+    '\'
+    '\\
+    '\' notChars
+  ] alt ;
 
-    { o | [ '' o .STStringChar star '' ] seq }
-    :STString
+  STString: { o | [ '' o .STStringChar star '' ] seq } ;
 
-    { o | [ '" '" notChars star '" ] seq }
-    :Comment
+  Comment: [ '" '" notChars star '" ] seq ;
 
-    { o | [ tab cr nl "  " ] alt plus }
-    :Whitespace
+  Whitespace: [ tab cr nl "  " ] alt plus ;
 
-    { o | [ o .space  o .comment ] alt plus tok }
-    :ignore
+  ignore: { o | [ o .space  o .comment ] alt plus tok } ;
 
   | { | ?? }
 } :SOMParser
