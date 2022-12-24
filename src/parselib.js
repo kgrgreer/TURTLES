@@ -72,8 +72,8 @@ scope.eval$(`
   i min >=  { a | a ret .:value } { _ | false } ifelse
 } } ::repeat
 
-{ 0 | repeat } ::star
-{ 1 | repeat } ::plus
+{ | 0 repeat } ::star
+{ | 1 repeat } ::plus
 
 { parser delim |
   [ [ parser delim ] 0 seq1 0 repeat parser opt ] seq

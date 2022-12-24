@@ -16,17 +16,17 @@ scope.eval$(`
 
 // Just a Parser, validates but has no semantic actions
 { let
-  { s o | s 0 nil o .ignore PStream [ o .ignore opt o .start ] 1 seq1 () .value } :parse$
-  { m o | o m o () () }                                           :call
-  { o |  [ o .stmts o .expr ] alt }                                   :start
-  { o |
+  parse$: { s o | s 0 nil o .ignore PStream [ o .ignore opt o .start ] 1 seq1 () .value } ;
+  call:   { m o | o m o () () } ;
+  start:  { o |  [ o .stmts o .expr ] alt } ;
+  stmt:   { o |
     [
       o .if
       o .while
       [ o .expr '; ] 0 seq1
       o .block
     ] alt
-  }                                                               :stmt
+  } ;
   { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } :if
   { o | [ 'while '( o .expr ') o .stmt ] seq }                    :while
   { o | [ '{ o .stmts '} ] 1 seq1 }                               :block

@@ -43,6 +43,9 @@ var scope = {
     } else if ( line.startsWith(':') ) {
       var sym = line.substring(1);
       code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
+    } else if ( line.endsWith(':') ) {
+      var sym = line.substring(0, line.length-1);
+      code.push(() => stack.push(sym));
     } else if ( line.charAt(0) >= '0' && line.charAt(0) <= '9' || ( line.charAt(0) == '-' && line.length > 1 ) ) {
       code.push(() => stack.push(Number.parseFloat(line)));
     } else if ( line.startsWith("'") ) {
@@ -190,6 +193,9 @@ var scope = {
   '-':       bfn((a,b) => a - b),
   '/':       bfn((a,b) => a / b),
   '^':       bfn((a,b) => Math.pow(a,b)),
+  ';':       (code) => { code.push(function() {
+    var value = stack.pop(), sym = stack.pop();
+    scope[sym] = (code) => code.push(() => stack.push(value))}) },
   '%':       fn(() => stack.push(stack.pop() / 100)),
   '()':      fn(() => { var f = stack.pop();
    //  console.log('running: ', f.toString());
@@ -233,6 +239,14 @@ scope.eval$(`
 // A helper function for displaying section titles
 { t | " " print t print } ::section
 
+/*
+i: 10 ;
+i print
+j: 20 ;
+j print
+
+debugger
+*/
 `);
 
 

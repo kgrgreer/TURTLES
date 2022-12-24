@@ -1,13 +1,15 @@
 scope.eval$(`
-  " Parser Tests" section
+" Parser Tests" section
+
 " thisthenthat0123 " 0 false false PStream :ps
 
 " Literal Parser" section
-ps 'this lit () print
+ps 'this lit () .value print
 'that print
 ps 'that lit () print
 ps 'this lit () .toString print
 
+/*
 " " 0 false false PStream :ps
 ps "  " lit 1 repeat ()
 print
@@ -15,10 +17,11 @@ print
 "  " 0 false false PStream :ps
 ps "  " lit () .toString
 print
+*/
 
 " Seq Parser" section
-[ 'this 'then 'that ] seq :seqparser
-ps seqparser () .toString print
+[ 'this 'then 'that ] seq ::seqparser
+ps seqparser print
 
 
 " Alt Parser" section
