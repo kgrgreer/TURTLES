@@ -2,34 +2,33 @@
 scope.eval$(`
   // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
   { let
-    { o | o .classdef 1 repeat }
+    { o | o .classdef plus }
     :program
 
-    { o | [ o .identifier '= o .superclass
-      o. NewTerm
-      o .instanceFields
-      o .method 0 repeat
-      [
-        o .Separator
-        o .classFields
-        o .method 0 repeat
-      ] seq opt
+    { o | [
+      o .identifier '= o .superclass
+      o .instanceFields o .method star
+      [ o .Separator o .classFields o .method star ] seq opt
+      o .EndTerm
     ] seq }
     :classdef
 
-    { o | o .Identifier opt }
+    { o | [ o .Identifier opt o .NewTerm ] seq }
     :superclass
 
-    { o | [ o .Or o .variable star o .Or ] seq opt }
+    { o | o .fields }
     :instanceFields
 
-    { o | [ o .Or o .variable star o .Or ] seq opt }
+    { o | o .fields }
     :classFields
+
+    { o | [ o .Or o .variable star o .Or ] seq opt }
+    :fields
 
     { o | [ o .pattern o .Equal [ o .StPrimitive o .methodBlock ] alt ] seq }
     :method
 
-    { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] opt }
+    { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt }
     :pattern
 
     { o | o .unarySelector }
@@ -52,6 +51,8 @@ scope.eval$(`
       o .Plus o .More  o .Less  o .At    o .Per o .OperatorSequence
     ] }
     :binarySelector
+
+    // checked until here
 
     { o | [ o .STPrimitive o .Identifier ] alt }
     :identifier
