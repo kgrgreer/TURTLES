@@ -129,29 +129,29 @@ scope.eval$(`
 
   Separator: '- lit 4 repeat tok ;
 
-  Equal:    '= lit ;
-  NewTerm:  '( lit ;
-  EndTerm:  ') lit ;
-  Or:       '| lit ;
-  Comma:    ', lit ;
-  Minus:    '- lit ;
-  Not:      '~ lit ;
-  And:      '& lit ;
-  Star:     '* lit ;
-  Div:      '/ lit ;
-  Mod:      '\ lit ;
-  Plus:     '+ lit ;
-  More:     '> lit ;
-  Less:     '< lit ;
-  At:       '@ lit ;
-  Per:      '% lit ;
-  Colon:    ': lit ;
-  NewBlock: '[ lit ;
-  EndBlock: '] lit ;
-  Pound:    '# lit ;
-  Exit:     '^ lit ;
-  Period:   '. lit ;
-  Assign:   " :=" lit ;
+  Equal:    '=  lit ;
+  NewTerm:  '(  lit ;
+  EndTerm:  ')  lit ;
+  Or:       '|  lit ;
+  Comma:    ',  lit ;
+  Minus:    '-  lit ;
+  Not:      '~  lit ;
+  And:      '&  lit ;
+  Star:     '*  lit ;
+  Div:      '/  lit ;
+  Mod:      '\  lit ;
+  Plus:     '+  lit ;
+  More:     '>  lit ;
+  Less:     '<  lit ;
+  At:       '@  lit ;
+  Per:      '%  lit ;
+  Colon:    ':  lit ;
+  NewBlock: '[  lit ;
+  EndBlock: ']  lit ;
+  Pound:    '#  lit ;
+  Exit:     '^  lit ;
+  Period:   '.  lit ;
+  Assign:   ':= lit ;
 
   OperatorSequence: { o | [
     o .Not  o .And  o .Or    o .Star o .Div o .Mod   o .Plus
