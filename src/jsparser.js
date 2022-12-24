@@ -27,47 +27,47 @@ scope.eval$(`
       o .block
     ] alt
   } ;
-  { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } :if
-  { o | [ 'while '( o .expr ') o .stmt ] seq }                    :while
-  { o | [ '{ o .stmts '} ] 1 seq1 }                               :block
-  { o |  o .stmt '; lit delim }                                   :stmts
-  [ '== '= litMap '!= ] alt                                       :equality
-  [ '<= '< '>= '> ] alt                                           :inequality
-  '&& lit                                                         :and
-  '|| lit                                                         :or
-  { o | [ o .expr3 [ '? o .expr3 ': o .expr3 ] seq opt ] seq }    :ternary
-  { o | [ o .lhs '= o .expr ] seq }                               :assignment
-  { o | o .expr2 }                                                :expr
-  { o | [ o .assignment o .ternary o .expr3 ] alt }               :expr2
-  'expr4 or 'expr3 binary                                         :expr3
-  'expr5 and 'expr4 binary                                        :expr4
-  { o | o .expr8 }                                                :expr5
-  'expr9 equality 'expr8 binary                                   :expr8
-  'expr10 inequality 'expr9 binary                                :expr9
-  { o | o .expr11 }                                               :expr10
-  'expr12 '+- anyChar 'expr11 binary                              :expr11
-  'expr13 '*/%  anyChar 'expr12 binary                            :expr12
-  'expr14 '** '^ litMap 'expr13 binary                            :expr13
-  { o | [ o .notPrefix o .iPrefix o .expr15 ] alt }               :expr14
-  { o | [ o .expr16 [ '++ '-- ] alt opt ] seq }                   :expr15
-  { o | o .expr17 }                                               :expr16
-  { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 1 repeat opt ] seq } :expr17
-  { o | [ o .lhs o .number o .bool o .group o .array ] alt }      :expr18
-  { o | [ '! o .expr15 ] 1 seq1 }                                 :notPrefix
-  { o | [ [ '-- '++ ] alt o .expr15 ] seq }                       :iPrefix
-  { o | [ '( o .expr ') ] 1 seq1 }                                :group
-  { o | o .digit 1 repeat }                                       :number
-  { o | '0 '9 range }                                             :digit
-  { o | [ 'true 'false ] alt }                                    :bool
-  { o | [ '[ o .expr ', lit delim '] ] 1 seq1 }                   :array
-  { o | [
+  if: { o | [ 'if '( o .expr ') o .stmt [ 'else o .stmt ] 1 seq1 opt ] seq } ;
+  while: { o | [ 'while '( o .expr ') o .stmt ] seq } ;
+  block: { o | [ '{ o .stmts '} ] 1 seq1 } ;
+  stmts: { o |  o .stmt '; lit delim } ;
+  equality: [ '== '= litMap '!= ] alt ;
+  inequality: [ '<= '< '>= '> ] alt ;
+  and: '&& lit ;
+  or: '|| lit ;
+  ternary: { o | [ o .expr3 [ '? o .expr3 ': o .expr3 ] seq opt ] seq } ;
+  assignment: { o | [ o .lhs '= o .expr ] seq } ;
+  expr: { o | o .expr2 } ;
+  expr2: { o | [ o .assignment o .ternary o .expr3 ] alt } ;
+  expr3: 'expr4 or 'expr3 binary ;
+  expr4: 'expr5 and 'expr4 binary ;
+  expr5: { o | o .expr8 } ;
+  expr8: 'expr9 equality 'expr8 binary ;
+  expr9: 'expr10 inequality 'expr9 binary  ;
+  expr10: { o | o .expr11 } ;
+  expr11: 'expr12 '+- anyChar 'expr11 binary ;
+  expr12: 'expr13 '*/%  anyChar 'expr12 binary ;
+  expr13: 'expr14 '** '^ litMap 'expr13 binary ;
+  expr14: { o | [ o .notPrefix o .iPrefix o .expr15 ] alt } ;
+  expr15: { o | [ o .expr16 [ '++ '-- ] alt opt ] seq } ;
+  expr16: { o | o .expr17 } ;
+  expr17: { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 1 repeat opt ] seq } ;
+  expr18: { o | [ o .lhs o .number o .bool o .group o .array ] alt } ;
+  notPrefix: { o | [ '! o .expr15 ] 1 seq1 } ;
+  iPrefix: { o | [ [ '-- '++ ] alt o .expr15 ] seq } ;
+  group: { o | [ '( o .expr ') ] 1 seq1 } ;
+  number: { o | o .digit 1 repeat } ;
+  digit: { o | '0 '9 range } ;
+  bool: { o | [ 'true 'false ] alt } ;
+  array: { o | [ '[ o .expr ', lit delim '] ] 1 seq1 } ;
+  lhs: { o | [
     [ '_ 'a 'z' range 'A 'Z range ] alt
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
     0 repeat &join mapp
-  ] seq &join mapp }                                              :lhs
-  { o | [ tab cr nl "  " ] alt 1 repeat }                         :space
-  { o | [ " //" nl notChars 0 repeat nl ] seq }                   :comment // TODO: needs to be a token
-  { o | [ o .space  o .comment ] alt 1 repeat tok }               :ignore
+  ] seq &join mapp } ;
+  space: { o | [ tab cr nl "  " ] alt 1 repeat } ;
+  comment: { o | [ " //" nl notChars 0 repeat nl ] seq } ;
+  ignore: { o | [ o .space  o .comment ] alt 1 repeat tok } ;
   | { | ?? }
 } :FormulaParser
 
