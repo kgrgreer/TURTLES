@@ -121,7 +121,7 @@ scope.eval$(`
 
   Identifier: { o | [ o .Alpha o .AlphaNum star ] seq tok } ;
 
-  STPrimitive: " primitive lit ;
+  STPrimitive: 'primitive lit ;
 
   Separator: '- lit 4 repeat tok ;
 
