@@ -1,7 +1,7 @@
 
 scope.eval$(`
-  // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
-  { let
+// "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
+{ let
   program: { o | o .classdef plus } ;
 
   classdef: { o | [
@@ -107,7 +107,7 @@ scope.eval$(`
 
   nestedBlock: { o | [ o .NewBlock o .blockPattern opt o .blockContents opt o .EndBlock ] seq } ;
 
-  blockPattern: { o | [ o .CblockArguments o .Or ] seq } ;
+  blockPattern: { o | [ o .blockArguments o .Or ] seq } ;
 
   blockArguments: { o | [ o .Colon o .argument ] seq plus } ;
 
