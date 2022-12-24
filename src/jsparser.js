@@ -51,23 +51,23 @@ scope.eval$(`
   expr14: { o | [ o .notPrefix o .iPrefix o .expr15 ] alt } ;
   expr15: { o | [ o .expr16 [ '++ '-- ] alt opt ] seq } ;
   expr16: { o | o .expr17 } ;
-  expr17: { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 1 repeat opt ] seq } ;
+  expr17: { o | [ o .expr18 [ '[ o .expr '] ] 1 seq1 plus opt ] seq } ;
   expr18: { o | [ o .lhs o .number o .bool o .group o .array ] alt } ;
   notPrefix: { o | [ '! o .expr15 ] 1 seq1 } ;
   iPrefix: { o | [ [ '-- '++ ] alt o .expr15 ] seq } ;
   group: { o | [ '( o .expr ') ] 1 seq1 } ;
-  number: { o | o .digit 1 repeat } ;
+  number: { o | o .digit plus } ;
   digit: { o | '0 '9 range } ;
   bool: { o | [ 'true 'false ] alt } ;
   array: { o | [ '[ o .expr ', lit delim '] ] 1 seq1 } ;
   lhs: { o | [
     [ '_ 'a 'z' range 'A 'Z range ] alt
     [ '_ 'a 'z' range 'A 'Z range '0 '9 range ] alt
-    0 repeat &join mapp
+    star &join mapp
   ] seq &join mapp } ;
-  space: { o | [ tab cr nl "  " ] alt 1 repeat } ;
-  comment: { o | [ " //" nl notChars 0 repeat nl ] seq } ;
-  ignore: { o | [ o .space  o .comment ] alt 1 repeat tok } ;
+  space: { o | [ tab cr nl "  " ] alt plus } ;
+  comment: { o | [ " //" nl notChars star nl ] seq } ;
+  ignore: { o | [ o .space  o .comment ] alt plus tok } ;
   | { | ?? }
 } :FormulaParser
 
