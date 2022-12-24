@@ -34,8 +34,8 @@ scope.eval$(`
   unarySelector: { o | o .identifier } ;
 
   binarySelector: { o | [
-    o .Or   o .Comma o .Minus o .Equal o .Not o .And o .Star o .Div o .Mod
-    o .Plus o .More  o .Less  o .At    o .Per o .OperatorSequence
+    o .Or  o .Comma o .Minus o .Equal o .Not o .And o .Star o .Div
+    o .Mod o .Plus  o .More  o .Less  o .At  o .Per o .OperatorSequence
   ] } ;
 
   // checked until here
@@ -67,11 +67,7 @@ scope.eval$(`
 
   evaluation: { o | [ o .primary o messages opt ] seq } ;
 
-  primary: { o | [
-    o .variable
-    o .nestedTerm
-    o .literal
-  ] alt } ;
+  primary: { o | [ o .variable o .nestedTerm o .literal ] alt } ;
 
   variable: { o | o .identifier } ;
 
@@ -162,16 +158,7 @@ scope.eval$(`
 
   KeywordSequence: { o | o .Keyword plus } ;
 
-  STStringChar: [
-    '\b
-    '\n
-    '\r
-    '\f
-    '\0
-    '\'
-    '\\
-    '\' notChars
-  ] alt ;
+  STStringChar: [ '\b '\n '\r '\f '\0 '\' '\\ '\' notChars ] alt ;
 
   STString: { o | [ '' o .STStringChar star '' ] seq } ;
 
