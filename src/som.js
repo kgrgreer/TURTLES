@@ -62,7 +62,7 @@ scope.eval$(`
 
   assignments: { o | o .assignment plus } ;
 
-  assignment: { o | [ o .variable ':= ] seq } ;
+  assignment: { o | [ o .variable ':= ] 0 seq1 } ;
 
   evaluation: { o | [ o .primary o .messages opt ] seq } ;
 
@@ -153,9 +153,9 @@ scope.eval$(`
 
   STStringChar: [ '\b '\n '\r '\f '\0 '\' '\\ '\' notChars ] alt ;
 
-  STString: { o | [ '' o .STStringChar star '' ] seq } ;
+  STString: { o | [ '' o .STStringChar star '' ] 1 seq1 } ;
 
-  Comment: [ '" '" notChars star '" ] seq ;
+  Comment: [ '" '" notChars star '" ] 1 seq1 ;
 
   Whitespace: [ tab cr nl "  " ] alt plus ;
 
