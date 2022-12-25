@@ -8,18 +8,18 @@ scope.eval$(`
     o .identifier '= o .superclass
     o .instanceFields o .method star
     [ o .Separator o .classFields o .method star ] seq opt
-    o .EndTerm
+    ')
   ] seq } ;
 
-  superclass: { o | [ o .Identifier opt o .NewTerm ] seq } ;
+  superclass: { o | [ o .Identifier opt '( ] seq } ;
 
   instanceFields: { o | o .fields } ;
 
   classFields: { o | o .fields } ;
 
-  fields: { o | [ o .Or o .variable star o .Or ] seq opt } ;
+  fields: { o | [ '| o .variable star '| ] seq opt } ;
 
-  method: { o | [ o .pattern o .Equal [ o .StPrimitive o .methodBlock ] alt ] seq } ;
+  method: { o | [ o .pattern '= [ o .StPrimitive o .methodBlock ] alt ] seq } ;
 
   pattern: { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt } ;
 
@@ -29,7 +29,7 @@ scope.eval$(`
 
   keywordPattern: { o | [ o .keyword o .argument ] seq plus } ;
 
-  methodBlock: { o | [ o .NewTerm o .blockContents opt o .EndTerm ] seq } ;
+  methodBlock: { o | [ '( o .blockContents opt ') ] seq } ;
 
   unarySelector: { o | o .identifier } ;
 
@@ -45,16 +45,16 @@ scope.eval$(`
 
   argument: { o | o .variable } ;
 
-  blockContents: { o | [ [ o .Or o .localDefs o .Or ] seq opt ] o .blockBody ] seq } ;
+  blockContents: { o | [ [ '| o .localDefs '| ] 1 seq1 opt ] o .blockBody ] seq } ;
 
   localDefs: { o | o .variable star } ;
 
   blockBody: { o | [
-    [ o .Exit o .result ] seq
-    [ [ o .expression [ o .Period o .blockBody opt ] ] seq opt
+    [ '^ o .result ] seq
+    [ [ o .expression [ '. o .blockBody opt ] ] seq opt
   ] alt } ;
 
-  result: { o | [ o .expression o .Period opt ] seq } ;
+  result: { o | [ o .expression '. opt ] seq } ;
 
   expression: { o | [ o .assignation o .evaluation ] alt } ;
 
@@ -62,7 +62,7 @@ scope.eval$(`
 
   assignments: { o | o .assignment plus } ;
 
-  assignment: { o | [ o .variable o .Assign ] seq } ;
+  assignment: { o | [ o .variable ':= ] seq } ;
 
   evaluation: { o | [ o .primary o .messages opt ] seq } ;
 
@@ -125,8 +125,6 @@ scope.eval$(`
   Separator: '- lit 4 repeat tok ;
 
   Equal:    '=  lit ;
-  NewTerm:  '(  lit ;
-  EndTerm:  ')  lit ;
   Or:       '|  lit ;
   Comma:    ',  lit ;
   Minus:    '-  lit ;
@@ -140,13 +138,6 @@ scope.eval$(`
   Less:     '<  lit ;
   At:       '@  lit ;
   Per:      '%  lit ;
-  Colon:    ':  lit ;
-  NewBlock: '[  lit ;
-  EndBlock: ']  lit ;
-  Pound:    '#  lit ;
-  Exit:     '^  lit ;
-  Period:   '.  lit ;
-  Assign:   ':= lit ;
 
   OperatorSequence: '~&|*/\+<>,@.-= anyChar ;
   /*
@@ -156,7 +147,7 @@ scope.eval$(`
   ] alt plus } ;
   */
 
-  Keyword: { o | [ o .Identifier o .Colon ] seq tok } ;
+  Keyword: { o | [ o .Identifier ': ] 0 seq1 tok } ;
 
   KeywordSequence: { o | o .Keyword plus } ;
 
