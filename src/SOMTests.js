@@ -8,8 +8,8 @@ SOMParser :som
     src 0 false false PStream :ps
     ps sym som .call ()       :result
   |
-  nl print
   [
+    nl
     " Testing SOMParser Symbol: " sym nl
     " Input: " src nl
     " Output: " result { | result .toString } { | result } ifelse
@@ -28,4 +28,9 @@ SOMParser :som
 'OperatorSequence '/ testSym
 'OperatorSequence '! testSym
 
+'STStringChar 'A testSym
+'STStringChar '" testSym
+'STStringChar '' testSym
+
+// 'STString " 'a string'" testSym
 `);

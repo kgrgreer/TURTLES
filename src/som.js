@@ -151,9 +151,10 @@ scope.eval$(`
 
   KeywordSequence: { o | o .Keyword plus } ;
 
-  STStringChar: { o | [ '\b '\n '\r '\f '\0 '\' '\\ '\' notChars ] alt } ;
+  // Javascript string escaping is messing this up
+  STStringChar: { o | [ '\\b '\\n '\\r '\\f '\\0 '\\' '\\\\ '' notChars ] alt } ;
 
-  STString: { o | [ '' o .STStringChar star '' ] 1 seq1 } ;
+  STString: { o | [ '' o .STStringChar star '' ] seq } ;
 
   Comment: { o | [ '" '" notChars star '" ] 1 seq1 } ;
 
@@ -164,3 +165,5 @@ scope.eval$(`
   | { | ?? }
 } ::SOMParser
 `);
+
+//   STStringChar: { o | '' notChars } ;
