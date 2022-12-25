@@ -154,7 +154,7 @@ scope.eval$(`
   // Javascript string escaping is messing this up
   STStringChar: { o | [ '\\b '\\n '\\r '\\f '\\0 '\\' '\\\\ '' notChars ] alt } ;
 
-  STString: { o | [ '' o .STStringChar star '' ] seq } ;
+  STString: { o | [ '' o .STStringChar star '' ] 1 seq1 &join mapp } ;
 
   Comment: { o | [ '" '" notChars star '" ] 1 seq1 } ;
 

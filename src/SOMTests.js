@@ -32,5 +32,5 @@ SOMParser :som
 'STStringChar '" testSym
 'STStringChar '' testSym
 
-// 'STString " 'a string'" testSym
+'STString " 'a string'" testSym
 `);
