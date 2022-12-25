@@ -33,16 +33,15 @@ scope.eval$(`
 
   unarySelector: { o | o .identifier } ;
 
+  // binarySelector '|,-=~&*/\+><@.
   binarySelector: { o | [
     o .Or  o .Comma o .Minus o .Equal o .Not o .And o .Star o .Div
     o .Mod o .Plus  o .More  o .Less  o .At  o .Per o .OperatorSequence
   ] } ;
 
-  // checked until here
-
   identifier: { o | [ o .STPrimitive o .Identifier ] alt } ;
 
-  keyword: { o |  o .Keyword } ;
+  keyword: { o | o .Keyword } ;
 
   argument: { o | o .variable } ;
 
@@ -52,10 +51,10 @@ scope.eval$(`
 
   blockBody: { o | [
     [ o .Exit o .result ] seq
-    [ [ o .expression [ o .Period o .blockBody ] seq opt ] seq opt
+    [ [ o .expression [ o .Period o .blockBody opt ] ] seq opt
   ] alt } ;
 
-  result: { o | [ o .expression o .Period ] seq opt } ;
+  result: { o | [ o .expression o .Period opt ] seq } ;
 
   expression: { o | [ o .assignation o .evaluation ] alt } ;
 
@@ -63,11 +62,11 @@ scope.eval$(`
 
   assignments: { o | o .assignment plus } ;
 
-  assignment: { o | o .variable o .Assign } ;
+  assignment: { o | [ o .variable o .Assign ] seq } ;
 
   evaluation: { o | [ o .primary o .messages opt ] seq } ;
 
-  primary: { o | [ o .variable o .nestedTerm o .literal ] alt } ;
+  primary: { o | [ o .variable o .nestedTerm o .nestedBlock o .literal ] alt } ;
 
   variable: { o | o .identifier } ;
 
@@ -87,15 +86,15 @@ scope.eval$(`
 
   formula: { o | [ o .binaryOperand o .binaryMessage star ] seq } ;
 
-  nestedTerm: { o | [ o .NewTerm o .expression o .EndTerm ] seq } ;
+  nestedTerm: { o | [ '( o .expression o ') ] 1 seq1 } ;
 
   literal: { o | [ o .literalArray o .literalSymbol o .literalString o .literalNumber ] alt } ;
 
-  literalArray: { o | [ o .Pound o .NewTerm o .literal star o .EndTerm ] seq } ;
+  literalArray: { o | [ '# o '( o .literal star ') ] 2 seq1 } ;
 
   literalNumber: { o | o .Number } ;
 
-  literalSymbol: { o | [ o .Pound [ o .string o .selector ] alt ] seq } ;
+  literalSymbol: { o | [ '# [ o .string o .selector ] alt ] 1 seq1 } ;
 
   literalString: { o | o .STString } ;
 
@@ -105,11 +104,11 @@ scope.eval$(`
 
   string: { o | o .STString } ;
 
-  nestedBlock: { o | [ o .NewBlock o .blockPattern opt o .blockContents opt o .EndBlock ] seq } ;
+  nestedBlock: { o | [ '[ o .blockPattern opt o .blockContents opt '] ] seq } ;
 
-  blockPattern: { o | [ o .blockArguments o .Or ] seq } ;
+  blockPattern: { o | [ o .blockArguments '| ] 0 seq1 } ;
 
-  blockArguments: { o | [ o .Colon o .argument ] seq plus } ;
+  blockArguments: { o | [ ': o .argument ] 1 seq1 plus } ;
 
   Number: { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
 
@@ -149,11 +148,13 @@ scope.eval$(`
   Period:   '.  lit ;
   Assign:   ':= lit ;
 
-  //   OperatorSequence: '~&|*/\+<>,@.-= anyChar ;
+  OperatorSequence: '~&|*/\+<>,@.-= anyChar ;
+  /*
   OperatorSequence: { o | [
     o .Not  o .And  o .Or    o .Star o .Div o .Mod   o .Plus
     o .More o .Less o .Comma o .At   o .Per o .Minus o .Equal
-  ] alt } ;
+  ] alt plus } ;
+  */
 
   Keyword: { o | [ o .Identifier o .Colon ] seq tok } ;
 
