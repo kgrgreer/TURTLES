@@ -110,19 +110,19 @@ scope.eval$(`
 
   blockArguments: { o | [ ': o .argument ] 1 seq1 plus } ;
 
-  Number: { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
+  Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] 1 seq1 opt ] seq tok } ;
 
-  Alpha: [ 'a 'z range 'A 'Z range ] alt ;
+  Alpha: { o | [ 'a 'z range 'A 'Z range ] alt } ;
 
-  Num: '0 '9 range ;
+  Num: { o | '0 '9 range } ;
 
   AlphaNum: { o | [ o .Alpha o .Num ] alt } ;
 
-  Identifier: { o | [ o .Alpha o .AlphaNum star ] seq tok } ;
+  Identifier: { o | [ o .Alpha o .AlphaNum star &join mapp ] seq &join mapp tok } ;
 
-  STPrimitive: 'primitive lit ;
+  STPrimitive: { o | 'primitive lit } ;
 
-  Separator: '- lit 4 repeat tok ;
+  Separator: { o | '- lit 4 repeat tok } ;
 
   Equal:    { o | '=  lit } ;
   Or:       { o | '|  lit } ;
@@ -147,7 +147,7 @@ scope.eval$(`
   ] alt plus } ;
   */
 
-  Keyword: { o | [ o .Identifier ': ] 0 seq1 tok } ;
+  Keyword: { o | [ o .Identifier " :" ] 0 seq1 tok } ;
 
   KeywordSequence: { o | o .Keyword plus } ;
 
