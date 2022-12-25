@@ -124,22 +124,22 @@ scope.eval$(`
 
   Separator: '- lit 4 repeat tok ;
 
-  Equal:    '=  lit ;
-  Or:       '|  lit ;
-  Comma:    ',  lit ;
-  Minus:    '-  lit ;
-  Not:      '~  lit ;
-  And:      '&  lit ;
-  Star:     '*  lit ;
-  Div:      '/  lit ;
-  Mod:      '\  lit ;
-  Plus:     '+  lit ;
-  More:     '>  lit ;
-  Less:     '<  lit ;
-  At:       '@  lit ;
-  Per:      '%  lit ;
+  Equal:    { o | '=  lit } ;
+  Or:       { o | '|  lit } ;
+  Comma:    { o | ',  lit } ;
+  Minus:    { o | '-  lit } ;
+  Not:      { o | '~  lit } ;
+  And:      { o | '&  lit } ;
+  Star:     { o | '*  lit } ;
+  Div:      { o | '/  lit } ;
+  Mod:      { o | '\  lit } ;
+  Plus:     { o | '+  lit } ;
+  More:     { o | '>  lit } ;
+  Less:     { o | '<  lit } ;
+  At:       { o | '@  lit } ;
+  Per:      { o | '%  lit } ;
 
-  OperatorSequence: '~&|*/\+<>,@.-= anyChar ;
+  OperatorSequence: { o | '~&|*/\+<>,@.-= anyChar } ;
   /*
   OperatorSequence: { o | [
     o .Not  o .And  o .Or    o .Star o .Div o .Mod   o .Plus
@@ -151,16 +151,16 @@ scope.eval$(`
 
   KeywordSequence: { o | o .Keyword plus } ;
 
-  STStringChar: [ '\b '\n '\r '\f '\0 '\' '\\ '\' notChars ] alt ;
+  STStringChar: { o | [ '\b '\n '\r '\f '\0 '\' '\\ '\' notChars ] alt } ;
 
   STString: { o | [ '' o .STStringChar star '' ] 1 seq1 } ;
 
-  Comment: [ '" '" notChars star '" ] 1 seq1 ;
+  Comment: { o | [ '" '" notChars star '" ] 1 seq1 } ;
 
   Whitespace: [ tab cr nl "  " ] alt plus ;
 
   ignore: { o | [ o .space  o .comment ] alt plus tok } ;
 
   | { | ?? }
-} :SOMParser
+} ::SOMParser
 `);

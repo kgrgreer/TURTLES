@@ -205,6 +205,7 @@ var scope = {
     var s = scope;
     code.push(() => {
       var oldScope = scope, key = stack.pop();
+      if ( ! s[key] ) { console.log('Key not found in ??: ', key); debugger; }
       scope = s; s[key]({push: f => f()}); scope = oldScope;
     });
   },
