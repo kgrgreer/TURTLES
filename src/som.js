@@ -33,11 +33,7 @@ scope.eval$(`
 
   unarySelector: { o | o .identifier } ;
 
-  // binarySelector '|,-=~&*/\+><@.
-  binarySelector: { o | [
-    o .Or  o .Comma o .Minus o .Equal o .Not o .And o .Star o .Div
-    o .Mod o .Plus  o .More  o .Less  o .At  o .Per o .OperatorSequence
-  ] } ;
+  binarySelector: { o | o .OperatorSequence } ;
 
   identifier: { o | [ o .STPrimitive o .Identifier ] alt } ;
 
@@ -90,17 +86,17 @@ scope.eval$(`
 
   literal: { o | [ o .literalArray o .literalSymbol o .literalString o .literalNumber ] alt } ;
 
-  literalArray: { o | [ '# o '( o .literal star ') ] 2 seq1 } ;
+  literalArray: { o | [ '# '( { | o .literal () } star ') ] 2 seq1 } ;
 
   literalNumber: { o | o .Number } ;
 
-  literalSymbol: { o | [ '# [ o .string o .selector ] alt ] 1 seq1 } ;
+  literalSymbol: { o | [ '# [ o .string o .selector ] alt ] 1 seq1 tok } ;
 
   literalString: { o | o .STString } ;
 
-  selector: { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt } ;
+  selector: { o | [ o .binarySelector o .keywordSelector  o .unarySelector ] alt } ;
 
-  keywordSelector: { o | [ o .Keyword o .KeywordSequence ] alt } ;
+  keywordSelector: { o | o .KeywordSequence } ;
 
   string: { o | o .STString } ;
 
@@ -108,7 +104,7 @@ scope.eval$(`
 
   blockPattern: { o | [ o .blockArguments '| ] 0 seq1 } ;
 
-  blockArguments: { o | [ ': o .argument ] 1 seq1 plus } ;
+  blockArguments: { o | [ ': o .argument ] seq1 &join mapp plus } ;
 
   Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] seq &join mapp opt ] seq { | { i | i } filter join } mapp tok } ;
 
@@ -139,15 +135,9 @@ scope.eval$(`
   At:       { o | '@  lit } ;
   Per:      { o | '%  lit } ;
 
-  OperatorSequence: { o | '~&|*/\+<>,@.-= anyChar } ;
-  /*
-  OperatorSequence: { o | [
-    o .Not  o .And  o .Or    o .Star o .Div o .Mod   o .Plus
-    o .More o .Less o .Comma o .At   o .Per o .Minus o .Equal
-  ] alt plus } ;
-  */
+  OperatorSequence: { o | '~&|*/\+<>,@.-= anyChar plus } ;
 
-  Keyword: { o | [ o .Identifier " :" ] 0 seq1 tok } ;
+  Keyword: { o | [ o .Identifier " :" ] seq &join mapp tok } ;
 
   KeywordSequence: { o | o .Keyword plus } ;
 

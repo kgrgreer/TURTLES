@@ -14,46 +14,62 @@ SOMParser :som
     " Input: " src nl
     " Output: " result { | result .toString } { | result } ifelse
   ] join print
-} ::testSym
+} ::;;
 
 
-'Equal '= testSym
+'Equal '= ;;
 
-'Comment '""thisisacomment"" testSym
+'Comment '""thisisacomment"" ;;
 
-'OperatorSequence '~ testSym
-'OperatorSequence '& testSym
-'OperatorSequence '| testSym
-'OperatorSequence '* testSym
-'OperatorSequence '/ testSym
-'OperatorSequence '! testSym
+'OperatorSequence '~ ;;
+'OperatorSequence '& ;;
+'OperatorSequence '| ;;
+'OperatorSequence '* ;;
+'OperatorSequence '/ ;;
+'OperatorSequence '! ;;
 
-'STStringChar 'A testSym
-'STStringChar '" testSym
-'STStringChar '' testSym
+'STStringChar 'A ;;
+'STStringChar '" ;;
+'STStringChar '' ;;
 
-'STString " 'a string'" testSym
+'STString " 'a string'" ;;
 
-'Num '0 testSym
-'Num '9 testSym
-'Num 'a testSym
+'Num '0 ;;
+'Num '9 ;;
+'Num 'a ;;
 
-'AlphaNum '0 testSym
-'AlphaNum '9 testSym
-'AlphaNum 'a testSym
+'AlphaNum '0 ;;
+'AlphaNum '9 ;;
+'AlphaNum 'a ;;
 
-'Identifier " identifier " testSym
-'Identifier 'testing123 testSym
+'Identifier " identifier " ;;
+'Identifier 'testing123 ;;
 
-'Separator '--- testSym
-'Separator '---- testSym
-'Separator '----- testSym
+'Separator '--- ;;
+'Separator '---- ;;
+'Separator '----- ;;
 
-'Number '1 testSym
-'Number '10 testSym
-'Number '10.2 testSym
-'Number '-2 testSym
+'Number '1 ;;
+'Number '10 ;;
+'Number '10.2 ;;
+'Number '-2 ;;
 
-'Keyword " testing: " testSym
+'Keyword " testing: " ;;
 
+'identifier 'identifier ;;
+
+'unarySelector   'identifier ;;
+'binarySelector  '= ;;
+'KeywordSequence " keyword1:keyword2: " ;;
+'keywordSelector " keyword1:keyword2: " ;;
+'unarySelector   " symbol " ;;
+'selector        " symbol " ;;
+
+'literalSymbol '#symbol ;;
+'literalNumber '1 ;;
+'literal '1 ;;
+
+'literalArray " #( 1 2 )" ;;
+'literal " #( 1 2 )" ;;
+'literal " #( 1 2 'string' #(#a #b))" ;;
 `);
