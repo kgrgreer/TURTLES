@@ -110,7 +110,7 @@ scope.eval$(`
 
   blockArguments: { o | [ ': o .argument ] 1 seq1 plus } ;
 
-  Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] 1 seq1 opt ] seq tok } ;
+  Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] seq &join mapp opt ] seq { | { i | i } filter join } mapp tok } ;
 
   Alpha: { o | [ 'a 'z range 'A 'Z range ] alt } ;
 

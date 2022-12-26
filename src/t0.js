@@ -48,7 +48,7 @@ var scope = {
       console.log('***************************************************************', sym);
       code.push(() => stack.push(sym));
     } else if ( line.charAt(0) >= '0' && line.charAt(0) <= '9' || ( line.charAt(0) == '-' && line.length > 1 ) ) {
-      code.push(() => stack.push(Number.parseFloat(line)));
+      code.push(() => stack.push(scope.parseFloat_(line)));
     } else if ( line.startsWith("'") ) {
       var s = line.substring(1);
       code.push(() => stack.push(s));
@@ -157,6 +157,8 @@ var scope = {
     stack.pop(); // remove arrayStart
     stack.push(a);
   }),
+  parseFloat_: Number.parseFloat,
+  parseFloat: fn(() => stack.push(scope.parseFloat_(stack.pop()))),
   debugger:  fn(() => {debugger;}),
   print:     fn(() => console.log('' + stack.pop())),
   if:        fn(() => { var block = stack.pop(); var cond = stack.pop(); if ( cond ) block(); }),
