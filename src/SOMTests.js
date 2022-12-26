@@ -5,8 +5,9 @@ SOMParser :som
 
 { sym src
   let
-    src "  " + 0 false false PStream :ps
-    ps sym som .call ()       :result
+    som                              :parser
+    src "  " + 0 false som .ignore PStream :ps
+    ps sym parser .call ()           :result
   |
   [
     nl
@@ -69,7 +70,8 @@ SOMParser :som
 'literalNumber '1 ;;
 'literal '1 ;;
 
-'literalArray " #( 1 2 )" ;;
+'literalArray " #(12)" ;;
+'literalArray " #(1 2)" ;;
 'literal " #( 1 2 )" ;;
 'literal " #( 1 2 'string' #(#a #b))" ;;
 `);
