@@ -11,7 +11,7 @@ SOMParser :som
   |
   [
     nl
-    " Testing SOMParser Symbol: " sym nl
+    " Symbol: " sym nl
     " Input: " src nl
     " Output: " result { | result .toString } { | result } ifelse
   ] join print
@@ -74,4 +74,14 @@ SOMParser :som
 'literalArray " #(1 2)" ;;
 'literal " #( 1 2 )" ;;
 'literal " #( 1 2 'string' #(#a #b))" ;;
+'literal '1 ;;
+
+'variable 'a ;;
+
+// 'primary 'a ;;
+'literal '1 ;;
+'literal '2 ;;
+'primary '10 ;;
+
+'Done print
 `);

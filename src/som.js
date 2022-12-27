@@ -63,13 +63,13 @@ scope.eval$(`
 
   evaluation: { o | [ o .primary o .messages opt ] seq } ;
 
-  primary: { o | [ o .variable o .nestedTerm o .nestedBlock o .literal ] alt } ;
+  primary: { o | [ o .variable { | o .nestedTerm () } o .nextedBlock o .literal ] alt } ;
 
   variable: { o | o .identifier } ;
 
   messages: { o | [
     [ o .unaryMessage plus o .binaryMessage star o .keywordMessage opt ] seq
-    [ o .binaryMessage plus o .keywordMessaget opt ] seq
+    [ o .binaryMessage plus o .keywordMessage opt ] seq
     o .keywordMessage
   ] alt } ;
 
@@ -85,7 +85,7 @@ scope.eval$(`
 
   nestedTerm: { o | [ '( o .expression o ') ] 1 seq1 } ;
 
-  literal: { o | [ o .literalArray o .literalSymbol o .literalString o .literalNumber ] alt } ;
+  literal: { o | [ { | o .literalArray () } o .literalSymbol o .literalString o .literalNumber ] alt } ;
 
   literalArray: { o | [ '# '( { | o .literal () } star ') ] 2 seq1 } ;
 
