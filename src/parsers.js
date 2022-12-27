@@ -5,11 +5,18 @@ scope.eval$(`
   { m |
     m switch
       'parse  { parser this | this parser () }
-      'parseToken { parser this
-        let this .ignoreOff parser () :result |
-        result
-          { | ignore result .ignoreOn }
-          { | result }
+      'parseToken { parser this |
+        ignore
+          {
+            let this .ignoreOff parser () :result |
+            result
+              { | ignore result .ignoreOn }
+              { | result }
+            ifelse
+          }
+          { |
+            this parser ()
+          }
         ifelse
       }
       'ignoreOff { this | str pos value false PStream }

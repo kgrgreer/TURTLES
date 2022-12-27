@@ -2,6 +2,7 @@
 scope.eval$(`
 // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
 { let
+
   program: { o | o .classdef plus } ;
 
   classdef: { o | [
@@ -146,11 +147,11 @@ scope.eval$(`
 
   STString: { o | [ '' o .STStringChar star '' ] 1 seq1 &join mapp } ;
 
-  Comment: { o | [ '" '" notChars star '" ] 1 seq1 } ;
+  Comment: { o | [ '" '" notChars star '" ] 1 seq1 tok } ;
 
-  Whitespace: [ tab cr nl "  " ] alt plus ;
+  Whitespace: { o | [ tab cr nl "  " ] alt plus tok } ;
 
-  ignore: { o | [ o .space  o .comment ] alt plus tok } ;
+  ignore: { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
 
   | { | ?? }
 } ::SOMParser

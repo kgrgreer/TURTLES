@@ -56,7 +56,7 @@ var scope = {
       console.log('Warning: Unknown Symbol or Forward Reference "' + line + '" at:', scope.input.substring(scope.ip, scope.ip+40).replaceAll('\n', '\\n'), ' ...');
       if ( line === '' ) debugger;
       code.push(() => {
-        if ( typeof scope[line] !== 'function' ) console.log('Error, invalid symbol: ', line);
+        if ( typeof scope[line] !== 'function' ) { console.error('Error, invalid symbol: ', line); debugger; }
         scope[line]({ push: f => f()})
       });
     }
@@ -272,6 +272,8 @@ TODO:
   - Add a recursive array toString method
   - Fix associativeness of ** and ? operators
   - exceptions?
+  - Don't use exceptions for returns
+  - Make parsers be methods rather than functions, or, store 'this' on ps?
 
 BUGS:
   - Can't update global variables inside of blocks

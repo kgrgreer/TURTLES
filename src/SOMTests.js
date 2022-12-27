@@ -5,9 +5,9 @@ SOMParser :som
 
 { sym src
   let
-    som                              :parser
+    som                                    :parser
     src "  " + 0 false som .ignore PStream :ps
-    ps sym parser .call ()           :result
+    ps sym parser .call ()                 :result
   |
   [
     nl
