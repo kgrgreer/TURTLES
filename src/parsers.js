@@ -20,7 +20,7 @@ scope.eval$(`
         ifelse
       }
       'ignoreOff { this | str pos value false PStream }
-      'ignoreOn { ignore this | str pos value ignore PStream }
+      'ignoreOn { ignore this | str pos value ignore PStream .maybeIgnore }
       'pos    { this | pos }
       'head   { this |
 //         [ " pos: " pos " , head-> " str pos charAt ] join print

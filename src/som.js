@@ -140,7 +140,7 @@ scope.eval$(`
 
   Keyword: { o | [ o .Identifier " :" ] seq &join mapp tok } ;
 
-  KeywordSequence: { o | o .Keyword plus } ;
+  KeywordSequence: { o | o .Keyword plus tok } ;
 
   // Javascript string escaping is messing this up
   STStringChar: { o | [ '\\b '\\n '\\r '\\f '\\0 '\\' '\\\\ '' notChars ] alt } ;
