@@ -9,15 +9,12 @@ SOMParser :som
     src "  " + 0 false som .ignore PStream :ps
     ps sym parser .call ()                 :result
   |
-  [
-    nl
-    " Symbol: " sym nl
-    " Input: " src nl
-    " Output: " result { | result .toString } { | result } ifelse
-  ] join print
+  " Symbol: " sym + print
+  " Input: "  src + print
+  " Output: " result { | result .toString } { | false } ifelse + print
 } ::;;
 
-
+/*
 'Equal '= ;;
 
 'Comment '""thisisacomment"" ;;
@@ -78,10 +75,27 @@ SOMParser :som
 
 'variable 'a ;;
 
-// 'primary 'a ;;
 'literal '1 ;;
 'literal '2 ;;
 'primary '10 ;;
+
+'unarySelector 'foo ;;
+'unaryMessage 'foo ''
+
+'unaryPattern 'foo ;;
+'unaryMessage 'foo ;;
+
+'primary '10  ;;
+'binaryOperand '10ab  ;;
+'binaryOperand '10  ;;
+
+'formula '10+2 ;;
+*/
+'result '5 ;;
+'blockBody " ^5" ;;
+'blockContents " ^5" ;;
+'methodBlock " () " ;;
+// 'method " foobar = ( )" ;;
 
 'Done print
 `);

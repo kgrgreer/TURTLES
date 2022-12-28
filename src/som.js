@@ -3,6 +3,8 @@ scope.eval$(`
 // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
 { let
 
+  call:   { m o | o m o () () } ;
+
   program: { o | o .classdef plus } ;
 
   classdef: { o | [
@@ -20,7 +22,7 @@ scope.eval$(`
 
   fields: { o | [ '| o .variable star '| ] seq opt } ;
 
-  method: { o | [ o .pattern '= [ o .StPrimitive o .methodBlock ] alt ] seq } ;
+  method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
 
   pattern: { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt } ;
 
@@ -36,22 +38,25 @@ scope.eval$(`
 
   binarySelector: { o | o .OperatorSequence } ;
 
-  identifier: { o | [ o .STPrimitive o .Identifier ] alt } ;
+  identifier: { o | [ o .STPrimitive { | o .Identifier () } ] alt } ;
 
   keyword: { o | o .Keyword } ;
 
   argument: { o | o .variable } ;
 
-  blockContents: { o | [ [ '| o .localDefs '| ] 1 seq1 opt ] o .blockBody ] seq } ;
+  blockContents: { o | [ [ '| o .localDefs '| ] 1 seq1 opt { | o .blockBody () } ] seq } ;
 
   localDefs: { o | o .variable star } ;
 
   blockBody: { o | [
-    [ '^ o .result ] seq
-    [ [ o .expression [ '. o .blockBody opt ] ] seq opt
+    [ '^ { | o .result () } ] 1 seq1
+    [
+      { | o .expression () }
+      [ '. { | o .blockBody () } opt ] seq opt
+    ] seq
   ] alt } ;
 
-  result: { o | [ o .expression '. opt ] seq } ;
+  result: { o | [ o .expression '. lit opt ] seq } ;
 
   expression: { o | [ o .assignation o .evaluation ] alt } ;
 
@@ -63,12 +68,12 @@ scope.eval$(`
 
   evaluation: { o | [ o .primary o .messages opt ] seq } ;
 
-  primary: { o | [ o .variable { | o .nestedTerm () } o .nextedBlock o .literal ] alt } ;
+  primary: { o | [ o .variable { | o .nestedTerm () } { | o .nestedBlock () } { | o .literal () } ] alt } ;
 
   variable: { o | o .identifier } ;
 
   messages: { o | [
-    [ o .unaryMessage plus o .binaryMessage star o .keywordMessage opt ] seq
+    [ o .unaryMessage  plus o .binaryMessage star o .keywordMessage opt ] seq
     [ o .binaryMessage plus o .keywordMessage opt ] seq
     o .keywordMessage
   ] alt } ;
@@ -81,11 +86,11 @@ scope.eval$(`
 
   keywordMessage: { o | [ o .keyword o .formula ] seq plus } ;
 
-  formula: { o | [ o .binaryOperand o .binaryMessage star ] seq } ;
+  formula: { o | [ o .binaryOperand { | o .binaryMessage () } star ] seq } ;
 
   nestedTerm: { o | [ '( o .expression o ') ] 1 seq1 } ;
 
-  literal: { o | [ { | o .literalArray () } o .literalSymbol o .literalString o .literalNumber ] alt } ;
+  literal: { o | [ o .literalArray o .literalSymbol  o .literalString  o .literalNumber ] alt } ;
 
   literalArray: { o | [ '# '( { | o .literal () } star ') ] 2 seq1 } ;
 
@@ -101,13 +106,15 @@ scope.eval$(`
 
   string: { o | o .STString } ;
 
-  nestedBlock: { o | [ '[ o .blockPattern opt o .blockContents opt '] ] seq } ;
+  nestedBlock: { o | [ '[ { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
 
   blockPattern: { o | [ o .blockArguments '| ] 0 seq1 } ;
 
   blockArguments: { o | [ ': o .argument ] seq1 &join mapp plus } ;
 
-  Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] seq &join mapp opt ] seq { | { i | i } filter join } mapp tok } ;
+  Number: { o | [ '- lit opt o .Num plus /* [ '. o .Num plus ] seq opt */ ] seq tok } ;
+
+//  Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] seq &join mapp opt ] seq { | { i | i } filter join } mapp tok } ;
 
   Alpha: { o | [ 'a 'z range 'A 'Z range ] alt } ;
 
@@ -151,9 +158,9 @@ scope.eval$(`
 
   Whitespace: { o | [ tab cr nl "  " ] alt plus tok } ;
 
-  ignore: { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
+   ignore: { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
 
-  | { | ?? }
+  | { m | m ?? }
 } ::SOMParser
 `);
 

@@ -22,6 +22,7 @@ var scope = {
   },
   eval: code => { code.push(() => scope.eval$(stack.pop())); },
   evalSym: function(line, code) {
+    // console.log('********line', line);
     var sym = scope[line];
     if ( sym ) { sym(code); }
     else if ( line.startsWith('.') ) {
@@ -45,7 +46,7 @@ var scope = {
       code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
     } else if ( line.endsWith(':') ) {
       var sym = line.substring(0, line.length-1);
-      console.log('***************************************************************', sym);
+      // console.log('***************************************************************', sym);
       code.push(() => stack.push(sym));
     } else if ( line.charAt(0) >= '0' && line.charAt(0) <= '9' || ( line.charAt(0) == '-' && line.length > 1 ) ) {
       code.push(() => stack.push(scope.parseFloat_(line)));
@@ -201,7 +202,7 @@ var scope = {
     scope[sym] = (code) => code.push(() => stack.push(value))}) },
   '%':       fn(() => stack.push(stack.pop() / 100)),
   '()':      fn(() => { var f = stack.pop();
-   //  console.log('running: ', f.toString());
+     // console.log('running: ', f.toString());
     if ( typeof f !== 'function' )
       console.error('Error: "' + f + '" not a function.');
       f(); }),
