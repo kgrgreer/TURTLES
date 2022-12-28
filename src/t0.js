@@ -166,7 +166,7 @@ var scope = {
   while:     fn(() => { var block = stack.pop(), cond = stack.pop(); while ( true ) { cond(); if ( ! stack.pop() ) break; block(); } }),
   const:     fn(() => { var sym = stack.pop(), value = stack.pop(); scope[sym] = fn(() => { stack.push(value); }); }),
   mod:       bfn((a, b) => a % b),
-  charAt:    bfn((s, i) => i < s.length ? s.charAt(i) : 'EOF'),
+  charAt:    bfn((s, i) => i < s.length ? s.charAt(i) : null),
   charCode:  fn(() => stack.push(String.fromCharCode(stack.pop()))),
   indexOf:   bfn((s, p) => s.indexOf(p)),
   len:       fn(() => { stack.push(stack.pop().length); }),
@@ -203,7 +203,8 @@ var scope = {
   '()':      fn(() => { var f = stack.pop();
    //  console.log('running: ', f.toString());
     if ( typeof f !== 'function' )
-      console.error('Error: "' + f + '" not a function.'); f(); }),
+      console.error('Error: "' + f + '" not a function.');
+      f(); }),
   '??':      code => {
     var s = scope;
     code.push(() => {
