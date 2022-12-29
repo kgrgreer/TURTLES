@@ -8,19 +8,20 @@ scope.eval$(`
   program: { o | o .classdef plus } ;
 
   classdef: { o | [
-    o .identifier '= o .superclass
-    o .instanceFields o .method star
-    [ o .Separator o .classFields o .method star ] seq opt
+    o .identifier '= o .superclass '(
+      o .instanceFields
+      o .method star
+      [ o .Separator o .classFields o .method star ] seq opt
     ')
   ] seq } ;
 
-  superclass: { o | [ o .Identifier opt '( ] seq } ;
+  superclass: { o | o .Identifier opt } ;
 
   instanceFields: { o | o .fields } ;
 
   classFields: { o | o .fields } ;
 
-  fields: { o | [ '| o .variable star '| ] seq opt } ;
+  fields: { o | [ '| o .variable star '| ] 1 seq1 opt } ;
 
   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
 

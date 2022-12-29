@@ -10,7 +10,7 @@ SOMParser :som
     ps sym parser .call ()                 :result
   |
   " Symbol: " sym + print
-  " Input: "  src + print
+  " Input:  " src + print
   " Output: " result { | result .toString } { | false } ifelse + print
 } ::;;
 
@@ -95,7 +95,16 @@ SOMParser :som
 'blockBody " ^5" ;;
 'blockContents " ^5" ;;
 'methodBlock " () " ;;
-// 'method " foobar = ( )" ;;
+'method " foobar = ( )" ;;
+
+'classdef " ColourBall = Ball
+  (
+    | colour |
+    toString = ( )
+    ----
+    aMethod = ()
+  )
+" ;;
 
 'Done print
 `);
