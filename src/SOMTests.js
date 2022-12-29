@@ -1,7 +1,8 @@
 scope.eval$(`
 " SOM Parser Tests" section
 
-SOMParser :som
+// SOMParser :som
+SOMCompiler :som
 
 { sym src
   let

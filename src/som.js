@@ -163,6 +163,13 @@ scope.eval$(`
 
   | { m | m ?? }
 } ::SOMParser
-`);
 
-//   STStringChar: { o | '' notChars } ;
+
+{ | { let SOMParser :super |
+  { m | m switch
+    'super      { m o | o m super () () () }
+    { | m super () () }
+  end }
+} () } ::SOMCompiler
+
+`);
