@@ -106,5 +106,7 @@ SOMParser :som
   )
 " ;;
 
+'method
+" plus = ( | a b | ^ a + b )" ;;
 'Done print
 `);
