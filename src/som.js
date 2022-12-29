@@ -50,12 +50,14 @@ scope.eval$(`
   localDefs: { o | o .variable star } ;
 
   blockBody: { o | [
-    [ '^ { | o .result () } ] 1 seq1
     [
-      { | o .expression () }
+      o .blockBodyReturn
+      o .expression
       [ '. { | o .blockBody () } opt ] seq opt
     ] seq
   ] alt } ;
+
+  blockBodyReturn: { o |  [ '^ { | o .result () } ] 1 seq1 } ;
 
   result: { o | [ o .expression '. lit opt ] seq } ;
 
