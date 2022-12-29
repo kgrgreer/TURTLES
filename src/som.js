@@ -33,7 +33,7 @@ scope.eval$(`
 
   keywordPattern: { o | [ o .keyword o .argument ] seq plus } ;
 
-  methodBlock: { o | [ '( o .blockContents opt ') ] seq } ;
+  methodBlock: { o | [ '( o .blockContents opt ') ] 1 seq1 } ;
 
   unarySelector: { o | o .identifier } ;
 
@@ -168,6 +168,15 @@ scope.eval$(`
 { | { let SOMParser :super |
   { m | m switch
     'super      { m o | o m super () () () }
+    //   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
+    'method { | m super { a | a debugger
+      [
+        '' a 0 @ "  { "
+        a 2 @ 0 @ { i | i "  " + } map join
+        " | "
+        a 2 @ 1 @
+        " } "
+      ] join } action }
     { | m super () () }
   end }
 } () } ::SOMCompiler

@@ -96,6 +96,9 @@ scope.eval$(`
 { str | { ps | str ps .head indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar
 
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
+
+{ o m super f | { ps | o m super () () f mapp ps .parse } } ::action
+
 `);
 
 // Access to current input:

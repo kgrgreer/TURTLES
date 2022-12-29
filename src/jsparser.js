@@ -9,8 +9,6 @@ scope.eval$(`
   v 1 @ { | "  " v 1 @ 1 @ "  " v 1 @ 0 @ + + + + } if
 } :infix // convert an infix operator to postfix
 
-{ o m super f | { ps | o m super () () f mapp ps .parse } } ::action
-
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
 

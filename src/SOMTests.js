@@ -91,7 +91,7 @@ SOMCompiler :som
 'binaryOperand '10  ;;
 
 'formula '10+2 ;;
-*/
+
 'result '5 ;;
 'blockBody " ^5" ;;
 'blockContents " ^5" ;;
@@ -106,6 +106,8 @@ SOMCompiler :som
     aMethod = ()
   )
 " ;;
+
+*/
 
 'method
 " plus = ( | a b | ^ a + b )" ;;
