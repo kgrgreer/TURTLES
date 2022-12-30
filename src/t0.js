@@ -239,7 +239,6 @@ scope.eval$(`
 { a f | [ a f forEach ] } ::map
 { a v f | v a f forEach } ::reduce
 { a p | [  a { c | c p () { | c } if } forEach ] } ::filter
-
 { a | " " a { c | c + } forEach } ::join
 
 // A helper function for displaying section titles

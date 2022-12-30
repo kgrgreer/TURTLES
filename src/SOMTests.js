@@ -10,6 +10,7 @@ SOMCompiler :som
     src "  " + 0 false som .ignore PStream :ps
     ps sym parser .call ()                 :result
   |
+  nl print
   " Symbol: " sym + print
   " Input:  " src + print
   " Output: " result { | result .toString } { | false } ifelse + print
@@ -109,7 +110,13 @@ SOMCompiler :som
 
 */
 
-'method
-" plus = ( | a b | ^ a + b )" ;;
+'result " a+b" ;;
+'expression " a+b" ;;
+'evaluation " a+b" ;;
+'blockBodyReturn " ^ a+b" ;;
+'blockBody " ^ a+b" ;;
+'blockContents " | a b | ^ a + b" ;;
+'methodBlock " ( | a b | ^ a + b )" ;;
+'method " plus = ( | a b | ^ a + b )" ;;
 'Done print
 `);

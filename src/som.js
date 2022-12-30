@@ -1,5 +1,7 @@
 
 scope.eval$(`
+{ a | a ! { | " " <- } if a { i | i } filter { i | "  " i + } map join } ::joins // join, space separated, removing false values
+
 // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
 { let
 
@@ -50,16 +52,16 @@ scope.eval$(`
   localDefs: { o | o .variable star } ;
 
   blockBody: { o | [
+    { | o .blockBodyReturn () }
     [
-      o .blockBodyReturn
-      o .expression
+      { | o .expression () }
       [ '. { | o .blockBody () } opt ] seq opt
     ] seq
   ] alt } ;
 
-  blockBodyReturn: { o |  [ '^ { | o .result () } ] 1 seq1 } ;
+  blockBodyReturn: { o |  [ '^ o .result ] 1 seq1 } ;
 
-  result: { o | [ o .expression '. lit opt ] seq } ;
+  result: { o | [ o .expression '. lit opt ] 0 seq1 } ;
 
   expression: { o | [ o .assignation o .evaluation ] alt } ;
 
@@ -76,8 +78,8 @@ scope.eval$(`
   variable: { o | o .identifier } ;
 
   messages: { o | [
-    [ o .unaryMessage  plus o .binaryMessage star o .keywordMessage opt ] seq
-    [ o .binaryMessage plus o .keywordMessage opt ] seq
+    [ o .unaryMessage  plus o .binaryMessage star &joins mapp o .keywordMessage opt ] seq &joins mapp
+    [ o .binaryMessage plus &joins mapp o .keywordMessage opt ] seq &joins mapp
     o .keywordMessage
   ] alt } ;
 
@@ -87,7 +89,7 @@ scope.eval$(`
 
   binaryOperand: { o | [ o .primary o .unaryMessage star ] seq } ;
 
-  keywordMessage: { o | [ o .keyword o .formula ] seq plus } ;
+  keywordMessage: { o | [ o .keyword o .formula ] seq &joins mapp plus } ;
 
   formula: { o | [ o .binaryOperand { | o .binaryMessage () } star ] seq } ;
 
@@ -174,11 +176,26 @@ scope.eval$(`
     'method { | m super { a | a debugger
       [
         '' a 0 @ "  { "
-        a 2 @ 0 @ { i | i "  " + } map join
-        " | "
+        a 2 @ 0 @ joins
+        "  | "
         a 2 @ 1 @
-        " } "
+        "  } "
       ] join } action }
+    'blockBodyReturn { | m super { a | a "  <-" + } action }
+    'unaryMessage { | m super { a | "  " a + } action }
+    'binaryMessage { | m super { a | a 1 @ "  " a 0 @ + + } action }
+    'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
+    'evaluation { | m super { a | a joins } action }
+
+   // 'evaluation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
+    'assignation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
+    'assignment { | m super { a | "  :" a + } action }
+    'messages { | m super { a | a } action }
+    /*
+    'result { | m super { a |
+      a debugger
+    } action }
+    */
     { | m super () () }
   end }
 } () } ::SOMCompiler
