@@ -191,6 +191,7 @@ scope.eval$(`
     'assignation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
     'assignment { | m super { a | "  :" a + } action }
     'messages { | m super { a | a } action }
+    'STString { | m super { a | [ '" "  " a '" ] join } action }
     'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
     'classdef { | m super { a |
       [
