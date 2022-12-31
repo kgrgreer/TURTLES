@@ -165,7 +165,7 @@ scope.eval$(`
 
    ignore: { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
 
-  | { m | m ?? }
+  | { m | m print m ?? }
 } ::SOMParser
 
 
@@ -175,13 +175,13 @@ scope.eval$(`
     //   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
     'method { | m super { a | a debugger
       [
-        '' a 0 @ "  { "
+        '' a 0 @ "  { :--- "
         a 2 @ 0 @ joins
         "  | "
         a 2 @ 1 @
         "  } "
       ] join } action }
-    'blockBodyReturn { | m super { a | a "  <-" + } action }
+    'blockBodyReturn { | m super { a | a "  ---<-" + } action }
     'unaryMessage { | m super { a | "  " a + } action }
     'binaryMessage { | m super { a | a 1 @ "  " a 0 @ + + } action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }

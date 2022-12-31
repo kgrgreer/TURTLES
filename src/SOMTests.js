@@ -99,15 +99,6 @@ SOMCompiler :som
 'methodBlock " () " ;;
 'method " foobar = ( )" ;;
 
-'classdef " ColourBall = Ball
-  (
-    | colour |
-    toString = ( )
-    ----
-    aMethod = ()
-  )
-" ;;
-
 */
 
 'result " a+b" ;;
@@ -118,5 +109,15 @@ SOMCompiler :som
 'blockContents " | a b | ^ a + b" ;;
 'methodBlock " ( | a b | ^ a + b )" ;;
 'method " plus = ( | a b | ^ a + b )" ;;
+'classdef " ColourBall = Ball
+  (
+    | colour |
+    toString = ( ^ 'foo' )
+    ----
+    aMethod = (^ 4 )
+  )
+" ;;
+
+
 'Done print
 `);
