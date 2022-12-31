@@ -173,7 +173,7 @@ scope.eval$(`
   { m | m switch
     'super      { m o | o m super () () () }
     //   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
-    'method { | m super { a | a debugger
+    'method { | m super { a |
       [
         '' a 0 @ "  { :--- "
         a 2 @ 0 @ joins
@@ -191,13 +191,19 @@ scope.eval$(`
     'assignation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
     'assignment { | m super { a | "  :" a + } action }
     'messages { | m super { a | a } action }
+    'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
     'classdef { | m super { a |
       [
-        "  { " nl
-        a 4 @ nl
-        "  |" nl
-        a 5 @ nl
-        "  } " " :" a 0 @ nl
+        nl
+        " { | { " nl
+        "   " a 4 @ nl
+        "   let " a 2 @ "  :super |" nl
+        "   { m | m switch" nl
+        "     'super      { m o | o m super () () () }" nl
+//        a 5 @ nl
+        "     { | m super () () }" nl
+        "   end }" nl
+        " } () } :" a 0 @ nl
       ] join
     } action }
     /*
