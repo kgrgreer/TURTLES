@@ -175,7 +175,7 @@ scope.eval$(`
     //   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
     'method { | m super { a |
       [
-        '' a 0 @ "  { :--- "
+        "     '" a 0 @ "  { :--- "
         a 2 @ 0 @ joins
         "  | "
         a 2 @ 1 @
@@ -199,8 +199,8 @@ scope.eval$(`
         "   " a 4 @ nl
         "   let " a 2 @ "  :super |" nl
         "   { m | m switch" nl
-        "     'super      { m o | o m super () () () }" nl
-//        a 5 @ nl
+        "     'super { m o | o m super () () () }" nl
+        a 5 @ 0 @ nl
         "     { | m super () () }" nl
         "   end }" nl
         " } () } :" a 0 @ nl
