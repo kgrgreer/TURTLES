@@ -191,6 +191,15 @@ scope.eval$(`
     'assignation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
     'assignment { | m super { a | "  :" a + } action }
     'messages { | m super { a | a } action }
+    'classdef { | m super { a |
+      [
+        "  { " nl
+        a 4 @ nl
+        "  |" nl
+        a 5 @ nl
+        "  } " " :" a 0 @ nl
+      ] join
+    } action }
     /*
     'result { | m super { a |
       a debugger
