@@ -193,6 +193,7 @@ scope.eval$(`
     'assignment { | m super { a | "  :" a + } action }
     'messages { | m super { a | a } action }
     'instanceFields { | m super { a | a joins } action }
+    'classFields { | m super { a | a joins } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }
     'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
     'program { | m super { a | a nl joinWith } action }
@@ -201,14 +202,23 @@ scope.eval$(`
         nl
         " { | { " nl
         "   " a 4 @ nl
-        "   let " a 2 @ "  :super |" nl
+        "   let " a 2 @ " _ :super |" nl
         "   { m | m switch" nl
         "     'super { m o | o m super () () () }" nl
-        a debugger drop
         a 5 @ dup { | nl joinWith nl } { | drop } ifelse
         "     { | m super () () }" nl
         "   end }" nl
-        " } () } :" a 0 @ nl
+        " } () } ::" a 0 @ '_ nl
+        nl
+        a debugger drop
+        " { " nl
+        "   " a 6 @ 1 @ nl
+        "   |" nl
+        "   { m | m switch" nl
+        a 6 @ 3 @ dup { | nl joinWith nl } { | drop } ifelse
+        "     { | m super () () }" nl
+        "   end }" nl
+        " } :" a 0 @ nl
       ] join
     } action }
     /*
