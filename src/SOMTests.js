@@ -109,11 +109,14 @@ SOMCompiler :som
 'blockContents " | a b | ^ a + b" ;;
 'methodBlock " ( | a b | ^ a + b )" ;;
 'method " plus = ( | a b | ^ a + b )" ;;
-'classdef " ColourBall = Ball
+'program " Ball = ( | x y r | )
+ColourBall = Ball
   (
     | colour |
+    r = ( ^ 'bar' )
     toString = ( ^ 'foo' )
     ----
+    | a b c |
     aMethod = (^ 4 )
   )
 " ;;

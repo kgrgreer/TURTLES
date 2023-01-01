@@ -1,6 +1,8 @@
 
 scope.eval$(`
-{ a | a ! { | " " <- } if a { i | i } filter { i | "  " i + } map join } ::joins // join, space separated, removing false values
+  // TODO: don't include in first
+{ a w let true :first | a ! { | " " <- } if a { i | i } filter { i | first { | false :first i } { | w i + } ifelse } map join } ::joinWith // join, space separated, removing false values
+{ a | a "  " joinWith } ::joins // join, space separated, removing false values
 
 // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
 { let
@@ -13,7 +15,7 @@ scope.eval$(`
     o .identifier '= o .superclass '(
       o .instanceFields
       o .method star
-      [ o .Separator o .classFields o .method star ] seq opt
+      [ o .Separator o .classFields opt o .method star ] seq opt
     ')
   ] seq } ;
 
@@ -191,8 +193,10 @@ scope.eval$(`
     'assignation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
     'assignment { | m super { a | "  :" a + } action }
     'messages { | m super { a | a } action }
+    'instanceFields { | m super { a | a joins } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }
     'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
+    'program { | m super { a | a nl joinWith } action }
     'classdef { | m super { a |
       [
         nl
@@ -201,7 +205,8 @@ scope.eval$(`
         "   let " a 2 @ "  :super |" nl
         "   { m | m switch" nl
         "     'super { m o | o m super () () () }" nl
-        a 5 @ 0 @ nl
+        a debugger drop
+        a 5 @ dup { | nl joinWith nl } { | drop } ifelse
         "     { | m super () () }" nl
         "   end }" nl
         " } () } :" a 0 @ nl
