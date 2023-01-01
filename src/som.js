@@ -210,9 +210,8 @@ scope.eval$(`
         "   end }" nl
         " } () } ::" a 0 @ '_ nl
         nl
-        a debugger drop
         " { " nl
-        "   " a 6 @ 1 @ nl
+        a 6 @ { | "   "  a 6 @ 1 @ nl } if 
         "   |" nl
         "   { m | m switch" nl
         a 6 @ 3 @ dup { | nl joinWith nl } { | drop } ifelse
