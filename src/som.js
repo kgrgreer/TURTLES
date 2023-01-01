@@ -166,7 +166,7 @@ scope.eval$(`
 
    ignore: { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
 
-  | { m | m print m ?? }
+  | { m | m ?? }
 } ::SOMParser
 
 
@@ -176,7 +176,7 @@ scope.eval$(`
     //   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
     'method { | m super { a |
       [
-        "     '" a 0 @ "  { :--- "
+        "     '" a 0 @ 0 @ "  { :--- " a 0 @ 1 @ "  "
         a 2 @ 0 @ joins
         "  | "
         a 2 @ 1 @
@@ -187,6 +187,8 @@ scope.eval$(`
     'binaryMessage { | m super { a | a 1 @ "  " a 0 @ + + } action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
     'evaluation { | m super { a | a joins } action }
+    'unaryPattern { | m super { a | [ a " " ] } action }
+    'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
 
    // 'evaluation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
     'assignation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }

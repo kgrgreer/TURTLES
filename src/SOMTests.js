@@ -109,10 +109,19 @@ SOMCompiler :som
 'blockContents " | a b | ^ a + b" ;;
 'methodBlock " ( | a b | ^ a + b )" ;;
 'method " plus = ( | a b | ^ a + b )" ;;
+'unaryPattern " foo" ;;
+'binaryPattern " + argument" ;;
+'keywordPattern " double: d" ;;
+'keywordPattern " x: x y: y" ;;
+'method " double: d = ( ^ d + d )" ;;
+'method " x: x y: y = ( ^ x * y )" ;;
+
 'program " Ball = ( | x y r | )
 ColourBall = Ball
   (
     | colour |
+    color = ( ^ color )
+    color: c = ( color := c )
     r = ( ^ 'bar' )
     toString = ( ^ 'foo' )
     ----
