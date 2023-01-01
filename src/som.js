@@ -1,6 +1,5 @@
 
 scope.eval$(`
-  // TODO: don't include in first
 { a w let true :first | a ! { | " " <- } if a { i | i } filter { i | first { | false :first i } { | w i + } ifelse } map join } ::joinWith // join, space separated, removing false values
 { a | a "  " joinWith } ::joins // join, space separated, removing false values
 
