@@ -211,8 +211,8 @@ scope.eval$(`
         " } () } ::" a 0 @ '_ nl
         nl
         " { " nl
-        a 6 @ { | "   "  a 6 @ 1 @ nl } if 
-        "   |" nl
+        a 6 @ { | "   "  a 6 @ 1 @ nl } if
+        "   let Class :super |" nl
         "   { m | m switch" nl
         a 6 @ 3 @ dup { | nl joinWith nl } { | drop } ifelse
         "     { | m super () () }" nl
