@@ -146,6 +146,23 @@ ColourBall = Ball
   )
 " ;;
 
+'method " || boolean = ( ^self )" ;;
+
+'method " || boolean = ( ^self or: boolean  )" ;;
+
+'program " Boolean = (
+
+    ifTrue: trueBlock ifFalse: falseBlock = (
+        self ifTrue:  [ ^trueBlock value  ].
+        self ifFalse: [ ^falseBlock value ].
+    )
+
+    || boolean = ( ^self or: boolean  )
+    && boolean = ( ^self and: boolean )
+
+)
+" ;;
+
 
 'Done print
 `);

@@ -145,7 +145,7 @@ scope.eval$(`
   At:       { o | '@  lit } ;
   Per:      { o | '%  lit } ;
 
-  OperatorSequence: { o | '~&|*/\+<>,@.-= anyChar plus } ;
+  OperatorSequence: { o | '~&|*/\+<>,@.-= anyChar plus &join mapp } ;
 
   Keyword: { o | [ o .Identifier " :" ] seq &join mapp tok } ;
 
