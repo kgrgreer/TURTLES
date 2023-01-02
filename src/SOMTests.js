@@ -126,6 +126,11 @@ SOMCompiler :som
 'blockBody " x := y := 0" ;;
 */
 
+'method " || boolean = ( ^self )" ;;
+'method " || boolean = ( ^self )" ;;
+'method " || boolean = ( ^self or: boolean  )" ;;
+
+debugger;
 
 'program " Ball = ( | x y r |
   center = ( x := y := 0 )
@@ -146,9 +151,6 @@ ColourBall = Ball
   )
 " ;;
 
-'method " || boolean = ( ^self )" ;;
-
-'method " || boolean = ( ^self or: boolean  )" ;;
 
 'program " Boolean = (
 
