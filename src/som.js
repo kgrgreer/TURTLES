@@ -52,15 +52,11 @@ scope.eval$(`
 
   localDefs: { o | o .variable star } ;
 
-  blockBody: { o | [
-    { | o .blockBodyReturn () }
-    [
-      { | o .expression () }
-      [ '. { | o .blockBody () } opt ] seq opt
-    ] seq
-  ] alt } ;
+  blockBody: { o | [ { | o .blockBodyReturn () } { | o .blockBodyExpression () } ] alt } ;
 
   blockBodyReturn: { o |  [ '^ o .result ] 1 seq1 } ;
+
+  blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] seq opt ] seq } ;
 
   result: { o | [ o .expression '. lit opt ] 0 seq1 } ;
 
@@ -118,9 +114,9 @@ scope.eval$(`
 
   blockArguments: { o | [ ': o .argument ] seq1 &join mapp plus } ;
 
-  Number: { o | [ '- lit opt o .Num plus /* [ '. o .Num plus ] seq opt */ ] seq tok } ;
+//  Number: { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
 
-//  Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] seq &join mapp opt ] seq { | { i | i } filter join } mapp tok } ;
+  Number: { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] seq &join mapp opt ] seq { | { i | i } filter join } mapp tok } ;
 
   Alpha: { o | [ 'a 'z range 'A 'Z range ] alt } ;
 
@@ -183,6 +179,8 @@ scope.eval$(`
         "  } "
       ] join } action }
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
+//    blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] seq opt ] seq } ;
+    'blockBodyExpression { | m super { a | a joins } action } 
     'unaryMessage { | m super { a | "  " a + } action }
     'binaryMessage { | m super { a | a 1 @ "  " a 0 @ + + } action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
@@ -191,14 +189,14 @@ scope.eval$(`
     'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
 
    // 'evaluation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
-    'assignation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
-    'assignment { | m super { a | "  :" a + } action }
+    'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
     'messages { | m super { a | a } action }
     'instanceFields { | m super { a | a joins } action }
     'classFields { | m super { a | a joins } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }
     'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
     'program { | m super { a | a nl joinWith } action }
+    'assignment { | m super { a | "  :" a + } action }
     'classdef { | m super { a |
       [
         nl

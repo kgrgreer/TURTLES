@@ -101,6 +101,11 @@ SOMCompiler :som
 
 */
 
+'Number " 0" ;;
+'literalNumber " 0" ;;
+'literal " 0" ;;
+'primary " 0" ;;
+'evaluation " 0" ;;
 'result " a+b" ;;
 'expression " a+b" ;;
 'evaluation " a+b" ;;
@@ -115,8 +120,17 @@ SOMCompiler :som
 'keywordPattern " x: x y: y" ;;
 'method " double: d = ( ^ d + d )" ;;
 'method " x: x y: y = ( ^ x * y )" ;;
+'assignation " x:=y:=0" ;;
+'method " center = ( x := y := 0 )" ;;
+'methodBlock " (x := y := 0)" ;;
+'blockContents " x := y := 0" ;;
+'blockBody " x := y := 0" ;;
 
-'program " Ball = ( | x y r | )
+debugger
+
+'program " Ball = ( | x y r |
+  center = ( x := y := 0 )
+)
 ColourBall = Ball
   (
     | colour |
