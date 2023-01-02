@@ -138,6 +138,7 @@ ColourBall = Ball
     color = ( ^ color )
     color: c = ( color := c )
     r = ( ^ 'bar' )
+    nativeMethod = primitive
     toString = ( ^ 'foo' )
     ----
     | a b c |
