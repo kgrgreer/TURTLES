@@ -167,18 +167,22 @@ ColourBall = Ball
 
 )
 " ;;
-*/
 
 'unaryPattern " foo" ;;
 'binaryPattern " + argument" ;;
 'keywordPattern " double: d" ;;
 'keywordPattern " x: x y: y" ;;
 
-// Should return [ selector, values ] 
+*/
+
+// Should return [ selector, values ]
 'unaryMessage " foo" ;;
 'binaryMessage " + 42" ;;
 'keywordMessage " double: d" ;;
-'keywordMessage " x: 5 y: 4" ;;
+'keywordMessage " x: a  y: 4" ;;
+'formula " a  y: 4" ;;
+'binaryOperand " a  y: 4" ;;
+'Identifier " a  y: 4" ;;
 
 
 'Done print

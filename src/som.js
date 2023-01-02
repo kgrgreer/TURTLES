@@ -75,12 +75,12 @@ scope.eval$(`
   variable: { o | o .identifier } ;
 
   messages: { o | [
-    [ o .unaryMessage  plus &joins mapp o .binaryMessage star &joins mapp o .keywordMessage opt ] seq
-    [ o .binaryMessage plus &joins mapp o .keywordMessage opt ] seq &joins map
+    [ o .unaryMessage  plus o .binaryMessage star o .keywordMessage opt ] seq
+    [ o .binaryMessage plus o .keywordMessage opt ] seq
     o .keywordMessage
   ] alt } ;
 
-  unaryMessage: { o | o .unarySelector } ;
+  unaryMessage: { o | o .unarySelector o .Whitespace } ;
 
   binaryMessage: { o | [ o .binarySelector o .binaryOperand ] seq } ;
 
@@ -180,8 +180,9 @@ scope.eval$(`
     'blockContents { | m super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } action }
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
     'blockBodyExpression { | m super { a | a joins } action }
-    'unaryMessage { | m super { a | "  " a + } action }
-    'binaryMessage { | m super { a | a 1 @ "  " a 0 @ + + } action }
+    'unaryMessage { | m super { a | [ a " " ] } action }
+//     'binaryMessage { | m super { a | [ a 0 @  a 1 @ ] action } // not needed
+    'formula { | m super { a | a 0 @ a 1 @ joins + } action }
     'keywordMessage { | m super { a | a [ a { i | i 0 @ } map join a { i | i 1 @ } map joins ] }  action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
     'evaluation { | m super { a | a joins } action }
