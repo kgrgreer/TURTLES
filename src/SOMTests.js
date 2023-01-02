@@ -99,7 +99,6 @@ SOMCompiler :som
 'methodBlock " () " ;;
 'method " foobar = ( )" ;;
 
-*/
 
 'Number " 0" ;;
 'literalNumber " 0" ;;
@@ -125,11 +124,13 @@ SOMCompiler :som
 'methodBlock " (x := y := 0)" ;;
 'blockContents " x := y := 0" ;;
 'blockBody " x := y := 0" ;;
+*/
 
-debugger
 
 'program " Ball = ( | x y r |
   center = ( x := y := 0 )
+  withoutLocalVars = ( a := 1 )
+  withLocalVars = ( | a b c | a := 1 )
 )
 ColourBall = Ball
   (

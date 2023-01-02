@@ -175,20 +175,18 @@ scope.eval$(`
         "     '" a 0 @ 0 @ "  { :--- " a 0 @ 1 @ "  "
         a 2 @ 0 @ joins
         "  | "
-        a 2 @ 1 @
+        a 2 @
         "  } "
       ] join } action }
+    'blockContents { | m super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } forEach " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } action }
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
-//    blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] seq opt ] seq } ;
-    'blockBodyExpression { | m super { a | a joins } action } 
+    'blockBodyExpression { | m super { a | a joins } action }
     'unaryMessage { | m super { a | "  " a + } action }
     'binaryMessage { | m super { a | a 1 @ "  " a 0 @ + + } action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
     'evaluation { | m super { a | a joins } action }
     'unaryPattern { | m super { a | [ a " " ] } action }
     'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
-
-   // 'evaluation { | m super { a | a 0 @ "  " a 1 @ joins + + } action }
     'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
     'messages { | m super { a | a } action }
     'instanceFields { | m super { a | a joins } action }
