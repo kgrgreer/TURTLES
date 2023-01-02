@@ -180,6 +180,7 @@ ColourBall = Ball
 'binaryMessage " + 42" ;;
 'keywordMessage " double: d" ;;
 'keywordMessage " x: a  y: 4" ;;
+
 'formula " a  y: 4" ;;
 'binaryOperand " a  y: 4" ;;
 'Identifier " a  y: 4" ;;

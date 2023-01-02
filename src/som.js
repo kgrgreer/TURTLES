@@ -80,7 +80,7 @@ scope.eval$(`
     o .keywordMessage
   ] alt } ;
 
-  unaryMessage: { o | o .unarySelector o .Whitespace } ;
+  unaryMessage: { o | [ o .unarySelector o .Whitespace ] 0 seq1  } ;
 
   binaryMessage: { o | [ o .binarySelector o .binaryOperand ] seq } ;
 
