@@ -124,13 +124,16 @@ SOMCompiler :som
 'methodBlock " (x := y := 0)" ;;
 'blockContents " x := y := 0" ;;
 'blockBody " x := y := 0" ;;
-*/
+
+'keywordMessage " or: true " ;;
+'messages " or: true " ;;
+
+'evaluation " true or: true " ;;
 
 'method " || boolean = ( ^self )" ;;
-'method " || boolean = ( ^self )" ;;
-'method " || boolean = ( ^self or: boolean  )" ;;
+'method " || boolean = ( ^ boolean or: boolean  )" ;;
+'expression " true or: true " ;;
 
-debugger;
 
 'program " Ball = ( | x y r |
   center = ( x := y := 0 )
@@ -164,6 +167,18 @@ ColourBall = Ball
 
 )
 " ;;
+*/
+
+'unaryPattern " foo" ;;
+'binaryPattern " + argument" ;;
+'keywordPattern " double: d" ;;
+'keywordPattern " x: x y: y" ;;
+
+// Should return [ selector, values ] 
+'unaryMessage " foo" ;;
+'binaryMessage " + 42" ;;
+'keywordMessage " double: d" ;;
+'keywordMessage " x: 5 y: 4" ;;
 
 
 'Done print
