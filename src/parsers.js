@@ -84,7 +84,7 @@ scope.eval$(`
 
 { parser delim |
   [ [ parser delim ] 0 seq1 0 repeat parser opt ] seq
-  { a | [ a 0 @  { e | e } forEach a 1 @ ] } mapp
+  { a | [ a 0 @  { e | e } do a 1 @ ] } mapp
 } ::delim
 
 { parser | { ps let parser ps .parse :ret |

@@ -356,7 +356,7 @@ auto
     'put       { newObj o | newObj Tree Tree TreeNode }
     'remove    { id o | o }
     'removeAll { o | o }
-    'forEach   { f o | }
+    'do   { f o | }
     'select    { s l f o | }
     'skip      { s o | o }
     'limit     { l o | o }
@@ -396,10 +396,10 @@ auto
       o .ifLCR_
     }
     'removeAll { o | Tree }
-    'forEach { f o | f l .forEach obj f () f r .forEach }
+    'do { f o | f l .do obj f () f r .do }
     'select { :m skip limit f o |
       limit 0 <= skip count >= | { | m<- } if
-      skip 0 <= limit count >= & { | f o .forEach m<- } if
+      skip 0 <= limit count >= & { | f o .do m<- } if
       skip limit f l .select
       skip l .count - :skip
       skip 0 < { | limit skip + :limit 0 :skip } if
@@ -436,16 +436,16 @@ auto
     50 'Jane  'Doe      User
     5  'Adam  'Smith    User
     99 'Wayne 'Gretzsky User
-  ] { u | u .toString print u tr .put :tr tr .count print } forEach
+  ] { u | u .toString print u tr .put :tr tr .count print } do
 
-  { u | " forEach: " u .toString + print } tr .forEach
+  { u | " do: " u .toString + print } tr .do
   'find print
   5 tr .find .toString print
 
-  [ { o | o .toString } tr .forEach ] print
+  [ { o | o .toString } tr .do ] print
 
-  [ { o | o .toString } 2 tr .skip  .forEach ] print
-  [ { o | o .toString } 2 tr .limit .forEach ] print
+  [ { o | o .toString } 2 tr .skip  .do ] print
+  [ { o | o .toString } 2 tr .limit .do ] print
 
   'select section
   [ 0 1000 { o | o .toString } tr .select ] print
@@ -456,9 +456,9 @@ auto
 
   'remove print
   42 tr .remove :tr tr .count print
-  [ { o | o .toString } tr .forEach ] print
+  [ { o | o .toString } tr .do ] print
   5 tr .remove :tr tr .count print
-  [ { o | o .toString } tr .forEach ] print
+  [ { o | o .toString } tr .do ] print
 } ()
 
 t .report

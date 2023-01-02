@@ -91,11 +91,11 @@ scope.eval$(`
     'expr12     { | m super infix action }
     'expr13     { | m super infix action }
     'expr15     { | m super { a | a 0 @ a 1 @ { | "  " a 0 @ a 1 @ + + + } if } action }
-    'expr17     { | m super { a | a 0 @ a 1 @ { | "  " + a 1 @ { e | e + "  @ " + } forEach } if } action }
+    'expr17     { | m super { a | a 0 @ a 1 @ { | "  " + a 1 @ { e | e + "  @ " + } do } if } action }
     'notPrefix  { | m super { | "  !" + } action }
     'iPrefix    { | m super { a | a 1 @ a 0 @ + "  " a 1 @ + + } action }
     'number     { | m super &join action }
-    'array      { | m super  { a | " [" a { e | "  " + e + } forEach "  ]" + } action }
+    'array      { | m super  { a | " [" a { e | "  " + e + } do "  ]" + } action }
     { | m super () () }
   end }
 } () } ::FormulaCompiler

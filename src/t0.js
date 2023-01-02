@@ -235,11 +235,11 @@ scope.eval$(`
 { v | v v } ::dup  { _ | } ::drop  { a b | b a } ::swap
 
 // Standard High-Order Functions
-{ a f | 0 a len 1 - { i | a i @ f () } for } ::forEach
-{ a f | [ a f forEach ] } ::map
-{ a v f | v a f forEach } ::reduce
-{ a p | [  a { c | c p () { | c } if } forEach ] } ::filter
-{ a | " " a { c | c + } forEach } ::join
+{ a f | 0 a len 1 - { i | a i @ f () } for } ::do
+{ a f | [ a f do ] } ::map
+{ a v f | v a f do } ::reduce
+{ a p | [  a { c | c p () { | c } if } do ] } ::filter
+{ a | " " a { c | c + } do } ::join
 
 // A helper function for displaying section titles
 { t | " " print t print } ::section

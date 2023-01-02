@@ -178,7 +178,7 @@ scope.eval$(`
         a 2 @
         "  } "
       ] join } action }
-    'blockContents { | m super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } forEach " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } action }
+    'blockContents { | m super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } action }
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
     'blockBodyExpression { | m super { a | a joins } action }
     'unaryMessage { | m super { a | "  " a + } action }
