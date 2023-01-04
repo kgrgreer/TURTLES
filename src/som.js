@@ -74,11 +74,18 @@ scope.eval$(`
 
   variable: { o | o .identifier } ;
 
+/*
   messages: { o | [
     [ o .unaryMessage  plus o .binaryMessage star o .keywordMessage opt ] seq
     [ o .binaryMessage plus o .keywordMessage opt ] seq
     o .keywordMessage
   ] alt } ;
+  */
+
+  messages: { o |
+    [ o .unaryMessage star o .binaryMessage star o .keywordMessage opt ] seq
+  } ;
+
 
   unaryMessage: { o | [ o .unarySelector o .Whitespace ] 0 seq1  } ;
 
@@ -189,7 +196,13 @@ scope.eval$(`
     'unaryPattern { | m super { a | [ a " " ] } action }
     'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
     'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
-    'messages { | m super { a | a } action }
+    'messages { | m super { a |
+      [
+        a 0 @ joins
+        a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
+        a 2 @ { i | '>s2 i 1 @  's2> '. i 0 @ +  } do
+      ] joins
+    } action }
     'instanceFields { | m super { a | a joins } action }
     'classFields { | m super { a | a joins } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }

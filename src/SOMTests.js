@@ -185,8 +185,11 @@ ColourBall = Ball
 'keywordMessage " x: a  y: 4" ;;
 
 'method " || boolean = ( ^self )" ;;
-'method " || boolean = ( ^ boolean + boolean )" ;;
-'method " || boolean = ( ^ boolean or: boolean )" ;;
+'method " || boolean = ( ^ 1 + 2 )" ;;
+'method " || boolean = ( ^ true or: false )" ;;
+'expression " 1 + 2" ;;
+'evaluation " 1 + 2" ;;
+'messages " + 2" ;;
 
 
 'Done print
