@@ -208,6 +208,8 @@ scope.eval$(`
     'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
     'program { | m super { a | a nl joinWith } action }
     'assignment { | m super { a | "  :" a + } action }
+//   nestedBlock: { o | [ '[  { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
+    'nestedBlock { | m super { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } action }
     'classdef { | m super { a |
       [
         nl
