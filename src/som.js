@@ -56,7 +56,7 @@ scope.eval$(`
 
   blockBodyReturn: { o |  [ '^ o .result ] 1 seq1 } ;
 
-  blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] seq opt ] seq } ;
+  blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] 1 seq1 opt ] seq } ;
 
   result: { o | [ o .expression '. lit opt ] 0 seq1 } ;
 
@@ -115,11 +115,11 @@ scope.eval$(`
 
   string: { o | o .STString } ;
 
-  nestedBlock: { o | [ '[ { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
+  nestedBlock: { o | [ '[  { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
 
   blockPattern: { o | [ o .blockArguments '| ] 0 seq1 } ;
 
-  blockArguments: { o | [ ': o .argument ] seq1 &join mapp plus } ;
+  blockArguments: { o | [ ': o .argument ] 1 seq1 &join mapp plus } ;
 
 //  Number: { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
 
@@ -152,7 +152,7 @@ scope.eval$(`
   At:       { o | '@  lit } ;
   Per:      { o | '%  lit } ;
 
-  OperatorSequence: { o | '~&|*/\+<>,@.-= anyChar plus &join mapp } ;
+  OperatorSequence: { o | '~&|*/\+<>,%@-= anyChar plus &join mapp } ;
 
   Keyword: { o | [ o .Identifier " :" ] seq &join mapp tok } ;
 
@@ -188,7 +188,6 @@ scope.eval$(`
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
     'blockBodyExpression { | m super { a | a joins } action }
     'unaryMessage { | m super { a | [ a " " ] } action }
-//     'binaryMessage { | m super { a | [ a 0 @  a 1 @ ] action } // not needed
     'formula { | m super { a | a 0 @ a 1 @ joins + } action }
     'keywordMessage { | m super { a | a [ a { i | i 0 @ } map join a { i | i 1 @ } map joins ] }  action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }

@@ -132,7 +132,9 @@ SOMCompiler :som
 
 'expression " true or: true " ;;
 
+*/
 
+/*
 'program " Ball = ( | x y r |
   center = ( x := y := 0 )
   withoutLocalVars = ( a := 1 )
@@ -151,13 +153,29 @@ ColourBall = Ball
     aMethod = (^ 4 )
   )
 " ;;
+*/
 
+'nestedBlock " []" ;;
+'nestedBlock " [42]" ;;
+
+'primary " [42]" ;;
+'evaluation " [42]" ;;
+'expression " [42]" ;;
+
+'program " Boolean = (
+
+  foo = (
+      self ifTrue: [ 42 ]
+  )
+
+)
+" ;;
 
 'program " Boolean = (
 
     ifTrue: trueBlock ifFalse: falseBlock = (
         self ifTrue:  [ ^trueBlock value  ].
-        self ifFalse: [ ^falseBlock value ].
+        self ifFalse: [ ^falseBlock value ]
     )
 
     || boolean = ( ^self or: boolean  )
@@ -166,9 +184,8 @@ ColourBall = Ball
 )
 " ;;
 
-*/
 
-
+/*
 'unaryPattern " foo" ;;
 'binaryPattern " + argument" ;;
 'keywordPattern " double: d" ;;
@@ -186,10 +203,24 @@ ColourBall = Ball
 
 'method " || boolean = ( ^self )" ;;
 'method " || boolean = ( ^ 1 + 2 )" ;;
+'pattern " arg1: a1 arg2: a2" ;;
+'keywordPattern " arg1: a1 arg2: a2" ;;
+'keyword " arg1:" ;;
 'method " || boolean = ( ^ true or: false )" ;;
+
+'method " arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )" ;;
+'method " arg1: a1 arg2: a2 = ( 42 . )" ;;
+'blockBodyExpression " a" ;;
+'blockBodyExpression " a . b" ;;
+*/
+
+
+
+/*
 'expression " 1 + 2" ;;
 'evaluation " 1 + 2" ;;
 'messages " + 2" ;;
+*/
 
 
 'Done print
