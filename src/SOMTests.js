@@ -170,7 +170,6 @@ ColourBall = Ball
 'nestedBlock " [ |l1 l2| ^42]" ;;
 'nestedBlock " [ :a1 :a2 ||l1 l2| ^42]" ;;
 
-debugger
 
 'program " Test1 = (
   bar = ( ^ 2 )
@@ -202,7 +201,6 @@ debugger
 )
 " ;;
 */
-
 /*
 'unaryPattern " foo" ;;
 'binaryPattern " + argument" ;;

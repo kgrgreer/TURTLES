@@ -179,7 +179,7 @@ scope.eval$(`
     //   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
     'method { | m super { a |
       [
-        "     '" a 0 @ 0 @ "  { :--- " a 0 @ 1 @ "   | "
+        "     '" a 0 @ 0 @ "  { :--- " a 0 @ 1 @ " | "
         a 2 @
         "  } "
       ] join } action }
