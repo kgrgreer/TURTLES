@@ -153,8 +153,6 @@ ColourBall = Ball
     aMethod = (^ 4 )
   )
 " ;;
-*/
-
 'nestedBlock " []" ;;
 'nestedBlock " [42]" ;;
 
@@ -162,15 +160,35 @@ ColourBall = Ball
 'evaluation " [42]" ;;
 'expression " [42]" ;;
 
-'program " Boolean = (
+*/
 
+'argument " a1" ;;
+'blockArguments " :a1" ;;
+'blockPattern " :a1|" ;;
+'nestedBlock " [^42]" ;;
+'nestedBlock " [:a1 :a2| ^42]" ;;
+'nestedBlock " [ |l1 l2| ^42]" ;;
+'nestedBlock " [ :a1 :a2 ||l1 l2| ^42]" ;;
+
+debugger
+
+'program " Test1 = (
+  bar = ( ^ 2 )
   foo = (
-      self ifTrue: [ 42 ]
+      self ifTrue: [ ^ 42 ]
   )
-
 )
 " ;;
 
+'program " Test2 = (
+  bar = ( ^ 2 )
+  foo = (
+      self ifTrue: [ ^ 42 ]
+  )
+)
+" ;;
+
+/*
 'program " Boolean = (
 
     ifTrue: trueBlock ifFalse: falseBlock = (
@@ -183,7 +201,7 @@ ColourBall = Ball
 
 )
 " ;;
-
+*/
 
 /*
 'unaryPattern " foo" ;;

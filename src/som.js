@@ -119,7 +119,7 @@ scope.eval$(`
 
   blockPattern: { o | [ o .blockArguments '| ] 0 seq1 } ;
 
-  blockArguments: { o | [ ': o .argument ] 1 seq1 &join mapp plus } ;
+  blockArguments: { o | [ " :" o .argument ] seq &join mapp plus } ;
 
 //  Number: { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
 
