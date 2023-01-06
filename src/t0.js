@@ -3,6 +3,7 @@ function fn(f) { return code => code.push(f); }
 function bfn(f) { return fn(() => { var b = stack.pop(), a = stack.pop(); stack.push(f(a, b)); }); }
 var scope = {
   readChar: function() { return this.ip < this.input.length ? this.input.charAt(this.ip++) : undefined; },
+  match: function(s) { return this.input.substring(this.ip, this.ip + s.length) == s; },
   readSym:  function() {
     var sym = '', c;
     while ( c = this.readChar() ) {
@@ -182,6 +183,7 @@ var scope = {
   'array?':  fn(() => { stack.push(Array.isArray(stack.pop())); }),
   'i[':      code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
   '"':       code => { var s = '', c; while ( (c = scope.readChar()) != '"' ) s += c; code.push(() => stack.push(s)); },
+  '"""':     code => { var s = ''; while ( ! scope.match('"""') ) s += scope.readChar(); code.push(() => stack.push(s)); scope.readChar(); scope.readChar(); scope.readChar(); },
   '//':      () => { while ( scope.readChar() != '\n' );},
   '/*':      () => { while ( scope.readSym() != '*/' );},
   '!':       fn(() => { stack.push( ! stack.pop()); }),
