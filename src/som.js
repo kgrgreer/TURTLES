@@ -218,19 +218,6 @@ scope.eval$(`
         classFields_:    a 6 @ { | a 6 @ 1 @ } { | " " } ifelse ;
         classMethods_:   a 6 @ { | a 6 @ 2 @ } { | [ ] } ifelse ;
       |
-
-[
-  " name:           " name_ nl
-  " super:          " superName_ nl
-  " instanceFields: " instanceFields_ nl
-  " methods:        " methods_ nl
-  " classFields:    " classFields_ nl
-  " classMethods:   " classMethods_ nl
-] join print
-
-a  debugger
-
-
       [
         nl
 
