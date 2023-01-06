@@ -196,7 +196,7 @@ scope.eval$(`
     'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
     'messages { | m super { a |
       [
-        a 0 @ joins
+        a 0 @ { i | '. i + } map joins
         a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
         a 2 @ { i | '>s2 i 1 @  's2> '. i 0 @ +  } do
       ] joins
