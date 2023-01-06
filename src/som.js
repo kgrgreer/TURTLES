@@ -45,14 +45,15 @@ scope.eval$(`
   messages: { o | [
     [ " " [ ] litMap dup o .keywordMessage ] seq
     [ " " [ ] litMap o .binaryMessage plus o .keywordMessage opt ] seq
-    [ o .unaryMessage  plus o .binaryMessage star o .keywordMessage opt ] seq
+    [ o .unaryMessage2 plus o .binaryMessage star o .keywordMessage opt ] seq
   ] alt } ;
-  unaryMessage: { o | [ o .unarySelector o .Whitespace opt ] 0 seq1  } ;
+  unaryMessage2: { o | [ o .unaryMessage o .Whitespace ] 0 seq1 tok } ;
+  unaryMessage: { o | { | o .unarySelector () } } ;
   binaryMessage: { o | [ o .binarySelector o .binaryOperand ] seq } ;
   binaryOperand: { o | [ o .primary o .unaryMessage star ] seq } ;
   keywordMessage: { o | [ o .keyword o .formula ] seq plus } ;
   formula: { o | [ o .binaryOperand { | o .binaryMessage () } star ] seq } ;
-  nestedTerm: { o | [ '( o .expression o ') ] 1 seq1 } ;
+  nestedTerm: { o | [ '( o .expression ') ] 1 seq1 } ;
   literal: { o | [ o .literalArray o .literalSymbol  o .literalString  o .literalNumber ] alt } ;
   literalArray: { o | [ '# '( { | o .literal () } star ') ] 2 seq1 } ;
   literalNumber: { o | o .Number } ;

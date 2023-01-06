@@ -250,6 +250,23 @@ ColourBall = Ball (
 'blockBodyExpression " self plus: 7" ;;
 'blockBodyExpression " self plus: 7. self foo. self bar. ^2" ;;
 
+'blockBodyExpression " newEntry hash: 42" ;;
+'blockBodyExpression " newEntry hash: (k hashcode)" ;;
+
+'blockBodyExpression " self ifTrue: [ ^42 ] " ;;
+'blockBodyExpression " self key ifTrue: [ ^42 ] " ;;
+'blockBodyExpression " key = self key ifTrue: [ ^42 ] " ;;
+
+debugger
+
+'method """ getValue: key = (
+        key = self key ifTrue: [ ^value ].
+        next isNil ifTrue: [ ^nil ].
+        ^next getValue: key.
+    )
+""" ;;
+
+
 'program " Pair = (
 
     | key value |
@@ -274,6 +291,77 @@ ColourBall = Ball (
     )
 )
 " ;;
+
+'program """ HashEntry = (
+
+    | key value next hash |
+
+    key       = ( ^key )
+    value     = ( ^value )
+    next      = ( ^next )
+    hash      = ( ^hash )
+
+    key: k    = ( key := k )
+    value: v  = ( value := v )
+    next: n   = ( next := n )
+    hash: h   = ( hash := h )
+
+"
+    setKey: key value: value = (
+        key = self key
+            ifTrue: [ self value: value. ^false. ]
+            ifFalse: [
+            next isNil
+                ifTrue: [
+                    self next: (HashEntry newKey: key value: value next: nil).
+                    ^true. ]
+                ifFalse: [
+                    ^(self next setKey: key value: value) ] ].
+    )
+
+    getValue: key = (
+        key = self key ifTrue: [ ^value ].
+        next isNil ifTrue: [ ^nil ].
+        ^next getValue: key.
+    )
+
+    containsKey: key = (
+        key = self key ifTrue: [ ^true ].
+        next isNil ifTrue: [ ^false ].
+        ^next containsKey: key.
+    )
+
+    containsValue: value = (
+        value = self value ifTrue: [ ^true ].
+        next isNil ifTrue: [ ^false ].
+        ^next containsValue: value.
+    )
+    keys = (
+        next isNil
+            ifTrue: [ ^Vector new append: key ]
+            ifFalse: [ ^(next keys), key ]
+    )
+
+    values = (
+        next isNil
+            ifTrue: [ ^ Vector with: value ]
+            ifFalse: [ ^(next values), value ]
+    )
+    "
+
+    ----
+
+    newKey: k value: v next: n = (
+        | newEntry |
+        newEntry := super new.
+        newEntry key: k.
+        newEntry value: v.
+        newEntry next: n.
+        newEntry hash: (k hashcode).
+        ^newEntry
+    )
+)
+""" ;;
 
 'Done print
 `);
