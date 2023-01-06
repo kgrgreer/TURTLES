@@ -9,7 +9,7 @@ var scope = {
       if ( /\s/.test(c) ) { if ( sym ) break; else continue; }
       sym += c;
     }
-//     console.log('sym: ', sym);
+    // console.log('sym: ', sym);
     return sym;
   },
   eval$: src => {

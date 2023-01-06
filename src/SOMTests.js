@@ -209,7 +209,6 @@ ColourBall = Ball (
 )
 " ;;
 
-/*
 'unaryPattern " foo" ;;
 'binaryPattern " + argument" ;;
 'keywordPattern " double: d" ;;
@@ -248,9 +247,33 @@ ColourBall = Ball (
 
 
 'method " arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )" ;;
-*/
 'blockBodyExpression " self plus: 7" ;;
 'blockBodyExpression " self plus: 7. self foo. self bar. ^2" ;;
+
+'program " Pair = (
+
+    | key value |
+
+    key = ( ^key )
+    value = ( ^value )
+
+    key: aKey = ( key := aKey )
+    value: aValue = ( value := aValue )
+
+    print = ( '[' print. key print. '=>' print. value print. ']' print )
+    println = ( self print. '' println )
+
+    ----
+
+    withKey: aKey andValue: aValue = (
+        | newPair |
+        newPair := super new.
+        newPair key: aKey.
+        newPair value: aValue.
+        ^newPair
+    )
+)
+" ;;
 
 'Done print
 `);

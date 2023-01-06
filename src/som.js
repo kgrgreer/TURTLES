@@ -201,8 +201,7 @@ scope.eval$(`
         a 2 @ { i | '>s2 i 1 @  's2> '. i 0 @ +  } do
       ] joins
     } action }
-    'instanceFields { | m super { a | a { | a joins } { | " " } ifelse } action }
-    'classFields { | m super { a | a joins } action }
+    'fields { | m super { a | a { | a joins } { | " " } ifelse } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }
     'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
     'program { | m super { a | a nl joinWith } action }
