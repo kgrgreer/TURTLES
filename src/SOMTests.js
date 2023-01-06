@@ -134,25 +134,26 @@ SOMCompiler :som
 
 */
 
-/*
-'program " Ball = ( | x y r |
+'program " Ball = (
+  | x y r |
   center = ( x := y := 0 )
   withoutLocalVars = ( a := 1 )
   withLocalVars = ( | a b c | a := 1 )
 )
-ColourBall = Ball
-  (
-    | colour |
-    color = ( ^ color )
-    color: c = ( color := c )
-    r = ( ^ 'bar' )
-    nativeMethod = primitive
-    toString = ( ^ 'foo' )
-    ----
-    | a b c |
-    aMethod = (^ 4 )
-  )
+ColourBall = Ball (
+  | colour |
+  color = ( ^ color )
+  color: c = ( color := c )
+  r = ( ^ 'bar' )
+  nativeMethod = primitive
+  toString = ( ^ 'foo' )
+  ----
+  | a b c |
+  aMethod = (^ 4 )
+)
 " ;;
+
+/*
 'nestedBlock " []" ;;
 'nestedBlock " [42]" ;;
 
@@ -160,7 +161,6 @@ ColourBall = Ball
 'evaluation " [42]" ;;
 'expression " [42]" ;;
 
-*/
 
 'argument " a1" ;;
 'blockArguments " :a1" ;;
@@ -169,9 +169,11 @@ ColourBall = Ball
 'nestedBlock " [:a1 :a2| ^42]" ;;
 'nestedBlock " [ |l1 l2| ^42]" ;;
 'nestedBlock " [ :a1 :a2 ||l1 l2| ^42]" ;;
+*/
 
 
 'program " Test1 = (
+  | a b c |
   bar = ( ^ 2 )
   foo = (
       self ifTrue: [ ^ 42 ]
@@ -187,7 +189,13 @@ ColourBall = Ball
 )
 " ;;
 
-/*
+'program " Test3 = (
+
+  arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )
+
+)
+" ;;
+
 'program " Boolean = (
 
     ifTrue: trueBlock ifFalse: falseBlock = (
@@ -200,7 +208,7 @@ ColourBall = Ball
 
 )
 " ;;
-*/
+
 /*
 'unaryPattern " foo" ;;
 'binaryPattern " + argument" ;;
@@ -224,20 +232,25 @@ ColourBall = Ball
 'keyword " arg1:" ;;
 'method " || boolean = ( ^ true or: false )" ;;
 
-'method " arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )" ;;
-'method " arg1: a1 arg2: a2 = ( 42 . )" ;;
 'blockBodyExpression " a" ;;
 'blockBodyExpression " a . b" ;;
-*/
-
-
-
-/*
 'expression " 1 + 2" ;;
 'evaluation " 1 + 2" ;;
 'messages " + 2" ;;
-*/
+'method " arg1: a1 arg2: a2 = ( 42 . 56 . ^ 22 )" ;;
+'method " arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )" ;;
+'method " arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )" ;;
+'method " arg1: a1 arg2: a2 = ( self foo )" ;;
+'evaluation " self foo" ;;
+'messages " foo" ;;
+'unaryMessage " foo" ;;
+'unaryMessage " foo" ;;
 
+
+'method " arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )" ;;
+*/
+'blockBodyExpression " self plus: 7" ;;
+'blockBodyExpression " self plus: 7. self foo. self bar. ^2" ;;
 
 'Done print
 `);

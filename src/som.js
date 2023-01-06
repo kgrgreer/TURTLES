@@ -74,20 +74,20 @@ scope.eval$(`
 
   variable: { o | o .identifier } ;
 
-/*
   messages: { o | [
+    [ " " [ ] litMap dup o .keywordMessage ] seq
+    [ " " [ ] litMap o .binaryMessage plus o .keywordMessage opt ] seq
     [ o .unaryMessage  plus o .binaryMessage star o .keywordMessage opt ] seq
-    [ o .binaryMessage plus o .keywordMessage opt ] seq
-    o .keywordMessage
   ] alt } ;
-  */
 
+
+/*
   messages: { o |
     [ o .unaryMessage star o .binaryMessage star o .keywordMessage opt ] seq
   } ;
+*/
 
-
-  unaryMessage: { o | [ o .unarySelector o .Whitespace ] 0 seq1  } ;
+  unaryMessage: { o | [ o .unarySelector o .Whitespace opt ] 0 seq1  } ;
 
   binaryMessage: { o | [ o .binarySelector o .binaryOperand ] seq } ;
 
@@ -176,10 +176,9 @@ scope.eval$(`
 { | { let SOMParser :super |
   { m | m switch
     'super      { m o | o m super () () () }
-    //   method: { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
     'method { | m super { a |
       [
-        "     '" a 0 @ 0 @ "  { :--- " a 0 @ 1 @ " | "
+        "     '" a 0 @ 0 @ "  { :--- " a 0 @ 1 @ "  | "
         a 2 @
         "  } "
       ] join } action }
@@ -187,7 +186,7 @@ scope.eval$(`
     'blockContents { | m super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } action }
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
     'blockBodyExpression { | m super { a | a joins } action }
-    'unaryMessage { | m super { a | [ a " " ] } action }
+//    'unaryMessage { | m super { a | [ a " " ] } action }
     'formula { | m super { a | a 0 @ a 1 @ joins + } action }
     'keywordMessage { | m super { a | a [ a { i | i 0 @ } map join a { i | i 1 @ } map joins ] }  action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
@@ -202,7 +201,7 @@ scope.eval$(`
         a 2 @ { i | '>s2 i 1 @  's2> '. i 0 @ +  } do
       ] joins
     } action }
-    'instanceFields { | m super { a | a joins } action }
+    'instanceFields { | m super { a | a { | a joins } { | " " } ifelse } action }
     'classFields { | m super { a | a joins } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }
     'superclass { | m super { a | a { | a } { | 'Object } ifelse } action }
@@ -210,36 +209,53 @@ scope.eval$(`
     'assignment { | m super { a | "  :" a + } action }
 //   nestedBlock: { o | [ '[  { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
     'nestedBlock { | m super { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } action }
-    'classdef { | m super { a |
+    'classdef { | m super { a
+      let
+        name_:           a 0 @ ;
+        superName_:      a 2 @ ;
+        instanceFields_: a 4 @ ;
+        methods_:        a 5 @ ;
+        classFields_:    a 6 @ { | a 6 @ 1 @ } { | " " } ifelse ;
+        classMethods_:   a 6 @ { | a 6 @ 2 @ } { | [ ] } ifelse ;
+      |
+
+[
+  " name:           " name_ nl
+  " super:          " superName_ nl
+  " instanceFields: " instanceFields_ nl
+  " methods:        " methods_ nl
+  " classFields:    " classFields_ nl
+  " classMethods:   " classMethods_ nl
+] join print
+
+a  debugger
+
+
       [
         nl
-        " { | { " nl
-        "   " a 4 @ nl
-        "   let " a 2 @ " _ :super |" nl
+
+        " { | { "
+        "   " instanceFields_ nl
+        "   let " superName_ " _ :super |" nl
         "   { m | m switch" nl
         "     'super { m o | o m super () () () }" nl
-        a 5 @ dup { | nl joinWith nl } { | drop } ifelse
+        methods_ nl joinWith
         "     { | m super () () }" nl
         "   end }" nl
-        " } () } ::" a 0 @ '_ nl
+        " } () } ::" name_ '_ nl
         nl
-        " { " nl
-        a 6 @ { | "   "  a 6 @ 1 @ nl } if
+        " { "
+        classFields_ nl
         "   let Class :super |" nl
         "   { m | m switch" nl
-        "     'new_ { | " a 0 @ " _ }" nl
-        "     'name { | '" a 0 @ "  }" nl
-        a 6 @ 3 @ dup { | nl joinWith nl } { | drop } ifelse
+        "     'new_ { | " name_ " _ }" nl
+        "     'name { | '" name_ "  }" nl
+        classMethods_ nl joinWith
         "     { | m super () () }" nl
         "   end }" nl
-        " } :" a 0 @ nl
+        " } :" name_ nl
       ] join
     } action }
-    /*
-    'result { | m super { a |
-      a debugger
-    } action }
-    */
     { | m super () () }
   end }
 } () } ::SOMCompiler

@@ -169,6 +169,7 @@ var scope = {
   while:     fn(() => { var block = stack.pop(), cond = stack.pop(); while ( true ) { cond(); if ( ! stack.pop() ) break; block(); } }),
   const:     fn(() => { var sym = stack.pop(), value = stack.pop(); scope[sym] = fn(() => { stack.push(value); }); }),
   mod:       bfn((a, b) => a % b),
+  pick:      fn(() => stack.push(stack[stack.length-stack.pop()-2])),
   charAt:    bfn((s, i) => i < s.length ? s.charAt(i) : null),
   charCode:  fn(() => stack.push(String.fromCharCode(stack.pop()))),
   indexOf:   bfn((s, p) => s.indexOf(p)),
@@ -275,4 +276,5 @@ BUGS:
   { :outer a b c | ^outer ... }
 
   - ifelse is the same as ? ()
+
 */
