@@ -100,7 +100,7 @@ scope.eval$(`
     'unaryPattern { | m super { a | [ a " " ] } action }
     'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
     'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
-    'xxxmessages { | m super { a | [
+    'messages { | m super { a | [
       a 0 @ { i | '. i + } map joins
       a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
       a 2 @ { i | '>s2 i 1 @  's2> '. i 0 @ +  } do // use 'pick' instead of s2
