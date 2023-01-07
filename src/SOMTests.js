@@ -314,7 +314,6 @@ ColourBall = Ball (
     next: n   = ( next := n )
     hash: h   = ( hash := h )
 
-"
     setKey: key value: value = (
         key = self key
             ifTrue: [ self value: value. ^false. ]
@@ -355,7 +354,6 @@ ColourBall = Ball (
             ifTrue: [ ^ Vector with: value ]
             ifFalse: [ ^(next values), value ]
     )
-    "
 
     ----
 
