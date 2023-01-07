@@ -255,7 +255,8 @@ ColourBall = Ball (
 
 'blockBodyExpression " self ifTrue: [ ^42 ] " ;;
 'blockBodyExpression " self key ifTrue: [ ^42 ] " ;;
-'blockBodyExpression " key = self key ifTrue: [ ^42 ] " ;;
+'blockBodyExpression " key = self  key  ifTrue: [ ^42 ] " ;;
+'blockBodyExpression " key = self" ;;
 
 debugger
 

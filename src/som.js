@@ -24,7 +24,7 @@ scope.eval$(`
   binaryPattern: { o | [ o .binarySelector o .argument ] seq } ;
   keywordPattern: { o | [ o .keyword o .argument ] seq plus } ;
   methodBlock: { o | [ '( o .blockContents opt ') ] 1 seq1 } ;
-  unarySelector: { o | o .identifier } ;
+  unarySelector: { o | [ o .identifier ': lit notp ] 0 seq1 } ;
   binarySelector: { o | o .OperatorSequence } ;
   identifier: { o | [ o .STPrimitive { | o .Identifier () } ] alt } ;
   keyword: { o | o .Keyword } ;
@@ -42,12 +42,7 @@ scope.eval$(`
   evaluation: { o | [ o .primary o .messages opt ] seq } ;
   primary: { o | [ o .variable { | o .nestedTerm () } { | o .nestedBlock () } { | o .literal () } ] alt } ;
   variable: { o | o .identifier } ;
-  messages: { o | [
-    [ " " [ ] litMap dup o .keywordMessage ] seq
-    [ " " [ ] litMap o .binaryMessage plus o .keywordMessage opt ] seq
-    [ o .unaryMessage2 plus o .binaryMessage star o .keywordMessage opt ] seq
-  ] alt } ;
-  unaryMessage2: { o | [ o .unaryMessage o .Whitespace ] 0 seq1 tok } ;
+  messages: { o | [ o .unaryMessage star o .binaryMessage star o .keywordMessage opt ] seq } ;
   unaryMessage: { o | { | o .unarySelector () } } ;
   binaryMessage: { o | [ o .binarySelector o .binaryOperand ] seq } ;
   binaryOperand: { o | [ o .primary o .unaryMessage star ] seq } ;

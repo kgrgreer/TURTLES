@@ -91,6 +91,10 @@ scope.eval$(`
   ret { | ret } { | false ps .:value } ifelse
 } } ::opt
 
+{ parser | { ps let parser ps .parse :ret |
+  ret { | false } { | ps } ifelse
+} } ::notp
+
 { str | { ps | str ps .head indexOf -1 = { | ps .tail } { | false } ifelse } } ::notChars
 
 { str | { ps | str ps .head indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar
