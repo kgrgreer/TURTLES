@@ -24,7 +24,7 @@ scope.eval$(`
   binaryPattern: { o | [ o .binarySelector o .argument ] seq } ;
   keywordPattern: { o | [ o .keyword o .argument ] seq plus } ;
   methodBlock: { o | [ '( o .blockContents opt ') ] 1 seq1 } ;
-  unarySelector: { o | [ o .identifier ': lit notp ] 0 seq1 } ;
+  unarySelector: { o | [ o .identifier " :" lit notp ] 0 seq1 tok } ;
   binarySelector: { o | o .OperatorSequence } ;
   identifier: { o | [ o .STPrimitive { | o .Identifier () } ] alt } ;
   keyword: { o | o .Keyword } ;
@@ -54,7 +54,7 @@ scope.eval$(`
   literalNumber: { o | o .Number } ;
   literalSymbol: { o | [ '# [ o .string o .selector ] alt ] 1 seq1 tok } ;
   literalString: { o | o .STString } ;
-  selector: { o | [ o .binarySelector o .keywordSelector  o .unarySelector ] alt } ;
+  selector: { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt } ;
   keywordSelector: { o | o .KeywordSequence } ;
   string: { o | o .STString } ;
   nestedBlock: { o | [ '[  { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
@@ -71,7 +71,7 @@ scope.eval$(`
   OperatorSequence: { o | '~&|*/\+<>,%@-= anyChar plus &join mapp } ;
   Keyword: { o | [ o .Identifier " :" ] seq &join mapp tok } ;
   KeywordSequence: { o | o .Keyword plus tok } ;
-  // Javascript string escaping is messing this up
+  // Javascript string escaping is causing need for extra escaping
   STStringChar: { o | [ '\\b '\\n '\\r '\\f '\\0 '\\' '\\\\ '' notChars ] alt } ;
   STString: { o | [ '' o .STStringChar star '' ] 1 seq1 &join mapp } ;
   Comment: { o | [ '" '" notChars star '" ] 1 seq1 tok } ;
@@ -100,10 +100,10 @@ scope.eval$(`
     'unaryPattern { | m super { a | [ a " " ] } action }
     'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
     'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
-    'messages { | m super { a | [
+    'xxxmessages { | m super { a | [
       a 0 @ { i | '. i + } map joins
       a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
-      a 2 @ { i | '>s2 i 1 @  's2> '. i 0 @ +  } do
+      a 2 @ { i | '>s2 i 1 @  's2> '. i 0 @ +  } do // use 'pick' instead of s2
     ] joins } action }
     'fields { | m super { a | a { | a joins } { | " " } ifelse } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }

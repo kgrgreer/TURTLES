@@ -87,13 +87,9 @@ scope.eval$(`
   { a | [ a 0 @  { e | e } do a 1 @ ] } mapp
 } ::delim
 
-{ parser | { ps let parser ps .parse :ret |
-  ret { | ret } { | false ps .:value } ifelse
-} } ::opt
+{ parser | { ps let parser ps .parse :ret | ret { | ret } { | false ps .:value } ifelse } } ::opt
 
-{ parser | { ps let parser ps .parse :ret |
-  ret { | false } { | ps } ifelse
-} } ::notp
+{ parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 
 { str | { ps | str ps .head indexOf -1 = { | ps .tail } { | false } ifelse } } ::notChars
 

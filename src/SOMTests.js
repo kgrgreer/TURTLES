@@ -212,6 +212,15 @@ ColourBall = Ball (
 'unaryPattern " foo" ;;
 'binaryPattern " + argument" ;;
 'keywordPattern " double: d" ;;
+'keywordPattern " double: d trouble: t" ;;
+
+'messages " foo" ;;
+'messages " double: d" ;;
+'messages " + argument" ;;
+'messages " double: d" ;;
+'messages " double: d trouble: t" ;;
+'unarySelector " double: " ;;
+
 'keywordPattern " x: x y: y" ;;
 'formula " a  y: 4" ;;
 'binaryOperand " a  y: 4" ;;
@@ -257,8 +266,6 @@ ColourBall = Ball (
 'blockBodyExpression " self key ifTrue: [ ^42 ] " ;;
 'blockBodyExpression " key = self  key  ifTrue: [ ^42 ] " ;;
 'blockBodyExpression " key = self" ;;
-
-debugger
 
 'method """ getValue: key = (
         key = self key ifTrue: [ ^value ].
