@@ -120,7 +120,7 @@ scope.eval$(`
         classMethods_:   a 6 @ { | a 6 @ 2 @ } { | [ ] } ifelse ;
       | [
         nl " { | { "
-        "   " instanceFields_ nl
+        instanceFields_ nl
         "   let " superName_ " _ :super |" nl
         "   { m | m switch" nl
         "     'super { m o | o m super () () () }" nl
