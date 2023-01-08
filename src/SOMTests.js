@@ -184,7 +184,6 @@ ColourBall = Ball (
 
 'messages " ifTrue: [ ^ 42 ] ifElse: [ ^ 66 ]" ;;
 'keywordMessage " ifTrue: [ ^ 42 ] ifElse: [ ^ 66 ]" ;;
-debugger
 
 'program " Test2 = (
   bar = ( ^ 2 )
@@ -193,6 +192,8 @@ debugger
   )
 )
 " ;;
+
+debugger
 
 'program " Test3 = (
 

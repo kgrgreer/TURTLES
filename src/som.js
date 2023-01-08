@@ -41,7 +41,7 @@ scope.eval$(`
   evaluation: { o | [ o .primary o .messages opt ] seq } ;
   primary: { o | [ o .variable { | o .nestedTerm () } { | o .nestedBlock () } { | o .literal () } ] alt } ;
   variable: { o | o .identifier } ;
-  messages: { o | [ { | o .unaryMessage () } star { | o .binaryMessage () } star { | o .keywordMessage () } opt ] seq } ;
+  messages: { o | [ o .unaryMessage star o .binaryMessage star o .keywordMessage opt ] seq } ;
   unaryMessage: { o | { | o .unarySelector () } } ;
   binaryMessage: { o | [ o .binarySelector o .binaryOperand ] seq } ;
   binaryOperand: { o | [ o .primary o .unaryMessage star ] seq } ;
@@ -93,23 +93,16 @@ scope.eval$(`
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
     'blockBodyExpression { | m super { a | a joins } action }
     'formula { | m super { a | a 0 @ a 1 @ joins + } action }
-    'keywordMessage { | m super { a | a [ a { i | i 0 @ } map join a { i | i 1 @ } map joins ] } action }
+    'keywordMessage { | m super { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins ] } action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
     'evaluation { | m super { a | a joins } action }
     'unaryPattern { | m super { a | [ a " " ] } action }
     'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
     'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
     'messages { | m super { a | [
-      [
-        'unary= a 0 @ nl
-        'binary= a 1 @ nl
-        'keyword= a 2 @ nl
-        'extra= a 3 @ nl
-      ] join print
-
       a 0 @ { i | '. i + } map joins
       a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
-      /* a 2 @ { | a debugger drop } if */ a 2 @ { | '>s2 a 2 @ 1 @  's2> '. a 2 @ 0 @ + } if // use 'pick' instead of s2
+      a 2 @ { | '>s2 a 2 @ 1 @  's2> '. a 2 @ 0 @ + } if // use 'pick' instead of s2
     ] joins } action }
     'fields { | m super { a | a { | a joins } { | " " } ifelse } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }
