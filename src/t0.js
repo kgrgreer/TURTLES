@@ -1,4 +1,4 @@
-var stack = [], s2 = [], heap = [], heap2 = [], hp, __arrayStart__ = '__arrayStart__', __switchStart__ = '__switchStart__', outerCode;
+var stack = [], heap = [], heap2 = [], hp, __arrayStart__ = '__arrayStart__', __switchStart__ = '__switchStart__', outerCode;
 function fn(f) { return code => code.push(f); }
 function bfn(f) { return fn(() => { var b = stack.pop(), a = stack.pop(); stack.push(f(a, b)); }); }
 var scope = {
@@ -148,8 +148,6 @@ var scope = {
     for ( var i = 0 ; i < length ; i++ ) { stack.push(i); fn(); a[i] = stack.pop(); }
     stack.push(a);
   }),
-  '>s2': fn(() => s2.push(stack.pop())),
-  's2>': fn(() => stack.push(s2.pop())),
   '@':  bfn((a, i) => a[i]),
   ':@': fn(() => { var i = stack.pop(), a = stack.pop(), v = stack.pop(); a[i] = v; }),
   '[':  fn(() => stack.push(__arrayStart__)),

@@ -93,7 +93,7 @@ scope.eval$(`
     'blockBodyReturn { | m super { a | a "  ---<-" + } action }
     'blockBodyExpression { | m super { a | a joins } action }
     'formula { | m super { a | a 0 @ a 1 @ joins + } action }
-    'keywordMessage { | m super { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins ] } action }
+    'keywordMessage { | m super { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins a len ] } action }
     'binaryOperand { | m super { a | a 0 @ a 1 @ joins + } action }
     'evaluation { | m super { a | a joins } action }
     'unaryPattern { | m super { a | [ a " " ] } action }
@@ -102,7 +102,7 @@ scope.eval$(`
     'messages { | m super { a | [
       a 0 @ { i | '. i + } map joins
       a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
-      a 2 @ { | '>s2 a 2 @ 1 @  's2> '. a 2 @ 0 @ + } if // use 'pick' instead of s2
+      a 2 @ { | a 2 @ 1 @  a 2 @ 2 @  'pick '. a 2 @ 0 @ + 'drop } if
     ] joins } action }
     'fields { | m super { a | a { | a joins } { | " " } ifelse } action }
     'STString { | m super { a | [ '" "  " a '" ] join } action }
