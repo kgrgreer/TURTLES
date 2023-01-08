@@ -132,7 +132,6 @@ SOMCompiler :som
 
 'expression " true or: true " ;;
 
-*/
 
 'program " Ball = (
   | x y r |
@@ -153,7 +152,6 @@ ColourBall = Ball (
 )
 " ;;
 
-/*
 'nestedBlock " []" ;;
 'nestedBlock " [42]" ;;
 
@@ -176,10 +174,17 @@ ColourBall = Ball (
   | a b c |
   bar = ( ^ 2 )
   foo = (
+      self ifTrue: [ ^ 42 ] ifElse: [ ^ 66 ]
+  )
+  foo2 = (
       self ifTrue: [ ^ 42 ]
   )
 )
 " ;;
+
+'messages " ifTrue: [ ^ 42 ] ifElse: [ ^ 66 ]" ;;
+'keywordMessage " ifTrue: [ ^ 42 ] ifElse: [ ^ 66 ]" ;;
+debugger
 
 'program " Test2 = (
   bar = ( ^ 2 )
