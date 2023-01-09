@@ -98,7 +98,7 @@ scope.eval$(`
     'evaluation { | m super { a | a joins } action }
     'unaryPattern { | m super { a | [ a " " ] } action }
     'keywordPattern { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
-    'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map "  dup " joinWith a 0 @ joins ] joins } action }
+    'assignation { | m super { a | [ a 1 @  a 0 @ { i | "  " } map " dup" joinWith a 0 @ join ] join } action }
     'messages { | m super { a | [
       a 0 @ { i | '. i + } map joins
       a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do

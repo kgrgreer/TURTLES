@@ -375,5 +375,9 @@ debugger
 )
 """ ;;
 
+'method " foo = ( a := 1 )" ;;
+'method " foo = ( a := b := 1 )" ;;
+'method " foo = ( a := b := c:= 1 )" ;;
+
 'Done print
 `);
