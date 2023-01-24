@@ -98,20 +98,23 @@ Stack*    stack = NULL;
 TreeNode* scope = NULL;
 
 
-void one() {
-  push(stack, (void*) 1);
-}
+void one() { push(stack, (void*) 1); }
 
 
-void two() {
-  push(stack, (void*) 2);
-}
+void two() { push(stack, (void*) 2); }
 
 
 void plus() {
-  long l1 = (long) pop(stack);
   long l2 = (long) pop(stack);
+  long l1 = (long) pop(stack);
   push(stack, (void*) l1 + l2);
+}
+
+
+void minus() {
+  long l2 = (long) pop(stack);
+  long l1 = (long) pop(stack);
+  push(stack, (void*) l1 - l2);
 }
 
 
@@ -120,14 +123,10 @@ void print() {
 }
 
 
-void foo() {
-  printf("foo\n");
-}
+void foo() { printf("foo\n"); }
 
 
-void bar() {
-  printf("bar\n");
-}
+void bar() { printf("bar\n"); }
 
 
 int main() {
@@ -141,6 +140,7 @@ int main() {
   insert_node(&scope, "1",     &one);
   insert_node(&scope, "2",     &two);
   insert_node(&scope, "+",     &plus);
+  insert_node(&scope, "-",     &minus);
   insert_node(&scope, "print", &print);
 
   while ( readSym(buf, sizeof(buf)) ) {
