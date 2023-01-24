@@ -3,6 +3,20 @@
 #include <string.h>
 #include <stdbool.h>
 
+typedef struct stack_node {
+  void*  arr[10000];
+  int    ptr;
+} Stack;
+
+
+void push(Stack* stack, void* value) {
+  stack->arr[stack->ptr++] = value;
+}
+
+void* pop(Stack* stack) {
+  return stack->arr[--stack->ptr];
+}
+
 typedef void (*function_ptr)();
 
 typedef struct tree_node {
@@ -80,6 +94,31 @@ bool readSym(char* buffer, int buffer_size) {
   return size > 0;
 }
 
+Stack*    stack = NULL;
+TreeNode* scope = NULL;
+
+
+void one() {
+  push(stack, (void*) 1);
+}
+
+
+void two() {
+  push(stack, (void*) 2);
+}
+
+
+void plus() {
+  long l1 = (long) pop(stack);
+  long l2 = (long) pop(stack);
+  push(stack, (void*) l1 + l2);
+}
+
+
+void print() {
+  printf("%ld\n", (long) pop(stack));
+}
+
 
 void foo() {
   printf("foo\n");
@@ -90,14 +129,19 @@ void bar() {
   printf("bar\n");
 }
 
-TreeNode* scope = NULL;
 
 int main() {
   char c;
   char buf[256];
 
-  insert_node(&scope, "foo", &foo);
-  insert_node(&scope, "bar", &bar);
+  stack = (Stack*) malloc(sizeof(Stack));
+
+  insert_node(&scope, "foo",   &foo);
+  insert_node(&scope, "bar",   &bar);
+  insert_node(&scope, "1",     &one);
+  insert_node(&scope, "2",     &two);
+  insert_node(&scope, "+",     &plus);
+  insert_node(&scope, "print", &print);
 
   while ( readSym(buf, sizeof(buf)) ) {
     function_ptr func = search_node(scope, buf);
