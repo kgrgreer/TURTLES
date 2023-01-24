@@ -78,7 +78,7 @@ bool readSym(char* buffer, int buffer_size) {
   while ( isSpace(c = getchar()) );
   if ( c == EOF ) return false;
   buffer[size++] = c;
-  
+
   while ( (c = getchar()) != EOF && ! isSpace(c) && size < buffer_size - 1 ) {
     buffer[size++] = c;
   }
@@ -87,18 +87,31 @@ bool readSym(char* buffer, int buffer_size) {
 }
 
 
+void foo() {
+  printf("foo\n");
+}
+
+
+void bar() {
+  printf("bar\n");
+}
+
+TreeNode* scope = NULL;
+
 int main() {
   char c;
   char buf[256];
 
-  /*
-  while ( (c = getchar()) != EOF ) {
-    // Do something with the character 'c'
-    printf("%c", c);
-  } */
+  insert_node(&scope, "foo", &foo);
+  insert_node(&scope, "bar", &bar);
 
   while ( readSym(buf, sizeof(buf)) ) {
-    printf("> %s", buf);
+    function_ptr func = search_node(scope, buf);
+    if ( func == NULL ) {
+      printf("Unknown word: %s\n", buf);
+    } else {
+      func();
+    }
   }
 
   return 0;
