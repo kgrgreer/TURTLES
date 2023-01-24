@@ -4,8 +4,8 @@
 #include <stdbool.h>
 
 typedef struct stack_node {
-  void*  arr[10000];
   int    ptr;
+  void*  arr[10000];
 } Stack;
 
 
@@ -95,6 +95,7 @@ bool readSym(char* buffer, int buffer_size) {
 }
 
 Stack*    stack = NULL;
+Stack*    heap  = NULL;
 TreeNode* scope = NULL;
 
 void constant(void* obj) { push(stack, obj); }
@@ -131,12 +132,20 @@ void foo() { printf("foo\n"); }
 void bar() { printf("bar\n"); }
 
 
+void compile(function_ptr fn) {
+  push(heap, (void*) fn);
+}
 
-void evalSym(char* sym) {
+void immediate(function_ptr fn) {
+  fn();
+}
+
+
+void evalSym(char* sym, function_ptr evalulator) {
   function_ptr func = search_node(scope, sym);
 
   if ( func != NULL ) {
-    func();
+    evalulator(func);
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
     constant((void*) atol(sym));
   } else {
@@ -144,11 +153,13 @@ void evalSym(char* sym) {
   }
 }
 
+
 int main() {
   char c;
   char buf[256];
 
   stack = (Stack*) malloc(sizeof(Stack));
+  heap  = (Stack*) malloc(sizeof(Stack));
 
   insert_node(&scope, "foo",   &foo);
   insert_node(&scope, "bar",   &bar);
@@ -159,7 +170,7 @@ int main() {
   insert_node(&scope, "print", &print);
 
   while ( readSym(buf, sizeof(buf)) ) {
-    evalSym(buf);
+    evalSym(buf, &immediate);
   }
 
   return 0;
