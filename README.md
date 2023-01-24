@@ -30,7 +30,7 @@ Higher-Level Languages
 Currently, the following higher-level languages are (partially) supported:
 
 1. JS - a subset of a Javascript-like language.
-2. SOM - a subset of the Smalltalk language.
+2. [SOM](http://som-st.github.io/) - a subset of the Smalltalk language.
 
 The intention is to create T1 as a derivative of SOM and and then T2 as higher-level
 axiom-based language on top of T1 (maybe to be named "Axiom").
