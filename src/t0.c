@@ -97,11 +97,13 @@ bool readSym(char* buffer, int buffer_size) {
 Stack*    stack = NULL;
 TreeNode* scope = NULL;
 
+void constant(void* obj) { push(stack, obj); }
 
-void one() { push(stack, (void*) 1); }
+
+void one() { constant((void*) 1); }
 
 
-void two() { push(stack, (void*) 2); }
+void two() { constant((void*) 2); }
 
 
 void plus() {
@@ -129,6 +131,19 @@ void foo() { printf("foo\n"); }
 void bar() { printf("bar\n"); }
 
 
+
+void evalSym(char* sym) {
+  function_ptr func = search_node(scope, sym);
+
+  if ( func != NULL ) {
+    func();
+  } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
+    constant((void*) atol(sym));
+  } else {
+    printf("Unknown word: %s\n", sym);
+  }
+}
+
 int main() {
   char c;
   char buf[256];
@@ -144,12 +159,7 @@ int main() {
   insert_node(&scope, "print", &print);
 
   while ( readSym(buf, sizeof(buf)) ) {
-    function_ptr func = search_node(scope, buf);
-    if ( func == NULL ) {
-      printf("Unknown word: %s\n", buf);
-    } else {
-      func();
-    }
+    evalSym(buf);
   }
 
   return 0;
