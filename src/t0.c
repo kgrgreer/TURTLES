@@ -97,14 +97,16 @@ bool readSym(char* buffer, int buffer_size) {
 Stack*    stack = NULL;
 Stack*    heap  = NULL;
 TreeNode* scope = NULL;
+long      ip    = 0;
 
-void constant(void* obj) { push(stack, obj); }
+void constant() {
+  push(stack, heap->arr[ip++]);
+}
 
-
-void one() { constant((void*) 1); }
-
-
-void two() { constant((void*) 2); }
+void minusOne() { push(stack, (void*)  -1); }
+void zero()     { push(stack, (void*)  0); }
+void one()      { push(stack, (void*)  1); }
+void two()      { push(stack, (void*)  2); }
 
 
 void plus() {
@@ -128,31 +130,34 @@ void print() {
 
 void foo() { printf("foo\n"); }
 
-
 void bar() { printf("bar\n"); }
 
 
-void compile(function_ptr fn) {
-  push(heap, (void*) fn);
-}
-
-void immediate(function_ptr fn) {
-  fn();
-}
-
-
-void evalSym(char* sym, function_ptr evalulator) {
+void evalSym(char* sym) {
   function_ptr func = search_node(scope, sym);
 
   if ( func != NULL ) {
-    evalulator(func);
+    func();
+  } else if ( sym[0] == ':' ) {
+    char* sym = strdup(sym+1);
+    /*
+    var sym = line.substring(1);
+    code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
+    */
+
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
-    constant((void*) atol(sym));
+    heap->arr[ip++] = constant;
+    heap->arr[ip++] = (void*) atol(sym);
   } else {
     printf("Unknown word: %s\n", sym);
   }
 }
 
+void execute(long ptr) {
+  for ( ip = ptr ; heap->arr[ip] ; ip++ ) {
+    ((function_ptr) heap->arr[ip++])();
+  }
+}
 
 int main() {
   char c;
@@ -163,14 +168,20 @@ int main() {
 
   insert_node(&scope, "foo",   &foo);
   insert_node(&scope, "bar",   &bar);
+  insert_node(&scope, "-1",    &minusOne);
+  insert_node(&scope, "0",     &zero);
   insert_node(&scope, "1",     &one);
   insert_node(&scope, "2",     &two);
   insert_node(&scope, "+",     &plus);
   insert_node(&scope, "-",     &minus);
   insert_node(&scope, "print", &print);
+  insert_node(&scope, ".",     &print); // like forth
 
   while ( readSym(buf, sizeof(buf)) ) {
-    evalSym(buf, &immediate);
+    ip = heap->ptr;
+    evalSym(buf);
+    heap->arr[ip] = 0;
+    execute(heap->ptr);
   }
 
   return 0;
