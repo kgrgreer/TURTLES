@@ -169,15 +169,17 @@ int main() {
 
   insert_node(&scope, "foo",   &foo);
   insert_node(&scope, "bar",   &bar);
+  insert_node(&scope, "+",     &plus);
+  insert_node(&scope, "-",     &minus);
+  insert_node(&scope, "print", &print);
+  insert_node(&scope, ".",     &print); // like forth
+
+  // These could be moved to t0 code.
   insert_node(&scope, "-1",    &minusOne);
   insert_node(&scope, "0",     &zero);
   insert_node(&scope, "1",     &one);
   insert_node(&scope, "2",     &two);
   insert_node(&scope, "10",    &ten);
-  insert_node(&scope, "+",     &plus);
-  insert_node(&scope, "-",     &minus);
-  insert_node(&scope, "print", &print);
-  insert_node(&scope, ".",     &print); // like forth
 
   while ( readSym(buf, sizeof(buf)) ) {
     ip = heap->ptr;
