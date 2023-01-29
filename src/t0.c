@@ -107,6 +107,7 @@ void minusOne() { push(stack, (void*)  -1); }
 void zero()     { push(stack, (void*)  0); }
 void one()      { push(stack, (void*)  1); }
 void two()      { push(stack, (void*)  2); }
+void ten()      { push(stack, (void*)  10); }
 
 
 void plus() {
@@ -172,6 +173,7 @@ int main() {
   insert_node(&scope, "0",     &zero);
   insert_node(&scope, "1",     &one);
   insert_node(&scope, "2",     &two);
+  insert_node(&scope, "10",    &ten);
   insert_node(&scope, "+",     &plus);
   insert_node(&scope, "-",     &minus);
   insert_node(&scope, "print", &print);
