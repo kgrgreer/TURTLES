@@ -8,6 +8,8 @@ typedef struct stack_node {
   void*  arr[10000];
 } Stack;
 
+/* Part of Heap where interactive commands are temporarily compiled to. */
+#define SCRATCH (sizeof(Stack)-1000)
 
 void push(Stack* stack, void* value) {
   stack->arr[stack->ptr++] = value;
@@ -103,6 +105,12 @@ void constant() {
   push(stack, heap->arr[ip++]);
 }
 
+void define() {
+  void* value = pop(stack);
+  char* sym   = heap->arr[ip++];
+
+}
+
 void minusOne() { push(stack, (void*)  -1); }
 void zero()     { push(stack, (void*)  0); }
 void one()      { push(stack, (void*)  1); }
@@ -123,6 +131,16 @@ void minus() {
   push(stack, (void*) l1 - l2);
 }
 
+void gosub() {
+  long addr = (long) pop(stack);
+  push(stack, (void*) ip);
+}
+
+
+void ret() {
+  long addr = (long) pop(stack);
+  ip = addr;
+}
 
 void print() {
   printf("%ld\n", (long) pop(stack));
@@ -141,6 +159,8 @@ void evalSym(char* sym) {
     func();
   } else if ( sym[0] == ':' ) {
     char* sym = strdup(sym+1);
+    heap->arr[ip++] = define;
+    heap->arr[ip++] = sym;
     /*
     var sym = line.substring(1);
     code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
@@ -182,10 +202,10 @@ int main() {
   insert_node(&scope, "10",    &ten);
 
   while ( readSym(buf, sizeof(buf)) ) {
-    ip = heap->ptr;
+    ip = SCRATCH;
     evalSym(buf);
     heap->arr[ip] = 0;
-    execute(heap->ptr);
+    execute(SCRATCH);
   }
 
   return 0;
