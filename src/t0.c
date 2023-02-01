@@ -174,7 +174,7 @@ void evalSym(char* sym) {
     while ( ( c = getchar() ) ) {
       switch ( state ) {
         case 0: if ( c == '*' ) state = 1; break;
-        case 1: if ( c == '/' ) return; state = 0;
+        case 1: if ( c == '/' ) return; state = c == '*' ? 1 : 0;
       }
     }
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
