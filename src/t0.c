@@ -166,6 +166,8 @@ void evalSym(char* sym) {
     code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
     */
 
+  } else if ( strcmp("//", sym) == 0 ) {
+    while ( getchar() != '\n' );
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
     heap->arr[ip++] = constant;
     heap->arr[ip++] = (void*) atol(sym);
