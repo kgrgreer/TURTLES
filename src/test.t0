@@ -1,5 +1,9 @@
 // a comment
 1 1 + . // another comment
+/*
+  a multiline
+  comment
+*/
 2 2 + .
 5 132 + .
 3.1415926 .

@@ -168,6 +168,15 @@ void evalSym(char* sym) {
 
   } else if ( strcmp("//", sym) == 0 ) {
     while ( getchar() != '\n' );
+  } else if ( strcmp("/*", sym) == 0 ) {
+    int state = 0;
+    char c;
+    while ( ( c = getchar() ) ) {
+      switch ( state ) {
+        case 0: if ( c == '*' ) state = 1; break;
+        case 1: if ( c == '/' ) return; state = 0;
+      }
+    }
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
     heap->arr[ip++] = constant;
     heap->arr[ip++] = (void*) atol(sym);
