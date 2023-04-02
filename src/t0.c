@@ -56,16 +56,13 @@ void insert_node(TreeNode** root, char* key, function_ptr value) {
 function_ptr search_node(TreeNode* root, char* key) {
   if ( root == NULL ) return NULL;
 
-  if ( strcmp(key, root->key) == 0 )
-    return root->value;
-
-  if ( strcmp(key, root->key) < 0 )
-    return search_node(root->left, key);
-
+  int c = strcmp(key, root->key);
+  if ( c == 0 ) return root->value;
+  if ( c < 0  ) return search_node(root->left, key);
   return search_node(root->right, key);
 }
 
-
+/*
 void free_tree(TreeNode* root) {
   if ( root == NULL ) return;
   free_tree(root->left);
@@ -73,6 +70,7 @@ void free_tree(TreeNode* root) {
   free(root->key);
   free(root);
 }
+*/
 
 
 bool isSpace(char c) {
@@ -93,7 +91,7 @@ bool readSym(char* buffer, int buffer_size) {
     buffer[size++] = c;
   }
   buffer[size] = '\0';
-  return size > 0;
+  return true;
 }
 
 Stack*    stack = NULL;
@@ -109,12 +107,14 @@ void define() {
   void* value = pop(stack);
   char* sym   = heap->arr[ip++];
 
+//  insert_node(&scope, sym, ???); // needs to be an ip
+
 }
 
 void minusOne() { push(stack, (void*)  -1); }
-void zero()     { push(stack, (void*)  0); }
-void one()      { push(stack, (void*)  1); }
-void two()      { push(stack, (void*)  2); }
+void zero()     { push(stack, (void*)  0);  }
+void one()      { push(stack, (void*)  1);  }
+void two()      { push(stack, (void*)  2);  }
 void ten()      { push(stack, (void*)  10); }
 
 
@@ -131,6 +131,21 @@ void minus() {
   push(stack, (void*) l1 - l2);
 }
 
+
+void eq() {
+  long l2 = (long) pop(stack);
+  long l1 = (long) pop(stack);
+  bool ret = l1 == l2;
+  push(stack, (void*) ret);
+}
+
+
+void not() {
+  bool ret = ! (bool) pop(stack);
+  push(stack, (void*) ret);
+}
+
+
 void gosub() {
   long addr = (long) pop(stack);
   push(stack, (void*) ip);
@@ -138,9 +153,9 @@ void gosub() {
 
 
 void ret() {
-  long addr = (long) pop(stack);
-  ip = addr;
+  ip = (long) pop(stack);
 }
+
 
 void print() {
   printf("%ld\n", (long) pop(stack));
@@ -185,11 +200,13 @@ void evalSym(char* sym) {
   }
 }
 
+
 void execute(long ptr) {
   for ( ip = ptr ; heap->arr[ip] ; ip++ ) {
     ((function_ptr) heap->arr[ip++])();
   }
 }
+
 
 int main() {
   char c;
@@ -202,6 +219,8 @@ int main() {
   insert_node(&scope, "bar",   &bar);
   insert_node(&scope, "+",     &plus);
   insert_node(&scope, "-",     &minus);
+  insert_node(&scope, "=",     &eq);
+  insert_node(&scope, "!",     &not);
   insert_node(&scope, "print", &print);
   insert_node(&scope, ".",     &print); // like forth
 
