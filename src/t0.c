@@ -24,6 +24,7 @@ typedef void (*function_ptr)();
 typedef struct tree_node {
   char*             key;
   function_ptr      value;
+  long              cl;    // Heap pointer for closure-like extra data
   struct tree_node* left;
   struct tree_node* right;
 } TreeNode;
@@ -82,13 +83,16 @@ bool readSym(char* buffer, int buffer_size) {
 
   /* Skip leading whitespace. */
   while ( isSpace(c = getchar()) );
+
   if ( c == EOF ) return false;
+
   buffer[size++] = c;
 
   while ( (c = getchar()) != EOF && ! isSpace(c) && size < buffer_size - 1 ) {
     buffer[size++] = c;
   }
   buffer[size] = '\0';
+
   return true;
 }
 
@@ -98,12 +102,13 @@ TreeNode* scope = NULL;
 long      ip    = 0;
 
 void constant() {
+  // Consume next constant value stored in the heap and push to stack
   push(stack, heap->arr[ip++]);
 }
 
 void define() {
-  void* value = pop(stack);
-  char* sym   = heap->arr[ip++];
+  void* value = pop(stack);      // Definition Value
+  char* sym   = heap->arr[ip++]; // Definition Key
 
 //  insert_node(&scope, sym, ???); // needs to be an ip
 
@@ -180,8 +185,10 @@ void evalSym(char* sym) {
     */
 
   } else if ( strcmp("//", sym) == 0 ) {
+    // Ignore C++ style comments
     while ( getchar() != '\n' );
   } else if ( strcmp("/*", sym) == 0 ) {
+    // Ignore C style comments
     int state = 0;
     char c;
     while ( ( c = getchar() ) ) {
@@ -191,6 +198,7 @@ void evalSym(char* sym) {
       }
     }
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
+    // Parse Integers
     heap->arr[ip++] = constant;
     heap->arr[ip++] = (void*) atol(sym);
   } else {
@@ -198,7 +206,7 @@ void evalSym(char* sym) {
   }
 }
 
-
+/** Execute code starting at ip until 0 found. **/
 void execute(long ptr) {
   for ( ip = ptr ; heap->arr[ip] ; ip++ ) {
     ((function_ptr) heap->arr[ip++])();
@@ -232,7 +240,7 @@ int main() {
   while ( readSym(buf, sizeof(buf)) ) {
     ip = SCRATCH;
     evalSym(buf);
-    heap->arr[ip] = 0;
+    heap->arr[ip] = 0; // mark end of code
     execute(SCRATCH);
   }
 
