@@ -57,8 +57,7 @@ function_ptr search_node(TreeNode* root, char* key) {
 
   int c = strcmp(key, root->key);
   if ( c == 0 ) return root->value;
-  if ( c < 0  ) return search_node(root->left, key);
-  return search_node(root->right, key);
+  return search_node(c < 0 ? root->left : root->right, key);
 }
 
 /*
