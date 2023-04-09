@@ -45,11 +45,10 @@ void insert_node(TreeNode** root, char* key, function_ptr value) {
     *root = create_node(key, value);
     return;
   }
-  if ( strcmp(key, (*root)->key) < 0 ) {
-    insert_node(&(*root)->left, key, value);
-  } else {
-    insert_node(&(*root)->right, key, value);
-  }
+  insert_node(
+    strcmp(key,(*root)->key) < 0 ? &(*root)->left : &(*root)->right,
+    key,
+    value);
 }
 
 
