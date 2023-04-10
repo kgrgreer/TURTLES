@@ -21,6 +21,7 @@ void* pop(Stack* stack) {
 
 typedef void (*function_ptr)();
 
+// An alternative to adding 'cl' would be to have custom tree_node stuctures
 typedef struct tree_node {
   char*             key;
   function_ptr      value;
