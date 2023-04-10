@@ -55,12 +55,12 @@ TreeNode* create_node(char* key, Fn fn) {
 void insert_node(TreeNode** root, char* key, Fn fn) {
   if ( *root == NULL )  {
     *root = create_node(key, fn);
-    return;
+  } else {
+    insert_node(
+      strcmp(key,(*root)->key) < 0 ? &(*root)->left : &(*root)->right,
+      key,
+      fn);
   }
-  insert_node(
-    strcmp(key,(*root)->key) < 0 ? &(*root)->left : &(*root)->right,
-    key,
-    fn);
 }
 
 
