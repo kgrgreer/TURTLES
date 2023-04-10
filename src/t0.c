@@ -19,46 +19,56 @@ void* pop(Stack* stack) {
   return stack->arr[--stack->ptr];
 }
 
-typedef void (*function_ptr)();
+typedef void (*Fn)();
 
-// An alternative to adding 'cl' would be to have custom tree_node stuctures
+typedef struct closure {
+  Fn    fn;
+  void* state;
+} Closure;
+
 typedef struct tree_node {
   char*             key;
-  function_ptr      value;
+  Closure           value;
+//  Fn      value;
   long              cl;    // Heap pointer for closure-like extra data
   struct tree_node* left;
   struct tree_node* right;
 } TreeNode;
 
 
-TreeNode* create_node(char* key, function_ptr value) {
+void call(Closure* cl) {
+  cl->fn(cl->state);
+}
+
+
+TreeNode* create_node(char* key, Fn fn) {
   TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
-  node->value = value;
+  node->value.fn = fn;
   node->left  = NULL;
   node->right = NULL;
   return node;
 }
 
 
-void insert_node(TreeNode** root, char* key, function_ptr value) {
+void insert_node(TreeNode** root, char* key, Fn fn) {
   if ( *root == NULL )  {
-    *root = create_node(key, value);
+    *root = create_node(key, fn);
     return;
   }
   insert_node(
     strcmp(key,(*root)->key) < 0 ? &(*root)->left : &(*root)->right,
     key,
-    value);
+    fn);
 }
 
 
-function_ptr search_node(TreeNode* root, char* key) {
+Closure* search_node(TreeNode* root, char* key) {
   if ( root == NULL ) return NULL;
 
   int c = strcmp(key, root->key);
-  if ( c == 0 ) return root->value;
+  if ( c == 0 ) return &(root->value);
   return search_node(c < 0 ? root->left : root->right, key);
 }
 
@@ -172,10 +182,10 @@ void bar() { printf("bar\n"); }
 
 
 void evalSym(char* sym) {
-  function_ptr func = search_node(scope, sym);
+  Closure* cl = search_node(scope, sym);
 
-  if ( func != NULL ) {
-    func();
+  if ( cl != NULL ) {
+    call(cl);
   } else if ( sym[0] == ':' ) {
     char* sym = strdup(sym+1);
     heap->arr[ip++] = define;
@@ -210,7 +220,7 @@ void evalSym(char* sym) {
 /** Execute code starting at ip until 0 found. **/
 void execute(long ptr) {
   for ( ip = ptr ; heap->arr[ip] ; ip++ ) {
-    ((function_ptr) heap->arr[ip++])();
+    ((Fn) heap->arr[ip++])();
   }
 }
 
