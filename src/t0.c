@@ -26,22 +26,23 @@ typedef struct tree_node {
   Fn*               fn;
   struct tree_node* left;
   struct tree_node* right;
-} TreeNode;
+} SymNode;
 
 
 Stack*    stack = NULL;
 Stack*    heap  = NULL;
-TreeNode* scope = NULL;
+SymNode* scope = NULL;
 long      ip    = 0;
 
 
 void call(Fn* fn) {
+  // TODO: pass ptr OR what if SymNode contained multiple inlined words?
   (*fn)();
 }
 
 
-TreeNode* create_node(char* key, Fn* fn) {
-  TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
+SymNode* create_node(char* key, Fn* fn) {
+  SymNode* node = (SymNode*) malloc(sizeof(SymNode));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
   node->fn = fn;
@@ -53,7 +54,7 @@ TreeNode* create_node(char* key, Fn* fn) {
 }
 
 
-void insert_node(TreeNode** root, char* key, Fn* fn) {
+void insert_node(SymNode** root, char* key, Fn* fn) {
   if ( *root == NULL )  {
     *root = create_node(key, fn);
   } else {
@@ -64,14 +65,14 @@ void insert_node(TreeNode** root, char* key, Fn* fn) {
   }
 }
 
-void insertFn(TreeNode** root, char* key, Fn fn) {
+void insertFn(SymNode** root, char* key, Fn fn) {
   Fn* def = (Fn*) &(heap->arr[heap->ptr]);
   push(heap, fn);
   insert_node(root, key, def);
 }
 
 
-Fn* search_node(TreeNode* root, char* key) {
+Fn* search_node(SymNode* root, char* key) {
   if ( root == NULL ) return NULL;
 
   int c = strcmp(key, root->key);
@@ -80,7 +81,7 @@ Fn* search_node(TreeNode* root, char* key) {
 }
 
 /*
-void free_tree(TreeNode* root) {
+void free_tree(SymNode* root) {
   if ( root == NULL ) return;
   free_tree(root->left);
   free_tree(root->right);
@@ -123,7 +124,7 @@ void constant() {
 void define() {
   void* value = pop(stack);      // Definition Value
   char* sym   = heap->arr[ip++]; // Definition Key
-printf("define: %s", sym);
+printf("define: %s %ld", sym, (long) value);
   Fn* def = (Fn*) &(heap->arr[heap->ptr]);
   push(heap, constant);
   push(heap, value);
