@@ -123,13 +123,12 @@ void constant() {
 void define() {
   void* value = pop(stack);      // Definition Value
   char* sym   = heap->arr[ip++]; // Definition Key
-
+printf("define: %s", sym);
   Fn* def = (Fn*) &(heap->arr[heap->ptr]);
   push(heap, constant);
   push(heap, value);
 
   insert_node(&scope, sym, def);
-
 }
 
 void minusOne() { push(stack, (void*)  -1); }
@@ -194,9 +193,9 @@ void evalSym(char* sym) {
   if ( fn != NULL ) {
     call(fn);
   } else if ( sym[0] == ':' ) {
-    char* sym = strdup(sym+1);
+    char* s = strdup(sym+1);
     heap->arr[ip++] = define;
-    heap->arr[ip++] = sym;
+    heap->arr[ip++] = s;
     /*
     var sym = line.substring(1);
     code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
