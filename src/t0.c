@@ -40,11 +40,12 @@ void call(Fn* fn) {
 }
 
 
-TreeNode* create_node(char* key, Fn fn) {
+TreeNode* create_node(char* key, Fn* fn) {
   TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
-  node->fn = (Fn*) &(heap->arr[heap->ptr]);
+  node->fn = fn;
+//   node->fn = (Fn*) &(heap->arr[heap->ptr]);
   push(heap, fn);
   node->left  = NULL;
   node->right = NULL;
@@ -52,7 +53,7 @@ TreeNode* create_node(char* key, Fn fn) {
 }
 
 
-void insert_node(TreeNode** root, char* key, Fn fn) {
+void insert_node(TreeNode** root, char* key, Fn* fn) {
   if ( *root == NULL )  {
     *root = create_node(key, fn);
   } else {
@@ -61,6 +62,12 @@ void insert_node(TreeNode** root, char* key, Fn fn) {
       key,
       fn);
   }
+}
+
+void insertFn(TreeNode** root, char* key, Fn fn) {
+  Fn* def = (Fn*) &(heap->arr[heap->ptr]);
+  push(heap, fn);
+  insert_node(root, key, def);
 }
 
 
@@ -117,7 +124,11 @@ void define() {
   void* value = pop(stack);      // Definition Value
   char* sym   = heap->arr[ip++]; // Definition Key
 
-//  insert_node(&scope, sym, ???); // needs to be an ip
+  Fn* def = (Fn*) &(heap->arr[heap->ptr]);
+  push(heap, constant);
+  push(heap, value);
+
+  insert_node(&scope, sym, def);
 
 }
 
@@ -228,21 +239,21 @@ int main() {
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
-  insert_node(&scope, "foo",   &foo);
-  insert_node(&scope, "bar",   &bar);
-  insert_node(&scope, "+",     &plus);
-  insert_node(&scope, "-",     &minus);
-  insert_node(&scope, "=",     &eq);
-  insert_node(&scope, "!",     &not);
-  insert_node(&scope, "print", &print);
-  insert_node(&scope, ".",     &print); // like forth
+  insertFn(&scope, "foo",   &foo);
+  insertFn(&scope, "bar",   &bar);
+  insertFn(&scope, "+",     &plus);
+  insertFn(&scope, "-",     &minus);
+  insertFn(&scope, "=",     &eq);
+  insertFn(&scope, "!",     &not);
+  insertFn(&scope, "print", &print);
+  insertFn(&scope, ".",     &print); // like forth
 
   // These could be moved to t0 code.
-  insert_node(&scope, "-1",    &minusOne);
-  insert_node(&scope, "0",     &zero);
-  insert_node(&scope, "1",     &one);
-  insert_node(&scope, "2",     &two);
-  insert_node(&scope, "10",    &ten);
+  insertFn(&scope, "-1",    &minusOne);
+  insertFn(&scope, "0",     &zero);
+  insertFn(&scope, "1",     &one);
+  insertFn(&scope, "2",     &two);
+  insertFn(&scope, "10",    &ten);
 
   while ( readSym(buf, sizeof(buf)) ) {
     ip = SCRATCH;
