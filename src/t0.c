@@ -21,23 +21,22 @@ void* pop(Stack* stack) {
 
 typedef void (*Fn)();
 
-typedef struct closure {
-  Fn    fn;
-  void* state;
-} Closure;
-
 typedef struct tree_node {
   char*             key;
-  Closure           value;
-//  Fn      value;
-  long              cl;    // Heap pointer for closure-like extra data
+  Fn*               fn;
   struct tree_node* left;
   struct tree_node* right;
 } TreeNode;
 
 
-void call(Closure* cl) {
-  cl->fn(cl->state);
+Stack*    stack = NULL;
+Stack*    heap  = NULL;
+TreeNode* scope = NULL;
+long      ip    = 0;
+
+
+void call(Fn* fn) {
+  (*fn)();
 }
 
 
@@ -45,7 +44,8 @@ TreeNode* create_node(char* key, Fn fn) {
   TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
-  node->value.fn = fn;
+  node->fn = (Fn*) &(heap->arr[heap->ptr]);
+  push(heap, fn);
   node->left  = NULL;
   node->right = NULL;
   return node;
@@ -64,11 +64,11 @@ void insert_node(TreeNode** root, char* key, Fn fn) {
 }
 
 
-Closure* search_node(TreeNode* root, char* key) {
+Fn* search_node(TreeNode* root, char* key) {
   if ( root == NULL ) return NULL;
 
   int c = strcmp(key, root->key);
-  if ( c == 0 ) return &(root->value);
+  if ( c == 0 ) return root->fn;
   return search_node(c < 0 ? root->left : root->right, key);
 }
 
@@ -107,10 +107,6 @@ bool readSym(char* buffer, int buffer_size) {
   return true;
 }
 
-Stack*    stack = NULL;
-Stack*    heap  = NULL;
-TreeNode* scope = NULL;
-long      ip    = 0;
 
 void constant() {
   // Consume next constant value stored in the heap and push to stack
@@ -182,10 +178,10 @@ void bar() { printf("bar\n"); }
 
 
 void evalSym(char* sym) {
-  Closure* cl = search_node(scope, sym);
+  Fn* fn = search_node(scope, sym);
 
-  if ( cl != NULL ) {
-    call(cl);
+  if ( fn != NULL ) {
+    call(fn);
   } else if ( sym[0] == ':' ) {
     char* sym = strdup(sym+1);
     heap->arr[ip++] = define;
