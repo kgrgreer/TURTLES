@@ -194,6 +194,7 @@ void evalSym(char* sym) {
   if ( fn != NULL ) {
     call(fn);
   } else if ( sym[0] == ':' ) {
+    // function definition appears as :name
     char* s = strdup(sym+1);
     heap->arr[ip++] = define;
     heap->arr[ip++] = s;
