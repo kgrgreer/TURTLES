@@ -30,6 +30,7 @@ typedef struct tree_node {
 
 
 Stack*   stack = NULL;
+Stack*   calls = NULL; // call stack
 Stack*   heap  = NULL;
 SymNode* scope = NULL;
 long     ip    = 0;
@@ -119,6 +120,7 @@ bool readSym(char* buffer, int buffer_size) {
 
 
 void jump() {
+  // TODO: push return address on stack
   long ptr = (long) heap->arr[ip++];
   call(ptr);
 }
@@ -126,7 +128,7 @@ void jump() {
 void constant() {
   // Consume next constant value stored in the heap and push to stack
   long c = (long) heap->arr[ip++];
-  push(stack, (void *) c);
+  push(stack, (void*) c);
 }
 
 void define() {
@@ -184,7 +186,8 @@ void gosub() {
 
 
 void ret() {
-  ip = (long) pop(stack);
+  ip = (long) pop(calls);
+  // printf("returning to %ld\n", ip);
 }
 
 
@@ -193,16 +196,13 @@ void print() {
 }
 
 
-void foo() { printf("foo\n"); }
-
-void bar() { printf("bar\n"); }
-
-
 void evalSym(char* sym) {
 //  Fn* fn = search_node(scope, sym);
   long ptr = search_node(scope, sym);
 
   if ( ptr != -1 ) {
+    // printf("evaled: %s\n", sym);
+//    heap->arr[ip++] = (void*) ptr;
     heap->arr[ip++] = jump;
     heap->arr[ip++] = (void*) ptr;
   } else if ( sym[0] == ':' ) {
@@ -210,11 +210,6 @@ void evalSym(char* sym) {
     char* s = strdup(sym+1);
     heap->arr[ip++] = define;
     heap->arr[ip++] = s;
-    /*
-    var sym = line.substring(1);
-    code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
-    */
-
   } else if ( strcmp("//", sym) == 0 ) {
     // Ignore C++ style comments
     while ( getchar() != '\n' );
@@ -232,24 +227,59 @@ void evalSym(char* sym) {
     // Parse Integers
     heap->arr[ip++] = constant;
     heap->arr[ip++] = (void*) atol(sym);
+    printf("evaled number: %ld\n", (long) heap->arr[ip-1]);
   } else {
     printf("Unknown word: %s\n", sym);
   }
+  heap->arr[ip++] = ret;
 }
+
+
+void defun() {
+  char buf[256];
+
+  long ptr = heap->ptr;
+
+  while ( readSym(buf, sizeof(buf)) ) {
+    if ( strcmp(buf, "}") == 0 ) {
+      push(heap, ret);
+      return;
+    }
+    evalSym(buf);
+  }
+
+  printf("Syntax Error: Unclosed function, missing }");
+}
+
+
+void foo() { printf("foo\n"); }
+
+void bar() { printf("bar\n"); }
+
 
 /** Execute code starting at ip until 0 found. **/
 void execute(long ptr) {
-  for ( ip = ptr ; heap->arr[ip] ; ip++ ) {
+  for ( ip = ptr ; ; ) {
+    // printf("executing: %ld %ld\n", ip, (long) heap->arr[ip]);
     Fn fn = (Fn) heap->arr[ip++];
     fn();
+    // printf("executed %ld\n", ip);
+    if ( ip == -1 ) return;
   }
 }
 
+void printStack() {
+  for ( long i = 0 ; i < stack->ptr ; i++ ) {
+    printf("%ld ", (long) stack->arr[i]);
+  }
+  printf("\n\n");
+}
 
 int main() {
   char c;
   char buf[256];
 
+  calls = (Stack*) malloc(sizeof(Stack));
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
@@ -261,6 +291,7 @@ int main() {
   insertFn(&scope, "!",     &not);
   insertFn(&scope, "print", &print);
   insertFn(&scope, ".",     &print); // like forth
+  insertFn(&scope, "{",     &defun);
 
   // These could be moved to t0 code.
   insertFn(&scope, "-1",    &minusOne);
@@ -272,8 +303,10 @@ int main() {
   while ( readSym(buf, sizeof(buf)) ) {
     ip = SCRATCH;
     evalSym(buf);
-    heap->arr[ip] = 0; // mark end of code
+    push(calls, (void*) -1); // psedo return address causes stop to execution
+    printf("compiled %ld bytes\n", ip-SCRATCH);
     execute(SCRATCH);
+    printStack();
   }
 
   printf("\n");
