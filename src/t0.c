@@ -203,8 +203,13 @@ void evalSym(char* sym) {
   if ( ptr != -1 ) {
     // printf("evaled: %s\n", sym);
 //    heap->arr[ip++] = (void*) ptr;
+    // TODO: we should just execute the function and it should compile add
+    // itself to the heap.
+    /*
     heap->arr[ip++] = jump;
     heap->arr[ip++] = (void*) ptr;
+    */
+    heap->arr[ip++] = heap->arr[ptr];
   } else if ( sym[0] == ':' ) {
     // function definition appears as :name
     char* s = strdup(sym+1);
