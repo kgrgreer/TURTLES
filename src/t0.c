@@ -131,16 +131,24 @@ void constant() {
   push(stack, (void*) c);
 }
 
+
+void ret() {
+  ip = (long) pop(calls);
+  // printf("returning to %ld\n", ip);
+}
+
+
 void define() {
   void* value = pop(stack);      // Definition Value
   char* sym   = heap->arr[ip++]; // Definition Key
-  // printf("define: %s %ld\n", sym, (long) value);
+  printf("define: %s %ld\n", sym, (long) value);
 
-  // TODO: ip needs to change when called
   long ptr = heap->ptr;
   push(heap, constant);
   push(heap, value);
+  push(heap, ret);
 
+  // TODO: needs to create code that pushes to heap
   insert_node(&scope, sym, ptr);
 }
 
@@ -185,12 +193,6 @@ void gosub() {
 }
 
 
-void ret() {
-  ip = (long) pop(calls);
-  // printf("returning to %ld\n", ip);
-}
-
-
 void print() {
   printf("%ld\n", (long) pop(stack));
 }
@@ -202,14 +204,15 @@ void evalSym(char* sym) {
 
   if ( ptr != -1 ) {
     // printf("evaled: %s\n", sym);
-//    heap->arr[ip++] = (void*) ptr;
-    // TODO: we should just execute the function and it should compile add
+    // TODO: we should just execute the function and it should compile/add
     // itself to the heap.
-    /*
+
+    // needed so that : works
     heap->arr[ip++] = jump;
     heap->arr[ip++] = (void*) ptr;
-    */
-    heap->arr[ip++] = heap->arr[ptr];
+
+    // only supports built-in functions
+//    heap->arr[ip++] = heap->arr[ptr];
   } else if ( sym[0] == ':' ) {
     // function definition appears as :name
     char* s = strdup(sym+1);
@@ -256,7 +259,6 @@ void defun() {
   printf("Syntax Error: Unclosed function, missing }");
 }
 
-
 void foo() { printf("foo\n"); }
 
 void bar() { printf("bar\n"); }
@@ -284,7 +286,7 @@ int main() {
   char c;
   char buf[256];
 
-  calls = (Stack*) malloc(sizeof(Stack));
+  calls = (Stack*) malloc(sizeof(Stack)); // TODO: make smaller
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
