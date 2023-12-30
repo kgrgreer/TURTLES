@@ -34,7 +34,7 @@ Stack*   heap  = NULL;
 SymNode* scope = NULL;
 long     ip    = 0;
 
-void jump(long ptr) {
+void call(long ptr) {
   long oldIp = ip;
   ip = ptr;
   Fn* fn = (Fn*) &(heap->arr[ip++]);
@@ -118,6 +118,11 @@ bool readSym(char* buffer, int buffer_size) {
 }
 
 
+void jump() {
+  long ptr = (long) heap->arr[ip++];
+  call(ptr);
+}
+
 void constant() {
   // Consume next constant value stored in the heap and push to stack
   long c = (long) heap->arr[ip++];
@@ -198,7 +203,8 @@ void evalSym(char* sym) {
   long ptr = search_node(scope, sym);
 
   if ( ptr != -1 ) {
-    jump(ptr); // TODO: shouldn't push a jump instead of performing directly
+    heap->arr[ip++] = jump;
+    heap->arr[ip++] = ptr;
   } else if ( sym[0] == ':' ) {
     // function definition appears as :name
     char* s = strdup(sym+1);
