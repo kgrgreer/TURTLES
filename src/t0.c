@@ -23,7 +23,7 @@ typedef void (*Fn)();
 
 typedef struct tree_node {
   char*             key;
-  Fn*               fn;
+  long              ip;
   struct tree_node* left;
   struct tree_node* right;
 } SymNode;
@@ -34,49 +34,51 @@ Stack*   heap  = NULL;
 SymNode* scope = NULL;
 long     ip    = 0;
 
-
-void call(Fn* fn) {
-  // TODO: pass ptr OR what if SymNode contained multiple inlined words?
+void jump(long ptr) {
+  long oldIp = ip;
+  ip = ptr;
+  Fn* fn = (Fn*) &(heap->arr[ip++]);
   (*fn)();
+  ip = oldIp;
 }
 
 
-SymNode* create_node(char* key, Fn* fn) {
+SymNode* create_node(char* key, long ptr) {
   SymNode* node = (SymNode*) malloc(sizeof(SymNode));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
-  node->fn = fn;
+  node->ip = ptr;
 //   node->fn = (Fn*) &(heap->arr[heap->ptr]);
-  push(heap, fn);
+//  push(heap, fn);
   node->left  = NULL;
   node->right = NULL;
   return node;
 }
 
 
-void insert_node(SymNode** root, char* key, Fn* fn) {
+void insert_node(SymNode** root, char* key, long ptr) {
   if ( *root == NULL )  {
-    *root = create_node(key, fn);
+    *root = create_node(key, ptr);
   } else {
     insert_node(
       strcmp(key,(*root)->key) < 0 ? &(*root)->left : &(*root)->right,
       key,
-      fn);
+      ptr);
   }
 }
 
 void insertFn(SymNode** root, char* key, Fn fn) {
-  Fn* def = (Fn*) &(heap->arr[heap->ptr]);
+  long ptr = heap->ptr;
   push(heap, fn);
-  insert_node(root, key, def);
+  insert_node(root, key, ptr);
 }
 
 
-Fn* search_node(SymNode* root, char* key) {
-  if ( root == NULL ) return NULL;
+long search_node(SymNode* root, char* key) {
+  if ( root == NULL ) return -1;
 
   int c = strcmp(key, root->key);
-  if ( c == 0 ) return root->fn;
+  if ( c == 0 ) return root->ip;
   return search_node(c < 0 ? root->left : root->right, key);
 }
 
@@ -118,18 +120,21 @@ bool readSym(char* buffer, int buffer_size) {
 
 void constant() {
   // Consume next constant value stored in the heap and push to stack
-  push(stack, heap->arr[ip++]);
+  long c = (long) heap->arr[ip++];
+  push(stack, (void *) c);
 }
 
 void define() {
   void* value = pop(stack);      // Definition Value
   char* sym   = heap->arr[ip++]; // Definition Key
-printf("define: %s %ld", sym, (long) value);
-  Fn* def = (Fn*) &(heap->arr[heap->ptr]);
+  // printf("define: %s %ld\n", sym, (long) value);
+
+  // TODO: ip needs to change when called
+  long ptr = heap->ptr;
   push(heap, constant);
   push(heap, value);
 
-  insert_node(&scope, sym, def);
+  insert_node(&scope, sym, ptr);
 }
 
 void minusOne() { push(stack, (void*)  -1); }
@@ -189,10 +194,11 @@ void bar() { printf("bar\n"); }
 
 
 void evalSym(char* sym) {
-  Fn* fn = search_node(scope, sym);
+//  Fn* fn = search_node(scope, sym);
+  long ptr = search_node(scope, sym);
 
-  if ( fn != NULL ) {
-    call(fn);
+  if ( ptr != -1 ) {
+    jump(ptr); // TODO: shouldn't push a jump instead of performing directly
   } else if ( sym[0] == ':' ) {
     // function definition appears as :name
     char* s = strdup(sym+1);
@@ -228,7 +234,8 @@ void evalSym(char* sym) {
 /** Execute code starting at ip until 0 found. **/
 void execute(long ptr) {
   for ( ip = ptr ; heap->arr[ip] ; ip++ ) {
-    ((Fn) heap->arr[ip++])();
+    Fn fn = (Fn) heap->arr[ip++];
+    fn();
   }
 }
 
@@ -262,6 +269,8 @@ int main() {
     heap->arr[ip] = 0; // mark end of code
     execute(SCRATCH);
   }
+
+  printf("\n");
 
   return 0;
 }
