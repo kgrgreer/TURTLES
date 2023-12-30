@@ -29,10 +29,10 @@ typedef struct tree_node {
 } SymNode;
 
 
-Stack*    stack = NULL;
-Stack*    heap  = NULL;
+Stack*   stack = NULL;
+Stack*   heap  = NULL;
 SymNode* scope = NULL;
-long      ip    = 0;
+long     ip    = 0;
 
 
 void call(Fn* fn) {
