@@ -186,6 +186,20 @@ void minus() {
 }
 
 
+void multiply() {
+  long l2 = (long) pop(stack);
+  long l1 = (long) pop(stack);
+  push(stack, (void*) (l1 * l2));
+}
+
+
+void divide() {
+  long l2 = (long) pop(stack);
+  long l1 = (long) pop(stack);
+  push(stack, (void*) (l1 / l2));
+}
+
+
 void eq() {
   long l2 = (long) pop(stack);
   long l1 = (long) pop(stack);
@@ -214,6 +228,9 @@ void print() {
 void evalSym(char* sym) {
   long ptr = search_node(scope, sym);
 
+  // ???: If symbol not found then could fallback to 'unknownSymbol'
+  // which would allow for extension through decoration.
+
   if ( ptr != -1 ) {
     // printf("evaled: %s\n", sym);
     call(ptr);
@@ -230,25 +247,10 @@ void evalSym(char* sym) {
   } else {
     printf("Unknown word: %s\n", sym);
   }
+
   heap->arr[cp++] = ret;
 }
 
-
-void defun() {
-  char buf[256];
-
-  long ptr = heap->ptr;
-
-  while ( readSym(buf, sizeof(buf)) ) {
-    if ( strcmp(buf, "}") == 0 ) {
-      push(heap, ret);
-      return;
-    }
-    evalSym(buf);
-  }
-
-  printf("Syntax Error: Unclosed function, missing }");
-}
 
 void foo() { printf("foo\n"); }
 
@@ -272,6 +274,23 @@ void printStack() {
     printf("%ld ", (long) stack->arr[i]);
   }
   printf("\n\n");
+}
+
+
+void defun() {
+  char buf[256];
+
+  long ptr = heap->ptr;
+
+  while ( readSym(buf, sizeof(buf)) ) {
+    if ( strcmp(buf, "}") == 0 ) {
+      push(heap, ret);
+      return;
+    }
+    evalSym(buf);
+  }
+
+  printf("Syntax Error: Unclosed function, missing }");
 }
 
 
@@ -304,16 +323,18 @@ int main() {
 
   insertCmd(&scope, "/*",   &cComment);
   insertCmd(&scope, "//",   &cppComment);
+  insertCmd(&scope, "{",    &defun);
 
   insertFn(&scope, "foo",   &foo);
   insertFn(&scope, "bar",   &bar);
   insertFn(&scope, "+",     &plus);
   insertFn(&scope, "-",     &minus);
+  insertFn(&scope, "*",     &multiply);
+  insertFn(&scope, "/",     &divide);
   insertFn(&scope, "=",     &eq);
   insertFn(&scope, "!",     &not);
   insertFn(&scope, "print", &print);
   insertFn(&scope, ".",     &print); // like forth
-  insertFn(&scope, "{",     &defun);
 
   // These could be moved to t0 code.
   insertFn(&scope, "-1",    &minusOne);
