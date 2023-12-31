@@ -32,7 +32,7 @@ typedef struct tree_node {
 Stack*   stack = NULL;
 Stack*   calls = NULL; // call stack
 Stack*   heap  = NULL;
-SymNode* scope = NULL;
+SymNode* scope = NULL; // dictionary of words / closures
 long     ip    = 0;    // instruction pointer
 long     cp    = 0;    // code pointer, where code is being emitted to
 
@@ -70,8 +70,15 @@ void insert_node(SymNode** root, char* key, long ptr) {
   }
 }
 
+
+void emitFn() {
+  heap->arr[cp++] = heap->arr[ip++];
+}
+
+
 void insertFn(SymNode** root, char* key, Fn fn) {
   long ptr = heap->ptr;
+  push(heap, emitFn);
   push(heap, fn);
   insert_node(root, key, ptr);
 }
@@ -199,34 +206,18 @@ void print() {
 }
 
 
-void emitFn() {
-  heap->arr[cp] = heap->arr[ip++];
-}
-
-
 void evalSym(char* sym) {
 //  Fn* fn = search_node(scope, sym);
   long ptr = search_node(scope, sym);
 
   if ( ptr != -1 ) {
     // printf("evaled: %s\n", sym);
-    // TODO: we should just execute the function and it should compile/add
-    // itself to the heap.
-
-    // needed so that : works
     call(ptr);
-    /*
-    heap->arr[ip++] = jump;
-    heap->arr[ip++] = (void*) ptr;
-    */
-
-    // only supports built-in functions
-//    heap->arr[ip++] = heap->arr[ptr];
   } else if ( sym[0] == ':' ) {
     // function definition appears as :name
     char* s = strdup(sym+1);
-    heap->arr[ip++] = define;
-    heap->arr[ip++] = s;
+    heap->arr[cp++] = define;
+    heap->arr[cp++] = s;
   } else if ( strcmp("//", sym) == 0 ) {
     // Ignore C++ style comments
     while ( getchar() != '\n' );
