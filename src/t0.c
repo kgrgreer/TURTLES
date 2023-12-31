@@ -50,9 +50,7 @@ SymNode* create_node(char* key, long ptr) {
   SymNode* node = (SymNode*) malloc(sizeof(SymNode));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
-  node->ip = ptr;
-//   node->fn = (Fn*) &(heap->arr[heap->ptr]);
-//  push(heap, fn);
+  node->ip    = ptr;
   node->left  = NULL;
   node->right = NULL;
   return node;
@@ -214,7 +212,6 @@ void print() {
 
 
 void evalSym(char* sym) {
-//  Fn* fn = search_node(scope, sym);
   long ptr = search_node(scope, sym);
 
   if ( ptr != -1 ) {
