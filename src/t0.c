@@ -138,6 +138,31 @@ void jump() {
   call(ptr);
 }
 
+
+/** Execute code starting at ip until 0 found. **/
+void execute(long ptr) {
+  for ( ip = ptr ; ; ) {
+    // printf("executing: %ld %ld\n", ip, (long) heap->arr[ip]);
+    Fn fn = (Fn) heap->arr[ip++];
+    fn();
+    // printf("executed %ld\n", ip);
+    if ( ip == -1 ) return;
+  }
+}
+
+
+void callFn() {
+  // The () word which calls a function on the top of the stack
+  long ptr = (long) pop(stack);
+  push(calls, (void*) ip);
+
+  printf("Calling function at: %ld from: %ld\n", ptr, ip);
+  ip = ptr;
+  execute(ip++);
+  printf("Returned to: %ld\n", ip);
+}
+
+
 void constant() {
   // Consume next constant value stored in the heap and push to stack
   long c = (long) heap->arr[ip++];
@@ -243,12 +268,10 @@ void evalSym(char* sym) {
     // Parse Integers
     heap->arr[cp++] = constant;
     heap->arr[cp++] = (void*) atol(sym);
-    printf("evaled number: %ld\n", (long) heap->arr[ip-1]);
+    printf("evaled number: %ld\n", (long) heap->arr[cp-1]);
   } else {
     printf("Unknown word: %s\n", sym);
   }
-
-  heap->arr[cp++] = ret;
 }
 
 
@@ -257,34 +280,36 @@ void foo() { printf("foo\n"); }
 void bar() { printf("bar\n"); }
 
 
-/** Execute code starting at ip until 0 found. **/
-void execute(long ptr) {
-  for ( ip = ptr ; ; ) {
-    // printf("executing: %ld %ld\n", ip, (long) heap->arr[ip]);
-    Fn fn = (Fn) heap->arr[ip++];
-    fn();
-    // printf("executed %ld\n", ip);
-    if ( ip == -1 ) return;
-  }
-}
-
-
 void printStack() {
   for ( long i = 0 ; i < stack->ptr ; i++ ) {
     printf("%ld ", (long) stack->arr[i]);
   }
-  printf("\n\n");
 }
+
+/*
+void callC() {
+}
+*/
 
 
 void defun() {
   char buf[256];
 
   long ptr = heap->ptr;
+  long ocp = cp;
+
+  cp = heap->ptr;
 
   while ( readSym(buf, sizeof(buf)) ) {
     if ( strcmp(buf, "}") == 0 ) {
-      push(heap, ret);
+      printf("defun %ld bytes to %ld\n", cp-ptr, ptr);
+      heap->arr[cp++] = ret;
+      heap->ptr       = cp;
+      cp              = ocp;
+
+      heap->arr[cp++] = constant;
+      heap->arr[cp++] = (void*) ptr;
+
       return;
     }
     evalSym(buf);
@@ -335,6 +360,7 @@ int main() {
   insertFn(&scope, "!",     &not);
   insertFn(&scope, "print", &print);
   insertFn(&scope, ".",     &print); // like forth
+  insertFn(&scope, "()",    &callFn);
 
   // These could be moved to t0 code.
   insertFn(&scope, "-1",    &minusOne);
@@ -343,13 +369,16 @@ int main() {
   insertFn(&scope, "2",     &two);
   insertFn(&scope, "10",    &ten);
 
-  while ( readSym(buf, sizeof(buf)) ) {
+  while ( true ) {
+    printf("heap: %d, stack: ", heap->ptr); printStack(); printf("> ");
+    if ( ! readSym(buf, sizeof(buf)) ) break;
     cp = SCRATCH;
     evalSym(buf);
+
+    heap->arr[cp++] = ret;
     push(calls, (void*) -1); // psedo return address causes stop to execution
     printf("compiled %ld bytes\n", cp-SCRATCH);
     execute(SCRATCH);
-    printStack();
   }
 
   printf("\n");
