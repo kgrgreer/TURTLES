@@ -33,14 +33,16 @@ Stack*   stack = NULL;
 Stack*   calls = NULL; // call stack
 Stack*   heap  = NULL;
 SymNode* scope = NULL;
-long     ip    = 0;
+long     ip    = 0;    // instruction pointer
+long     cp    = 0;    // code pointer, where code is being emitted to
+
 
 void call(long ptr) {
-  long oldIp = ip;
+  long ret = ip;
   ip = ptr;
   Fn* fn = (Fn*) &(heap->arr[ip++]);
   (*fn)();
-  ip = oldIp;
+  ip = ret;
 }
 
 
@@ -120,7 +122,6 @@ bool readSym(char* buffer, int buffer_size) {
 
 
 void jump() {
-  // TODO: push return address on stack
   long ptr = (long) heap->arr[ip++];
   call(ptr);
 }
@@ -198,6 +199,11 @@ void print() {
 }
 
 
+void emitFn() {
+  heap->arr[cp] = heap->arr[ip++];
+}
+
+
 void evalSym(char* sym) {
 //  Fn* fn = search_node(scope, sym);
   long ptr = search_node(scope, sym);
@@ -208,8 +214,11 @@ void evalSym(char* sym) {
     // itself to the heap.
 
     // needed so that : works
+    call(ptr);
+    /*
     heap->arr[ip++] = jump;
     heap->arr[ip++] = (void*) ptr;
+    */
 
     // only supports built-in functions
 //    heap->arr[ip++] = heap->arr[ptr];
@@ -233,13 +242,13 @@ void evalSym(char* sym) {
     }
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
     // Parse Integers
-    heap->arr[ip++] = constant;
-    heap->arr[ip++] = (void*) atol(sym);
+    heap->arr[cp++] = constant;
+    heap->arr[cp++] = (void*) atol(sym);
     printf("evaled number: %ld\n", (long) heap->arr[ip-1]);
   } else {
     printf("Unknown word: %s\n", sym);
   }
-  heap->arr[ip++] = ret;
+  heap->arr[cp++] = ret;
 }
 
 
@@ -275,12 +284,14 @@ void execute(long ptr) {
   }
 }
 
+
 void printStack() {
   for ( long i = 0 ; i < stack->ptr ; i++ ) {
     printf("%ld ", (long) stack->arr[i]);
   }
   printf("\n\n");
 }
+
 
 int main() {
   char c;
@@ -308,10 +319,10 @@ int main() {
   insertFn(&scope, "10",    &ten);
 
   while ( readSym(buf, sizeof(buf)) ) {
-    ip = SCRATCH;
+    cp = SCRATCH;
     evalSym(buf);
     push(calls, (void*) -1); // psedo return address causes stop to execution
-    printf("compiled %ld bytes\n", ip-SCRATCH);
+    printf("compiled %ld bytes\n", cp-SCRATCH);
     execute(SCRATCH);
     printStack();
   }
