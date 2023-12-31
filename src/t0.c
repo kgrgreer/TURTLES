@@ -84,6 +84,13 @@ void insertFn(SymNode** root, char* key, Fn fn) {
 }
 
 
+void insertCmd(SymNode** root, char* key, Fn fn) {
+  long ptr = heap->ptr;
+  push(heap, fn);
+  insert_node(root, key, ptr);
+}
+
+
 long search_node(SymNode* root, char* key) {
   if ( root == NULL ) return -1;
 
@@ -218,9 +225,6 @@ void evalSym(char* sym) {
     char* s = strdup(sym+1);
     heap->arr[cp++] = define;
     heap->arr[cp++] = s;
-  } else if ( strcmp("//", sym) == 0 ) {
-    // Ignore C++ style comments
-    while ( getchar() != '\n' );
   } else if ( strcmp("/*", sym) == 0 ) {
     // Ignore C style comments
     int state = 0;
@@ -284,6 +288,12 @@ void printStack() {
 }
 
 
+void lineComment() {
+  // Ignore C++ style comments
+  while ( getchar() != '\n' );
+}
+
+
 int main() {
   char c;
   char buf[256];
@@ -291,6 +301,8 @@ int main() {
   calls = (Stack*) malloc(sizeof(Stack)); // TODO: make smaller
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
+
+  insertCmd(&scope, "//",   &lineComment);
 
   insertFn(&scope, "foo",   &foo);
   insertFn(&scope, "bar",   &bar);
