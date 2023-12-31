@@ -225,16 +225,6 @@ void evalSym(char* sym) {
     char* s = strdup(sym+1);
     heap->arr[cp++] = define;
     heap->arr[cp++] = s;
-  } else if ( strcmp("/*", sym) == 0 ) {
-    // Ignore C style comments
-    int state = 0;
-    char c;
-    while ( ( c = getchar() ) ) {
-      switch ( state ) {
-        case 0: if ( c == '*' ) state = 1; break;
-        case 1: if ( c == '/' ) return; state = c == '*' ? 1 : 0;
-      }
-    }
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
     // Parse Integers
     heap->arr[cp++] = constant;
@@ -288,9 +278,22 @@ void printStack() {
 }
 
 
-void lineComment() {
-  // Ignore C++ style comments
+void cppComment() {
+  // Ignore C++ // style comments
   while ( getchar() != '\n' );
+}
+
+
+void cComment() {
+  // Ignore C style /* */ comments
+  int state = 0;
+  char c;
+  while ( ( c = getchar() ) ) {
+    switch ( state ) {
+      case 0: if ( c == '*' ) state = 1; break;
+      case 1: if ( c == '/' ) return; state = c == '*' ? 1 : 0;
+    }
+  }
 }
 
 
@@ -302,7 +305,8 @@ int main() {
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
-  insertCmd(&scope, "//",   &lineComment);
+  insertCmd(&scope, "/*",   &cComment);
+  insertCmd(&scope, "//",   &cppComment);
 
   insertFn(&scope, "foo",   &foo);
   insertFn(&scope, "bar",   &bar);
