@@ -186,9 +186,26 @@ void define() {
   push(heap, value);
   push(heap, ret);
 
-  // TODO: needs to create code that pushes to heap
   insert_node(&scope, sym, ptr);
 }
+
+
+void defineAuto() {
+  // Define a function that automatically executes when accessed without requiring ()
+  void* value = pop(stack);      // Definition Value
+  char* sym   = heap->arr[ip++]; // Definition Key
+  printf("defineAuto: %s %ld\n", sym, (long) value);
+
+  long ptr = heap->ptr;
+  push(heap, constant);
+  push(heap, value);
+  push(heap, ret);
+
+  call(search_node(scope, "()"));
+
+  insert_node(&scope, sym, ptr);
+}
+
 
 void minusOne() { push(stack, (void*)  -1); }
 void zero()     { push(stack, (void*)  0);  }
@@ -260,10 +277,17 @@ void evalSym(char* sym) {
     // printf("evaled: %s\n", sym);
     call(ptr);
   } else if ( sym[0] == ':' ) {
-    // function definition appears as :name
-    char* s = strdup(sym+1);
-    heap->arr[cp++] = define;
-    heap->arr[cp++] = s;
+    if ( sym[1] == ':' ) {
+      // function definition appears as ::name
+      char* s = strdup(sym+2);
+      heap->arr[cp++] = defineAuto;
+      heap->arr[cp++] = s;
+    } else {
+      // function definition appears as :name
+      char* s = strdup(sym+1);
+      heap->arr[cp++] = define;
+      heap->arr[cp++] = s;
+    }
   } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
     // Parse Integers
     heap->arr[cp++] = constant;
