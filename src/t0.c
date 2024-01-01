@@ -170,6 +170,15 @@ void constant() {
 }
 
 
+void autoConstant() {
+  // Consume next constant value stored in the heap and push to stack
+  long c = (long) heap->arr[ip++];
+  push(stack, (void*) c);
+  printf("autoConstant call %ld\n", c);
+  callFn(); // crashes after this
+}
+
+
 void ret() {
   ip = (long) pop(calls);
   // printf("returning to %ld\n", ip);
@@ -197,11 +206,9 @@ void defineAuto() {
   printf("defineAuto: %s %ld\n", sym, (long) value);
 
   long ptr = heap->ptr;
-  push(heap, constant);
+  push(heap, autoConstant);
   push(heap, value);
   push(heap, ret);
-
-  call(search_node(scope, "()"));
 
   insert_node(&scope, sym, ptr);
 }
