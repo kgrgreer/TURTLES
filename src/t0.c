@@ -359,10 +359,24 @@ void printStack() {
 void defun() {
   char buf[256];
 
-  long ptr = heap->ptr;
-  long ocp = cp;
+  long ptr  = heap->ptr;
+  long ocp  = cp;
+  long vars = heap->ptr;
 
   cp = heap->ptr;
+
+  while ( true ) {
+
+    if ( ! readSym(buf, sizeof(buf)) ) {
+      printf("Syntax Error: Unclosed function, missing |");
+      return;
+    }
+
+    if ( strcmp(buf, "|") == 0 ) break;
+
+    printf("var: %s\n", buf);
+    push(heap, buf); // vars.push(sym);
+  }
 
   while ( readSym(buf, sizeof(buf)) ) {
     if ( strcmp(buf, "}") == 0 ) {
