@@ -90,7 +90,7 @@ void emitFn() {
 }
 
 
-Scope* insertFn(Scope* root, char* key, Fn fn) {
+Scope* addFn(Scope* root, char* key, Fn fn) {
   long ptr = heap->ptr;
   push(heap, emitFn);
   push(heap, fn);
@@ -98,7 +98,7 @@ Scope* insertFn(Scope* root, char* key, Fn fn) {
 }
 
 
-Scope* insertCmd(Scope* root, char* key, Fn fn) {
+Scope* addCmd(Scope* root, char* key, Fn fn) {
   long ptr = heap->ptr;
   push(heap, fn);
   return addSym(root, key, ptr);
@@ -412,26 +412,26 @@ int main() {
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
-  scope = insertCmd(scope, "unknownSymbol",   &unknownSymbol);
-  scope = insertCmd(scope, "/*",   &cComment);
-  scope = insertCmd(scope, "//",   &cppComment);
-  scope = insertCmd(scope, "{",    &defun);
+  scope = addCmd(scope, "unknownSymbol",   &unknownSymbol);
+  scope = addCmd(scope, "/*",   &cComment);
+  scope = addCmd(scope, "//",   &cppComment);
+  scope = addCmd(scope, "{",    &defun);
 
-  scope = insertFn(scope, "+",     &plus);
-  scope = insertFn(scope, "-",     &minus);
-  scope = insertFn(scope, "*",     &multiply);
-  scope = insertFn(scope, "/",     &divide);
-  scope = insertFn(scope, "=",     &eq);
-  scope = insertFn(scope, "!",     &not);
-  scope = insertFn(scope, "print", &print);
-  scope = insertFn(scope, ".",     &print); // like forth
-  scope = insertFn(scope, "()",    &callFn);
+  scope = addFn(scope, "+",     &plus);
+  scope = addFn(scope, "-",     &minus);
+  scope = addFn(scope, "*",     &multiply);
+  scope = addFn(scope, "/",     &divide);
+  scope = addFn(scope, "=",     &eq);
+  scope = addFn(scope, "!",     &not);
+  scope = addFn(scope, "print", &print);
+  scope = addFn(scope, ".",     &print); // like forth
+  scope = addFn(scope, "()",    &callFn);
 
-  scope = insertFn(scope, "-1",    &minusOne);
-  scope = insertFn(scope, "0",     &zero);
-  scope = insertFn(scope, "1",     &one);
-  scope = insertFn(scope, "2",     &two);
-  scope = insertFn(scope, "10",    &ten);
+  scope = addFn(scope, "-1",    &minusOne);
+  scope = addFn(scope, "0",     &zero);
+  scope = addFn(scope, "1",     &one);
+  scope = addFn(scope, "2",     &two);
+  scope = addFn(scope, "10",    &ten);
 
   while ( true ) {
     printf("heap: %d, stack: ", heap->ptr); printStack(); printf("> ");
