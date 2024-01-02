@@ -74,7 +74,7 @@ void insert_node(SymNode** root, char* key, long ptr) {
 }
 
 
-/* Immutable version of insertNode. Creates a new tree with the updated binding. */
+/* Immutable version of insertNode. Creates a new tree with added binding. */
 SymNode* insertNodeI(SymNode* root, char* key, long ptr) {
   if ( root == NULL )  return create_node(key, ptr);
 
@@ -311,16 +311,10 @@ void print() {
 }
 
 
-void evalSym(char* sym) {
-  long ptr = search_node(scope, sym);
+void unknownSymbol() {
+  char* sym = (char*) pop(stack);
 
-  // ???: If symbol not found then could fallback to 'unknownSymbol'
-  // which would allow for extension through decoration.
-
-  if ( ptr != -1 ) {
-    // printf("evaled: %s\n", sym);
-    call(ptr);
-  } else if ( sym[0] == ':' ) {
+  if ( sym[0] == ':' ) {
     if ( sym[1] == ':' ) {
       // function definition appears as ::name
       char* s = strdup(sym+2);
@@ -338,14 +332,26 @@ void evalSym(char* sym) {
     heap->arr[cp++] = (void*) atol(sym);
     printf("evaled number: %ld\n", (long) heap->arr[cp-1]);
   } else {
-    printf("Unknown word: %s\n", sym);
+    printf("Unknown symbol: %s\n", sym);
   }
 }
 
 
-void foo() { printf("foo\n"); }
+void evalSym(char* sym) {
+  long ptr = search_node(scope, sym);
 
-void bar() { printf("bar\n"); }
+  // ???: If symbol not found then could fallback to 'unknownSymbol'
+  // which would allow for extension through decoration.
+
+  if ( ptr != -1 ) {
+    // printf("evaled: %s\n", sym);
+    call(ptr);
+  } else {
+    push(stack, sym);
+    ptr = search_node(scope, "unknownSymbol");
+    call(ptr);
+  }
+}
 
 
 void printStack() {
@@ -414,12 +420,11 @@ int main() {
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
+  insertCmd(&scope, "unknownSymbol",   &unknownSymbol);
   insertCmd(&scope, "/*",   &cComment);
   insertCmd(&scope, "//",   &cppComment);
   insertCmd(&scope, "{",    &defun);
 
-  insertFn(&scope, "foo",   &foo);
-  insertFn(&scope, "bar",   &bar);
   insertFn(&scope, "+",     &plus);
   insertFn(&scope, "-",     &minus);
   insertFn(&scope, "*",     &multiply);
@@ -430,7 +435,6 @@ int main() {
   insertFn(&scope, ".",     &print); // like forth
   insertFn(&scope, "()",    &callFn);
 
-  // These could be moved to t0 code.
   insertFn(&scope, "-1",    &minusOne);
   insertFn(&scope, "0",     &zero);
   insertFn(&scope, "1",     &one);
