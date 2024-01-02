@@ -31,13 +31,13 @@ typedef struct tree_node {
   long              ip;
   struct tree_node* left;
   struct tree_node* right;
-} SymNode;
+} Scope;
 
 
 Stack*   stack = NULL;
 Stack*   calls = NULL; // call stack
 Stack*   heap  = NULL;
-SymNode* scope = NULL; // dictionary of words / closures
+Scope* scope = NULL; // dictionary of words / closures
 long     ip    = 0;    // instruction pointer
 long     cp    = 0;    // code pointer, where code is being emitted to
 
@@ -51,8 +51,8 @@ void call(long ptr) {
 }
 
 
-SymNode* create_node(char* key, long ptr) {
-  SymNode* node = (SymNode*) malloc(sizeof(SymNode));
+Scope* createNode(char* key, long ptr) {
+  Scope* node = (Scope*) malloc(sizeof(Scope));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
   node->ip    = ptr;
@@ -62,25 +62,13 @@ SymNode* create_node(char* key, long ptr) {
 }
 
 
-void insert_node(SymNode** root, char* key, long ptr) {
-  if ( *root == NULL )  {
-    *root = create_node(key, ptr);
-  } else {
-    insert_node(
-      strcmp(key, (*root)->key) < 0 ? &(*root)->left : &(*root)->right,
-      key,
-      ptr);
-  }
-}
-
-
 /* Immutable version of insertNode. Creates a new tree with added binding. */
-SymNode* insertNodeI(SymNode* root, char* key, long ptr) {
-  if ( root == NULL )  return create_node(key, ptr);
+Scope* insertNode(Scope* root, char* key, long ptr) {
+  if ( root == NULL )  return createNode(key, ptr);
 
   int cmp = strcmp(key, root->key);
 
-  SymNode* ret = create_node(root->key, root->ip);
+  Scope* ret = createNode(root->key, root->ip);
   ret->left  = root->left;
   ret->right = root->right;
 
@@ -88,9 +76,9 @@ SymNode* insertNodeI(SymNode* root, char* key, long ptr) {
     // Should we free key in this case?
     ret->ip = ptr;
   } else if ( cmp < 0 ) {
-    ret->left  = insertNodeI(ret->left, key, ptr);
+    ret->left  = insertNode(ret->left, key, ptr);
   } else {
-    ret->right = insertNodeI(ret->right, key, ptr);
+    ret->right = insertNode(ret->right, key, ptr);
   }
 
   return ret;
@@ -102,22 +90,22 @@ void emitFn() {
 }
 
 
-void insertFn(SymNode** root, char* key, Fn fn) {
+Scope* insertFn(Scope* root, char* key, Fn fn) {
   long ptr = heap->ptr;
   push(heap, emitFn);
   push(heap, fn);
-  insert_node(root, key, ptr);
+  return insertNode(root, key, ptr);
 }
 
 
-void insertCmd(SymNode** root, char* key, Fn fn) {
+Scope* insertCmd(Scope* root, char* key, Fn fn) {
   long ptr = heap->ptr;
   push(heap, fn);
-  insert_node(root, key, ptr);
+  return insertNode(root, key, ptr);
 }
 
 
-long findNode(SymNode* root, char* key) {
+long findNode(Scope* root, char* key) {
   if ( root == NULL ) return -1;
 
   int c = strcmp(key, root->key);
@@ -126,7 +114,7 @@ long findNode(SymNode* root, char* key) {
 }
 
 /*
-void free_tree(SymNode* root) {
+void free_tree(Scope* root) {
   if ( root == NULL ) return;
   free_tree(root->left);
   free_tree(root->right);
@@ -224,7 +212,7 @@ void define() {
   push(heap, value);
   push(heap, ret);
 
-  insert_node(&scope, sym, ptr);
+  scope = insertNode(scope, sym, ptr);
 }
 
 
@@ -238,7 +226,7 @@ void defineAuto() {
   push(heap, autoConstant);
   push(heap, value);
   push(heap, ret);
-  insert_node(&scope, sym, ptr);
+  scope = insertNode(scope, sym, ptr);
 
   char* sym2 = (char*) malloc(sizeof(sym)+1);
   sym2[0] = '&';
@@ -247,7 +235,7 @@ void defineAuto() {
   push(heap, constant);
   push(heap, value);
   push(heap, ret);
-  insert_node(&scope, sym2, ptr);
+  scope = insertNode(scope, sym2, ptr);
 }
 
 
@@ -424,26 +412,26 @@ int main() {
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
-  insertCmd(&scope, "unknownSymbol",   &unknownSymbol);
-  insertCmd(&scope, "/*",   &cComment);
-  insertCmd(&scope, "//",   &cppComment);
-  insertCmd(&scope, "{",    &defun);
+  scope = insertCmd(scope, "unknownSymbol",   &unknownSymbol);
+  scope = insertCmd(scope, "/*",   &cComment);
+  scope = insertCmd(scope, "//",   &cppComment);
+  scope = insertCmd(scope, "{",    &defun);
 
-  insertFn(&scope, "+",     &plus);
-  insertFn(&scope, "-",     &minus);
-  insertFn(&scope, "*",     &multiply);
-  insertFn(&scope, "/",     &divide);
-  insertFn(&scope, "=",     &eq);
-  insertFn(&scope, "!",     &not);
-  insertFn(&scope, "print", &print);
-  insertFn(&scope, ".",     &print); // like forth
-  insertFn(&scope, "()",    &callFn);
+  scope = insertFn(scope, "+",     &plus);
+  scope = insertFn(scope, "-",     &minus);
+  scope = insertFn(scope, "*",     &multiply);
+  scope = insertFn(scope, "/",     &divide);
+  scope = insertFn(scope, "=",     &eq);
+  scope = insertFn(scope, "!",     &not);
+  scope = insertFn(scope, "print", &print);
+  scope = insertFn(scope, ".",     &print); // like forth
+  scope = insertFn(scope, "()",    &callFn);
 
-  insertFn(&scope, "-1",    &minusOne);
-  insertFn(&scope, "0",     &zero);
-  insertFn(&scope, "1",     &one);
-  insertFn(&scope, "2",     &two);
-  insertFn(&scope, "10",    &ten);
+  scope = insertFn(scope, "-1",    &minusOne);
+  scope = insertFn(scope, "0",     &zero);
+  scope = insertFn(scope, "1",     &one);
+  scope = insertFn(scope, "2",     &two);
+  scope = insertFn(scope, "10",    &ten);
 
   while ( true ) {
     printf("heap: %d, stack: ", heap->ptr); printStack(); printf("> ");
