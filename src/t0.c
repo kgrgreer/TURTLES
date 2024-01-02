@@ -34,12 +34,12 @@ typedef struct tree_node {
 } Scope;
 
 
-Stack*   stack = NULL;
-Stack*   calls = NULL; // call stack
-Stack*   heap  = NULL;
+Stack* stack = NULL;
+Stack* calls = NULL; // call stack
+Stack* heap  = NULL;
 Scope* scope = NULL; // dictionary of words / closures
-long     ip    = 0;    // instruction pointer
-long     cp    = 0;    // code pointer, where code is being emitted to
+long   ip    = 0;    // instruction pointer
+long   cp    = 0;    // code pointer, where code is being emitted to
 
 
 void call(long ptr) {
@@ -105,12 +105,12 @@ Scope* insertCmd(Scope* root, char* key, Fn fn) {
 }
 
 
-long findNode(Scope* root, char* key) {
+long findSym(Scope* root, char* key) {
   if ( root == NULL ) return -1;
 
   int c = strcmp(key, root->key);
   if ( c == 0 ) return root->ip;
-  return findNode(c < 0 ? root->left : root->right, key);
+  return findSym(c < 0 ? root->left : root->right, key);
 }
 
 /*
@@ -326,11 +326,11 @@ void unknownSymbol() {
 
 
 void evalSym(char* sym) {
-  long ptr = findNode(scope, sym);
+  long ptr = findSym(scope, sym);
 
   if ( ptr == -1 ) {
     push(stack, sym);
-    ptr = findNode(scope, "unknownSymbol");
+    ptr = findSym(scope, "unknownSymbol");
   }
 
   call(ptr);
