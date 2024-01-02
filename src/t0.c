@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define DEBUG 1
+
 typedef struct stack_node {
   int    ptr;
   void*  arr[10000];
@@ -16,6 +18,9 @@ void push(Stack* stack, void* value) {
 }
 
 void* pop(Stack* stack) {
+#ifdef DEBUG
+  if ( stack->ptr <= 0 ) printf("POP from empty stack.\n");
+#endif
   return stack->arr[--stack->ptr];
 }
 
@@ -175,6 +180,7 @@ void autoConstant() {
   long c = (long) heap->arr[ip++];
   push(stack, (void*) c);
   printf("autoConstant call %ld\n", c);
+  push(calls, (void*) -1); // psedo return address causes stop to execution
   callFn(); // crashes after this
 }
 
