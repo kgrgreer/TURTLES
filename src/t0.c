@@ -62,8 +62,8 @@ Scope* createNode(char* key, long ptr) {
 }
 
 
-/* Immutable version of insertNode. Creates a new tree with added binding. */
-Scope* insertNode(Scope* root, char* key, long ptr) {
+/* Immutable version of addSym. Creates a new tree with added binding. */
+Scope* addSym(Scope* root, char* key, long ptr) {
   if ( root == NULL )  return createNode(key, ptr);
 
   int cmp = strcmp(key, root->key);
@@ -76,9 +76,9 @@ Scope* insertNode(Scope* root, char* key, long ptr) {
     // Should we free key in this case?
     ret->ip = ptr;
   } else if ( cmp < 0 ) {
-    ret->left  = insertNode(ret->left, key, ptr);
+    ret->left  = addSym(ret->left, key, ptr);
   } else {
-    ret->right = insertNode(ret->right, key, ptr);
+    ret->right = addSym(ret->right, key, ptr);
   }
 
   return ret;
@@ -94,14 +94,14 @@ Scope* insertFn(Scope* root, char* key, Fn fn) {
   long ptr = heap->ptr;
   push(heap, emitFn);
   push(heap, fn);
-  return insertNode(root, key, ptr);
+  return addSym(root, key, ptr);
 }
 
 
 Scope* insertCmd(Scope* root, char* key, Fn fn) {
   long ptr = heap->ptr;
   push(heap, fn);
-  return insertNode(root, key, ptr);
+  return addSym(root, key, ptr);
 }
 
 
@@ -212,7 +212,7 @@ void define() {
   push(heap, value);
   push(heap, ret);
 
-  scope = insertNode(scope, sym, ptr);
+  scope = addSym(scope, sym, ptr);
 }
 
 
@@ -226,7 +226,7 @@ void defineAuto() {
   push(heap, autoConstant);
   push(heap, value);
   push(heap, ret);
-  scope = insertNode(scope, sym, ptr);
+  scope = addSym(scope, sym, ptr);
 
   char* sym2 = (char*) malloc(sizeof(sym)+1);
   sym2[0] = '&';
@@ -235,7 +235,7 @@ void defineAuto() {
   push(heap, constant);
   push(heap, value);
   push(heap, ret);
-  scope = insertNode(scope, sym2, ptr);
+  scope = addSym(scope, sym2, ptr);
 }
 
 
