@@ -113,16 +113,6 @@ long findSym(Scope* root, char* key) {
   return findSym(c < 0 ? root->left : root->right, key);
 }
 
-/*
-void free_tree(Scope* root) {
-  if ( root == NULL ) return;
-  free_tree(root->left);
-  free_tree(root->right);
-  free(root->key);
-  free(root);
-}
-*/
-
 
 bool isSpace(char c) {
   return c == ' ' || c == '\t' || c == '\n';
