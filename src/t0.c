@@ -117,12 +117,12 @@ void insertCmd(SymNode** root, char* key, Fn fn) {
 }
 
 
-long search_node(SymNode* root, char* key) {
+long findNode(SymNode* root, char* key) {
   if ( root == NULL ) return -1;
 
   int c = strcmp(key, root->key);
   if ( c == 0 ) return root->ip;
-  return search_node(c < 0 ? root->left : root->right, key);
+  return findNode(c < 0 ? root->left : root->right, key);
 }
 
 /*
@@ -330,7 +330,7 @@ void unknownSymbol() {
     // Parse Integers
     heap->arr[cp++] = constant;
     heap->arr[cp++] = (void*) atol(sym);
-    printf("evaled number: %ld\n", (long) heap->arr[cp-1]);
+    // printf("evaled number: %ld\n", (long) heap->arr[cp-1]);
   } else {
     printf("Unknown symbol: %s\n", sym);
   }
@@ -338,19 +338,14 @@ void unknownSymbol() {
 
 
 void evalSym(char* sym) {
-  long ptr = search_node(scope, sym);
+  long ptr = findNode(scope, sym);
 
-  // ???: If symbol not found then could fallback to 'unknownSymbol'
-  // which would allow for extension through decoration.
-
-  if ( ptr != -1 ) {
-    // printf("evaled: %s\n", sym);
-    call(ptr);
-  } else {
+  if ( ptr == -1 ) {
     push(stack, sym);
-    ptr = search_node(scope, "unknownSymbol");
-    call(ptr);
+    ptr = findNode(scope, "unknownSymbol");
   }
+
+  call(ptr);
 }
 
 
@@ -359,11 +354,6 @@ void printStack() {
     printf("%ld ", (long) stack->arr[i]);
   }
 }
-
-/*
-void callC() {
-}
-*/
 
 
 void defun() {
