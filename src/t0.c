@@ -67,10 +67,33 @@ void insert_node(SymNode** root, char* key, long ptr) {
     *root = create_node(key, ptr);
   } else {
     insert_node(
-      strcmp(key,(*root)->key) < 0 ? &(*root)->left : &(*root)->right,
+      strcmp(key, (*root)->key) < 0 ? &(*root)->left : &(*root)->right,
       key,
       ptr);
   }
+}
+
+
+/* Immutable version of insertNode. Creates a new tree with the updated binding. */
+SymNode* insertNodeI(SymNode* root, char* key, long ptr) {
+  if ( root == NULL )  return create_node(key, ptr);
+
+  int cmp = strcmp(key, root->key);
+
+  SymNode* ret = create_node(root->key, root->ip);
+  ret->left  = root->left;
+  ret->right = root->right;
+
+  if ( cmp == 0 ) {
+    // Should we free key in this case?
+    ret->ip = ptr;
+  } else if ( cmp < 0 ) {
+    ret->left  = insertNodeI(ret->left, key, ptr);
+  } else {
+    ret->right = insertNodeI(ret->right, key, ptr);
+  }
+
+  return ret;
 }
 
 
@@ -217,7 +240,7 @@ void defineAuto() {
   push(heap, ret);
   insert_node(&scope, sym, ptr);
 
-  char* sym2 = (char*) malloc(strlen(sym)+2);
+  char* sym2 = (char*) malloc(sizeof(sym)+1);
   sym2[0] = '&';
   strcpy(sym2+1, sym);
   ptr = heap->ptr;
