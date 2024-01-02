@@ -215,8 +215,16 @@ void defineAuto() {
   push(heap, autoConstant);
   push(heap, value);
   push(heap, ret);
-
   insert_node(&scope, sym, ptr);
+
+  char* sym2 = (char*) malloc(strlen(sym)+2);
+  sym2[0] = '&';
+  strcpy(sym2+1, sym);
+  ptr = heap->ptr;
+  push(heap, constant);
+  push(heap, value);
+  push(heap, ret);
+  insert_node(&scope, sym2, ptr);
 }
 
 
