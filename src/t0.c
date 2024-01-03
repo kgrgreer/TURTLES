@@ -90,11 +90,16 @@ void emitFn() {
 }
 
 
-Scope* addFn(Scope* root, char* key, Fn fn) {
+long emitFnClosure(Fn fn) {
   long ptr = heap->ptr;
   push(heap, emitFn);
   push(heap, fn);
-  return addSym(root, key, ptr);
+  return ptr;
+}
+
+
+Scope* addFn(Scope* root, char* key, Fn fn) {
+  return addSym(root, key, emitFnClosure(fn));
 }
 
 
@@ -169,10 +174,25 @@ void callFn() {
 }
 
 
+void ret() {
+  ip = (long) pop(calls);
+  // printf("returning to %ld\n", ip);
+}
+
+
 void constant() {
   // Consume next constant value stored in the heap and push to stack
   long c = (long) heap->arr[ip++];
   push(stack, (void*) c);
+}
+
+
+long constantClosure(void* value) {
+  long ptr = heap->ptr;
+  push(heap, constant);
+  push(heap, value);
+  push(heap, ret);
+  return ptr;
 }
 
 
@@ -186,9 +206,12 @@ void autoConstant() {
 }
 
 
-void ret() {
-  ip = (long) pop(calls);
-  // printf("returning to %ld\n", ip);
+long autoConstantClosure(void* value) {
+  long ptr = heap->ptr;
+  push(heap, autoConstant);
+  push(heap, value);
+  push(heap, ret);
+  return ptr;
 }
 
 
@@ -197,12 +220,7 @@ void define() {
   char* sym   = heap->arr[ip++]; // Definition Key
   printf("define: %s %ld\n", sym, (long) value);
 
-  long ptr = heap->ptr;
-  push(heap, constant);
-  push(heap, value);
-  push(heap, ret);
-
-  scope = addSym(scope, sym, ptr);
+  scope = addSym(scope, sym, constantClosure(value));
 }
 
 
@@ -212,20 +230,12 @@ void defineAuto() {
   char* sym   = heap->arr[ip++]; // Definition Key
   printf("defineAuto: %s %ld\n", sym, (long) value);
 
-  long ptr = heap->ptr;
-  push(heap, autoConstant);
-  push(heap, value);
-  push(heap, ret);
-  scope = addSym(scope, sym, ptr);
+  scope = addSym(scope, sym, autoConstantClosure(value));
 
   char* sym2 = (char*) malloc(sizeof(sym)+1);
   sym2[0] = '&';
   strcpy(sym2+1, sym);
-  ptr = heap->ptr;
-  push(heap, constant);
-  push(heap, value);
-  push(heap, ret);
-  scope = addSym(scope, sym2, ptr);
+  scope = addSym(scope, sym2, constantClosure(value));
 }
 
 
@@ -376,8 +386,9 @@ void defineFn() {
     i++;
   }
 
-  for ( int j = 0 ; j < i ; j++ ) {
+  for ( long j = 0 ; j < i ; j++ ) {
     defineVar(j, heap->arr[vars+1+j]);
+    scope = addSym(scope, heap->arr[vars+1+j], constantClosure((void*) 100+j)); // needs an extra level
   }
 
   long ptr = cp = heap->ptr;
@@ -396,6 +407,8 @@ void defineFn() {
     }
     evalSym(buf);
   }
+
+  scope = s; // revert to old scope
 
   printf("Syntax Error: Unclosed function, missing }");
 }
