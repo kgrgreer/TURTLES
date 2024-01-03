@@ -334,14 +334,20 @@ void printStack() {
 }
 
 
-void defun() {
+void defineVar(int i, char* name) {
+  printf("defineVar: %d %s\n", i, name);
+}
+
+
+void defineFn() {
   char buf[256];
 
-  long ptr  = heap->ptr;
-  long ocp  = cp;
-  long vars = heap->ptr;
+  Scope* s    = scope;
+  long   vars = heap->ptr;
+  long   ocp  = cp;
+  int    i    = 0;
 
-  cp = heap->ptr;
+  push(heap, 0); // number of vars
 
   while ( true ) {
 
@@ -352,13 +358,33 @@ void defun() {
 
     if ( strcmp(buf, "|") == 0 ) break;
 
-    printf("var: %s\n", buf);
-    push(heap, buf); // vars.push(sym);
+    /*
+    function countFrames() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
+    function framesUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
+    function accessor(index, f) { return code => { var d = countFrames(); code.push(() => f(framesUp(d) + index)); } }
+    function defineVar(v, index) {
+      scope[v]        = accessor(index, i => stack.push(heap[i]));
+      scope[':' + v]  = accessor(index, i => { heap2[i] = v; heap[i] = stack.pop(); });
+      scope[v + '++'] = accessor(index, i => heap[i]++);
+      scope[v + '--'] = accessor(index, i => heap[i]--);
+    }
+    */
+
+    // Add var name to 'vars'
+    push(heap, strdup(buf));
+    heap->arr[vars]++;
+    i++;
   }
+
+  for ( int j = 0 ; j < i ; j++ ) {
+    defineVar(j, heap->arr[vars+1+j]);
+  }
+
+  long ptr = cp = heap->ptr;
 
   while ( readSym(buf, sizeof(buf)) ) {
     if ( strcmp(buf, "}") == 0 ) {
-      printf("defun %ld bytes to %ld\n", cp-ptr, ptr);
+      printf("defineFn %ld bytes to %ld\n", cp-ptr, ptr);
       heap->arr[cp++] = ret;
       heap->ptr       = cp;
       cp              = ocp;
@@ -405,7 +431,7 @@ int main() {
   scope = addCmd(scope, "unknownSymbol",   &unknownSymbol);
   scope = addCmd(scope, "/*",   &cComment);
   scope = addCmd(scope, "//",   &cppComment);
-  scope = addCmd(scope, "{",    &defun);
+  scope = addCmd(scope, "{",    &defineFn);
 
   scope = addFn(scope, "+",     &plus);
   scope = addFn(scope, "-",     &minus);
