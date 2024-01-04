@@ -103,10 +103,13 @@ long   ip    = 0;    // instruction pointer, code being run
 long   fp    = 0;    // frame pointer, pointer on heap of current frame / activation-record ???: can replace 'calls'?
 
 
+void* nextI() { return heap->arr[ip++]; }
+
+
 void callClosure(long ptr) {
   long ret = ip;
   ip = ptr;
-  Fn fn = (Fn) (heap->arr[ip++]);
+  Fn fn = (Fn) nextI();
   (fn)();
   ip = ret;
 }
@@ -144,8 +147,7 @@ Scope* addSym(Scope* root, char* key, long ptr) {
   return ret;
 }
 
-
-void emitFn() { push(code, heap->arr[ip++]); }
+void emitFn() { push(code, nextI()); }
 
 long emitFnClosure(Fn fn) { return push2(heap, emitFn, fn); }
 
@@ -190,7 +192,7 @@ bool readSym(char* buf, int bufSize) {
 
 /*
 void jump() {
-  long ptr = (long) heap->arr[ip++];
+  long ptr = (long) nextI();
   call(ptr);
 }
 */
@@ -200,7 +202,7 @@ void jump() {
 void execute(long ptr) {
   for ( ip = ptr ; ; ) {
     // printf("executing: %ld %ld\n", ip, (long) heap->arr[ip]);
-    Fn fn = (Fn) heap->arr[ip++];
+    Fn fn = (Fn) nextI();
     fn();
     // printf("executed %ld\n", ip);
     if ( ip == -1 ) return;
@@ -228,7 +230,7 @@ void ret() {
 
 void constant() {
   // Consume next constant value stored in the heap and push to stack
-  long c = (long) heap->arr[ip++];
+  long c = (long) nextI();
   push(stack, (void*) c);
 }
 
@@ -237,7 +239,7 @@ long constantClosure(void* value) { return push2(heap, constant, value); }
 
 void frameReference() {
   // Consume next constant value stored in the heap and push to stack
-  long offset = (long) heap->arr[ip++];
+  long offset = (long) nextI();
   // push2At(heap, cp, constant, offset);
 //  push(stack, (void*) offset);
 }
@@ -249,7 +251,7 @@ void evalSym(char* sym);
 
 void autoConstant() {
   // Consume next constant value stored in the heap and push to stack
-  long c = (long) heap->arr[ip++];
+  long c = (long) nextI();
   push(stack, (void*) c);
   printf("autoConstant call %ld\n", c);
   push(calls, (void*) -1); // psedo return address causes stop to execution
@@ -261,7 +263,7 @@ long autoConstantClosure(void* value) { return push2(heap, autoConstant, value);
 
 void define() {
   void* value = pop(stack);      // Definition Value
-  char* sym   = heap->arr[ip++]; // Definition Key
+  char* sym   = nextI(); // Definition Key
   printf("define: %s %ld\n", sym, (long) value);
 
   scope = addSym(scope, sym, constantClosure(value));
@@ -270,7 +272,7 @@ void define() {
 /* Define a function that automatically executes when accessed without requiring () */
 void defineAuto() {
   void* value = pop(stack);      // Definition Value
-  char* sym   = heap->arr[ip++]; // Definition Key
+  char* sym   = nextI(); // Definition Key
   printf("defineAuto: %s %ld\n", sym, (long) value);
 
   scope = addSym(scope, sym, autoConstantClosure(value));
