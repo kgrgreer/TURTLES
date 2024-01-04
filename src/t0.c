@@ -1,3 +1,6 @@
+// t0.c
+// Author: Kevin Greer
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -103,8 +106,8 @@ long   fp    = 0;    // frame pointer, pointer on heap of current frame / activa
 void callClosure(long ptr) {
   long ret = ip;
   ip = ptr;
-  Fn* fn = (Fn*) &(heap->arr[ip++]);
-  (*fn)();
+  Fn fn = (Fn) (heap->arr[ip++]);
+  (fn)();
   ip = ret;
 }
 
@@ -449,9 +452,10 @@ int main() {
   calls = createStack(4000); // call stack
   code  = createStack(0);
 
+  // Code stack shares memory with heap, just has its own ptr
   code->arr = heap->arr;
 
-  heap->ptr = 1000; // Make space for REPL scratch
+  heap->ptr = 1000; // Make space for REPL scratch space
 
   scope = addCmd(scope, "???",  &unknownSymbol);
   scope = addCmd(scope, "/*",   &cComment);
