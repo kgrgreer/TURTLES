@@ -45,10 +45,15 @@
 */
 
 typedef struct stack_ {
-  int    ptr;
-  void*  arr[10000];
+  long ptr;
+  void* *arr;
 } Stack;
 
+Stack* createStack(long size) {
+  Stack* s = (Stack*) malloc(sizeof(Stack));
+  s->arr = malloc(size * sizeof(void*));
+  return s;
+}
 
 long push(Stack* stack, void* value) {
   long r = stack->ptr;
@@ -87,12 +92,11 @@ typedef struct scope_ {
 
 
 Stack* stack = NULL;
-Stack* calls = NULL; // call stack
+Stack* calls = NULL;
 Stack* heap  = NULL;
+Stack* code  = NULL;
 Scope* scope = NULL; // dictionary of words / closures
 long   ip    = 0;    // instruction pointer, code being run
-long   cp    = 0;    // code pointer, where code is being emitted to
-
 long   fp    = 0;    // frame pointer, pointer on heap of current frame / activation-record ???: can replace 'calls'?
 
 
@@ -138,7 +142,7 @@ Scope* addSym(Scope* root, char* key, long ptr) {
 }
 
 
-void emitFn() { heap->arr[cp++] = heap->arr[ip++]; }
+void emitFn() { push(code, heap->arr[ip++]); }
 
 long emitFnClosure(Fn fn) { return push2(heap, emitFn, fn); }
 
@@ -227,6 +231,17 @@ void constant() {
 
 long constantClosure(void* value) { return push2(heap, constant, value); }
 
+
+void frameReference() {
+  // Consume next constant value stored in the heap and push to stack
+  long offset = (long) heap->arr[ip++];
+  // push2At(heap, cp, constant, offset);
+//  push(stack, (void*) offset);
+}
+
+long frameReferenceClosure(long offset) { return push2(heap, constant, (void*) offset); }
+
+
 void evalSym(char* sym);
 
 void autoConstant() {
@@ -309,18 +324,15 @@ void unknownSymbol() {
     if ( sym[1] == ':' ) {
       // function definition appears as ::name
       char* s = strdup(sym+2);
-      heap->arr[cp++] = defineAuto;
-      heap->arr[cp++] = s;
+      push2(code, defineAuto, s);
     } else {
       // function definition appears as :name
       char* s = strdup(sym+1);
-      heap->arr[cp++] = define;
-      heap->arr[cp++] = s;
+      push2(code, define, s);
     }
   } else if ( sym[0] >= '0' && sym[0] <= '9' || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {
     // Parse Integers
-    heap->arr[cp++] = constant;
-    heap->arr[cp++] = (void*) atol(sym);
+    push2(code, constant, (void*) atol(sym));
     // printf("evaled number: %ld\n", (long) heap->arr[cp-1]);
   } else {
     printf("Unknown symbol: %s\n", sym);
@@ -352,7 +364,7 @@ void defineFn() {
 
   Scope* s    = scope;
   long   vars = push(heap, 0 /* # of vars */);
-  long   ocp  = cp;
+  long   ocp  = code->ptr;
   int    i    = 0;
 
   while ( true ) {
@@ -384,20 +396,19 @@ void defineFn() {
 
   for ( long j = 0 ; j < i ; j++ ) {
     defineVar(j, heap->arr[vars+1+j]);
-    scope = addSym(scope, heap->arr[vars+1+j], constantClosure((void*) 100+j)); // needs an extra level
+    scope = addSym(scope, heap->arr[vars+1+j], frameReferenceClosure(j+100));
   }
 
-  long ptr = cp = heap->ptr;
+  long ptr = code->ptr = heap->ptr;
 
   while ( readSym(buf, sizeof(buf)) ) {
     if ( strcmp(buf, "}") == 0 ) {
-      printf("defineFn %ld bytes to %ld\n", cp-ptr, ptr);
-      heap->arr[cp++] = ret;
-      heap->ptr       = cp;
-      cp              = ocp;
+      printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
+      push(code, ret);
+      heap->ptr = code->ptr;
+      code->ptr = ocp;
 
-      heap->arr[cp++] = constant;
-      heap->arr[cp++] = (void*) ptr;
+      push2(code, constant, (void*) ptr);
 
       return;
     }
@@ -433,9 +444,12 @@ void printStack() {
 int main() {
   char buf[256];
 
-  calls = (Stack*) malloc(sizeof(Stack)); // TODO: make smaller
-  stack = (Stack*) malloc(sizeof(Stack));
-  heap  = (Stack*) malloc(sizeof(Stack));
+  heap  = createStack(1000000);
+  stack = createStack(16000);
+  calls = createStack(4000); // call stack
+  code  = createStack(0);
+
+  code->arr = heap->arr;
 
   heap->ptr = 1000; // Make space for REPL scratch
 
@@ -457,17 +471,17 @@ int main() {
   scope = addFn(scope, "()",    &call);
 
   while ( true ) {
-    printf("heap: %d, stack: ", heap->ptr); printStack(); printf("> ");
+    printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
-    cp = 0;
+    code->ptr = 0;
     evalSym(buf);
 
-    heap->arr[cp++] = ret;
+    push(code, ret);
     push(calls, (void*) -1); // psedo return address causes stop of execution
 
-    printf("compiled %ld bytes\n", cp);
+    printf("compiled %ld bytes\n", code->ptr);
 
     execute(0);
   }
