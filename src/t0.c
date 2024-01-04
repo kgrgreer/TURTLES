@@ -232,12 +232,8 @@ long constantClosure(void* value) { return push2(heap, constant, value); }
 
 void frameReference() {
   // Consume next constant value stored in the heap and push to stack
-  long offset = (long) nextI();
-  // push2At(heap, cp, constant, offset);
-//  push(stack, (void*) offset);
+  push2(code, constant, nextI());
 }
-
-long frameReferenceClosure(long offset) { return push2(heap, constant, (void*) offset); }
 
 
 void evalSym(char* sym);
@@ -255,14 +251,14 @@ long autoConstantClosure(void* value) { return push2(heap, autoConstant, value);
 
 
 void define() {
-  void* value = pop(stack);      // Definition Value
-  char* sym   = nextI(); // Definition Key
+  void* value = pop(stack);  // Definition Value
+  char* sym   = nextI();     // Definition Key
   printf("define: %s %ld\n", sym, (long) value);
 
   scope = addSym(scope, sym, constantClosure(value));
 }
 
-/* Define a function that automatically executes when accessed without requiring () */
+// Define a function that automatically executes when accessed without requiring ()
 void defineAuto() {
   void* value = pop(stack);      // Definition Value
   char* sym   = nextI(); // Definition Key
@@ -387,7 +383,7 @@ void defineFn() {
 
   for ( long j = 0 ; j < i ; j++ ) {
     defineVar(j, heap->arr[vars+1+j]);
-    scope = addSym(scope, heap->arr[vars+1+j], frameReferenceClosure(j+100));
+    scope = addSym(scope, heap->arr[vars+1+j], push2(heap, frameReference, (void*) j+100));
   }
 
   long ptr = code->ptr = heap->ptr;
@@ -401,25 +397,26 @@ void defineFn() {
 
       push2(code, constant, (void*) ptr);
 
+      scope = s; // revert to old scope
+
       return;
     }
+
     evalSym(buf);
   }
-
-  scope = s; // revert to old scope
 
   printf("Syntax Error: Unclosed function, missing }");
 }
 
 
+// Ignore C++ // style comments
 void cppComment() {
-  // Ignore C++ // style comments
   while ( getchar() != '\n' );
 }
 
 
+// Ignore C style /* */ comments
 void cComment() {
-  // Ignore C style /* */ comments
   for ( char c, prev ; ( c = getchar() ) ; prev = c )
     if ( prev == '*' && c == '/' ) return;
 }
