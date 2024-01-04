@@ -190,13 +190,6 @@ bool readSym(char* buf, int bufSize) {
   return true;
 }
 
-/*
-void jump() {
-  long ptr = (long) nextI();
-  call(ptr);
-}
-*/
-
 
 /** Execute code starting at ip until 0 found. **/
 void execute(long ptr) {
@@ -307,13 +300,6 @@ void not() { push(stack, (void*) (long) (! (bool) pop(stack))); }
 void and() { push(stack, (void*) (long) ((bool) pop(stack) && (bool) pop(stack))); }
 
 void or() { push(stack, (void*) (long) ((bool) pop(stack) || (bool) pop(stack))); }
-
-/*
-void gosub() {
-  long addr = (long) pop(stack);
-  push(stack, (void*) ip);
-}*/
-
 
 void print() { printf("%ld\n", (long) pop(stack)); }
 
