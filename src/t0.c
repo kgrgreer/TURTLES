@@ -5,17 +5,69 @@
 
 #define DEBUG 1
 
-typedef struct stack_node {
+/*
+  Closures:
+    - a heap pointer to a function
+    - followed by its arguments
+    - without a ret, so only a single statement
+
+  Code:
+    - a heap pointer to zero or more Closures
+    - with a ret, so can be many statements
+
+  Activation Record
+    - Allocated on heap.
+
+    - Format:
+      return address / continuation?
+      previous AR pointer
+      space for arg1
+      space for arg2
+      ...
+      space for argn
+
+  Function Activation
+    push return address onto heap (caller?)
+    push current AR onto heap
+    set AR to heap ptr
+    for each arg, push(heap, pop(stack))
+    <code>
+    set AR to previous
+    set ip to ret
+
+  Symbol Table
+    - maps String keys to heap pointers to Closures
+    - Closure are executed when a symbol is looked up
+    - addCmd() adds a Closure directly (interpreted)
+    - addFn() adds a Closure which will emit the supplied function as code when run (compiled)
+
+  Issues:
+*/
+
+typedef struct stack_ {
   int    ptr;
   void*  arr[10000];
 } Stack;
 
-/* Part of Heap where interactive commands are temporarily compiled to. */
-#define SCRATCH (sizeof(Stack)-1000)
 
-void push(Stack* stack, void* value) {
+long push(Stack* stack, void* value) {
+  long r = stack->ptr;
   stack->arr[stack->ptr++] = value;
+  return r;
 }
+
+long push2(Stack* stack, void* v1, void* v2) {
+  long r = push(stack, v1);
+  push(stack, v2);
+  return r;
+}
+
+long push3(Stack* stack, void* v1, void* v2, void* v3) {
+  long r = push2(stack, v1, v2);
+  push(stack, v3);
+  return r;
+}
+
 
 void* pop(Stack* stack) {
 #ifdef DEBUG
@@ -26,11 +78,11 @@ void* pop(Stack* stack) {
 
 typedef void (*Fn)();
 
-typedef struct tree_node {
-  char*             key;
-  long              ip;
-  struct tree_node* left;
-  struct tree_node* right;
+typedef struct scope_ {
+  char*          key;
+  long           ip;
+  struct scope_* left;
+  struct scope_* right;
 } Scope;
 
 
@@ -38,11 +90,13 @@ Stack* stack = NULL;
 Stack* calls = NULL; // call stack
 Stack* heap  = NULL;
 Scope* scope = NULL; // dictionary of words / closures
-long   ip    = 0;    // instruction pointer
+long   ip    = 0;    // instruction pointer, code being run
 long   cp    = 0;    // code pointer, where code is being emitted to
 
+long   fp    = 0;    // frame pointer, pointer on heap of current frame / activation-record ???: can replace 'calls'?
 
-void call(long ptr) {
+
+void callClosure(long ptr) {
   long ret = ip;
   ip = ptr;
   Fn* fn = (Fn*) &(heap->arr[ip++]);
@@ -51,24 +105,23 @@ void call(long ptr) {
 }
 
 
-Scope* createNode(char* key, long ptr) {
+Scope* createScope(char* key, long ptr) {
   Scope* node = (Scope*) malloc(sizeof(Scope));
   node->key = (char*) malloc(strlen(key) + 1);
   strcpy(node->key, key);
   node->ip    = ptr;
-  node->left  = NULL;
-  node->right = NULL;
+  node->left  = node->right = NULL;
   return node;
 }
 
 
 /* Immutable version of addSym. Creates a new tree with added binding. */
 Scope* addSym(Scope* root, char* key, long ptr) {
-  if ( root == NULL )  return createNode(key, ptr);
+  if ( root == NULL )  return createScope(key, ptr);
 
   int cmp = strcmp(key, root->key);
 
-  Scope* ret = createNode(root->key, root->ip);
+  Scope* ret = createScope(root->key, root->ip);
   ret->left  = root->left;
   ret->right = root->right;
 
@@ -85,29 +138,14 @@ Scope* addSym(Scope* root, char* key, long ptr) {
 }
 
 
-void emitFn() {
-  heap->arr[cp++] = heap->arr[ip++];
-}
+void emitFn() { heap->arr[cp++] = heap->arr[ip++]; }
+
+long emitFnClosure(Fn fn) { return push2(heap, emitFn, fn); }
 
 
-long emitFnClosure(Fn fn) {
-  long ptr = heap->ptr;
-  push(heap, emitFn);
-  push(heap, fn);
-  return ptr;
-}
+Scope* addFn(Scope* root, char* key, Fn fn) { return addSym(root, key, emitFnClosure(fn)); }
 
-
-Scope* addFn(Scope* root, char* key, Fn fn) {
-  return addSym(root, key, emitFnClosure(fn));
-}
-
-
-Scope* addCmd(Scope* root, char* key, Fn fn) {
-  long ptr = heap->ptr;
-  push(heap, fn);
-  return addSym(root, key, ptr);
-}
+Scope* addCmd(Scope* root, char* key, Fn fn) { return addSym(root, key, push(heap, fn)); }
 
 
 long findSym(Scope* root, char* key) {
@@ -124,7 +162,7 @@ bool isSpace(char c) {
 }
 
 
-bool readSym(char* buffer, int buffer_size) {
+bool readSym(char* buf, int bufSize) {
   char c;
   int size = 0;
 
@@ -133,21 +171,22 @@ bool readSym(char* buffer, int buffer_size) {
 
   if ( c == EOF ) return false;
 
-  buffer[size++] = c;
+  buf[size++] = c;
 
-  while ( (c = getchar()) != EOF && ! isSpace(c) && size < buffer_size - 1 ) {
-    buffer[size++] = c;
+  while ( (c = getchar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+    buf[size++] = c;
   }
-  buffer[size] = '\0';
+  buf[size] = '\0';
 
   return true;
 }
 
-
+/*
 void jump() {
   long ptr = (long) heap->arr[ip++];
   call(ptr);
 }
+*/
 
 
 /** Execute code starting at ip until 0 found. **/
@@ -162,8 +201,8 @@ void execute(long ptr) {
 }
 
 
-void callFn() {
-  // The () word which calls a function on the top of the stack
+/* The () word which calls a function on the top of the stack */
+void call() {
   long ptr = (long) pop(stack);
   push(calls, (void*) ip);
 
@@ -186,15 +225,9 @@ void constant() {
   push(stack, (void*) c);
 }
 
+long constantClosure(void* value) { return push2(heap, constant, value); }
 
-long constantClosure(void* value) {
-  long ptr = heap->ptr;
-  push(heap, constant);
-  push(heap, value);
-  push(heap, ret);
-  return ptr;
-}
-
+void evalSym(char* sym);
 
 void autoConstant() {
   // Consume next constant value stored in the heap and push to stack
@@ -202,17 +235,10 @@ void autoConstant() {
   push(stack, (void*) c);
   printf("autoConstant call %ld\n", c);
   push(calls, (void*) -1); // psedo return address causes stop to execution
-  callFn(); // crashes after this
+  evalSym("()");
 }
 
-
-long autoConstantClosure(void* value) {
-  long ptr = heap->ptr;
-  push(heap, autoConstant);
-  push(heap, value);
-  push(heap, ret);
-  return ptr;
-}
+long autoConstantClosure(void* value) { return push2(heap, autoConstant, value); }
 
 
 void define() {
@@ -223,9 +249,8 @@ void define() {
   scope = addSym(scope, sym, constantClosure(value));
 }
 
-
+/* Define a function that automatically executes when accessed without requiring () */
 void defineAuto() {
-  // Define a function that automatically executes when accessed without requiring ()
   void* value = pop(stack);      // Definition Value
   char* sym   = heap->arr[ip++]; // Definition Key
   printf("defineAuto: %s %ld\n", sym, (long) value);
@@ -239,19 +264,7 @@ void defineAuto() {
 }
 
 
-void minusOne() { push(stack, (void*)  -1); }
-void zero()     { push(stack, (void*)  0);  }
-void one()      { push(stack, (void*)  1);  }
-void two()      { push(stack, (void*)  2);  }
-void ten()      { push(stack, (void*)  10); }
-
-
-void plus() {
-  long l2 = (long) pop(stack);
-  long l1 = (long) pop(stack);
-  push(stack, (void*) l1 + l2);
-}
-
+void plus() { push(stack, (void*) (long) pop(stack) + (long) pop(stack)); }
 
 void minus() {
   long l2 = (long) pop(stack);
@@ -259,13 +272,7 @@ void minus() {
   push(stack, (void*) l1 - l2);
 }
 
-
-void multiply() {
-  long l2 = (long) pop(stack);
-  long l1 = (long) pop(stack);
-  push(stack, (void*) (l1 * l2));
-}
-
+void multiply() { push(stack, (void*) ((long) pop(stack) * (long) pop(stack))); }
 
 void divide() {
   long l2 = (long) pop(stack);
@@ -273,32 +280,28 @@ void divide() {
   push(stack, (void*) (l1 / l2));
 }
 
+void eq() { push(stack, (void*) (long) (pop(stack) == pop(stack))); }
 
-void eq() {
-  long l2 = (long) pop(stack);
-  long l1 = (long) pop(stack);
-  bool ret = l1 == l2;
-  push(stack, (void*) ret);
-}
+void not() { push(stack, (void*) (long) (! (bool) pop(stack))); }
 
+void and() { push(stack, (void*) (long) ((bool) pop(stack) && (bool) pop(stack))); }
 
-void not() {
-  bool ret = ! (bool) pop(stack);
-  push(stack, (void*) ret);
-}
+void or() { push(stack, (void*) (long) ((bool) pop(stack) || (bool) pop(stack))); }
 
-
+/*
 void gosub() {
   long addr = (long) pop(stack);
   push(stack, (void*) ip);
-}
+}*/
 
 
-void print() {
-  printf("%ld\n", (long) pop(stack));
-}
+void print() { printf("%ld\n", (long) pop(stack)); }
 
 
+/*
+ * Function used by evalSym() if an exact match isn't found.
+ * Used to handle higher-level constructs like numbers, strings and functions.
+ */
 void unknownSymbol() {
   char* sym = (char*) pop(stack);
 
@@ -314,7 +317,7 @@ void unknownSymbol() {
       heap->arr[cp++] = define;
       heap->arr[cp++] = s;
     }
-  } else if ( sym[0] >= '0' && sym[0] <= '9' ) {
+  } else if ( sym[0] >= '0' && sym[0] <= '9' || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {
     // Parse Integers
     heap->arr[cp++] = constant;
     heap->arr[cp++] = (void*) atol(sym);
@@ -330,17 +333,12 @@ void evalSym(char* sym) {
 
   if ( ptr == -1 ) {
     push(stack, sym);
-    ptr = findSym(scope, "unknownSymbol");
+    ptr = findSym(scope, "???");
+    // ???: Could unknownSymbol be built into findSym()
+    // Would allow for context inheritance
   }
 
-  call(ptr);
-}
-
-
-void printStack() {
-  for ( long i = 0 ; i < stack->ptr ; i++ ) {
-    printf("%ld ", (long) stack->arr[i]);
-  }
+  callClosure(ptr);
 }
 
 
@@ -353,11 +351,9 @@ void defineFn() {
   char buf[256];
 
   Scope* s    = scope;
-  long   vars = heap->ptr;
+  long   vars = push(heap, 0 /* # of vars */);
   long   ocp  = cp;
   int    i    = 0;
-
-  push(heap, 0); // number of vars
 
   while ( true ) {
 
@@ -422,26 +418,28 @@ void cppComment() {
 
 void cComment() {
   // Ignore C style /* */ comments
-  int state = 0;
-  char c;
-  while ( ( c = getchar() ) ) {
-    switch ( state ) {
-      case 0: if ( c == '*' ) state = 1; break;
-      case 1: if ( c == '/' ) return; state = c == '*' ? 1 : 0;
-    }
+  for ( char c, prev ; ( c = getchar() ) ; prev = c )
+    if ( prev == '*' && c == '/' ) return;
+}
+
+
+void printStack() {
+  for ( long i = 0 ; i < stack->ptr ; i++ ) {
+    printf("%ld ", (long) stack->arr[i]);
   }
 }
 
 
 int main() {
-  char c;
   char buf[256];
 
   calls = (Stack*) malloc(sizeof(Stack)); // TODO: make smaller
   stack = (Stack*) malloc(sizeof(Stack));
   heap  = (Stack*) malloc(sizeof(Stack));
 
-  scope = addCmd(scope, "unknownSymbol",   &unknownSymbol);
+  heap->ptr = 1000; // Make space for REPL scratch
+
+  scope = addCmd(scope, "???",  &unknownSymbol);
   scope = addCmd(scope, "/*",   &cComment);
   scope = addCmd(scope, "//",   &cppComment);
   scope = addCmd(scope, "{",    &defineFn);
@@ -452,26 +450,26 @@ int main() {
   scope = addFn(scope, "/",     &divide);
   scope = addFn(scope, "=",     &eq);
   scope = addFn(scope, "!",     &not);
+  scope = addFn(scope, "&&",    &and);
+  scope = addFn(scope, "||",    &or);
   scope = addFn(scope, "print", &print);
   scope = addFn(scope, ".",     &print); // like forth
-  scope = addFn(scope, "()",    &callFn);
-
-  scope = addFn(scope, "-1",    &minusOne);
-  scope = addFn(scope, "0",     &zero);
-  scope = addFn(scope, "1",     &one);
-  scope = addFn(scope, "2",     &two);
-  scope = addFn(scope, "10",    &ten);
+  scope = addFn(scope, "()",    &call);
 
   while ( true ) {
     printf("heap: %d, stack: ", heap->ptr); printStack(); printf("> ");
+
     if ( ! readSym(buf, sizeof(buf)) ) break;
-    cp = SCRATCH;
+
+    cp = 0;
     evalSym(buf);
 
     heap->arr[cp++] = ret;
-    push(calls, (void*) -1); // psedo return address causes stop to execution
-    printf("compiled %ld bytes\n", cp-SCRATCH);
-    execute(SCRATCH);
+    push(calls, (void*) -1); // psedo return address causes stop of execution
+
+    printf("compiled %ld bytes\n", cp);
+
+    execute(0);
   }
 
   printf("\n");
