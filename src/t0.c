@@ -9,33 +9,43 @@
 #define DEBUG 1
 
 /*
+  Symbols:
+    - a sequence of non whitespace characters
+    - program input is symbols divided by whitespace characters
+    - are evaluated by evalSym() which tries to look them up in
+      the "scope" symbol table, and if it doesn't find an exact
+      match then it passes to the "???" function, also found in
+      the symbol table
+    - symbol dictionary entries point to Closures which execute directly,
+      however, most symbols actually push/emit/compile code onto the "code" stack
+
   Closures:
     - a heap pointer to a function
     - followed by its arguments
     - without a ret, so only a single statement
+    - created like: push2(heap, constant, value), where, in this case, "constant" is a function and "value" is a value that it remembers/uses
 
   Code:
     - a heap pointer to zero or more Closures
-    - with a ret, so can be many statements
+    - ends with a "ret", so can be many statements
 
   Activation Record
     - Allocated on heap.
 
     - Format:
+      previous AR pointer called "fp" Frame-Pointer
       return address / continuation?
-      previous AR pointer
       space for arg1
       space for arg2
       ...
       space for argn
 
   Function Activation
-    push return address onto heap (caller?)
-    push current AR onto heap
-    set AR to heap ptr
+    push current fp onto heap, update fp to this address
+    push return address onto heap
     for each arg, push(heap, pop(stack))
     <code>
-    set AR to previous
+    set fp to previous
     set ip to ret
 
   Symbol Table
@@ -45,18 +55,26 @@
     - addFn() adds a Closure which will emit the supplied function as code when run (compiled)
 
   Issues:
+    - malloc() is used in some places where the heap should be usedinstead so
+      that memory can be GC'ed in the future
+    - frame references could/should be reused
 */
+
+void evalSym(char* sym);
+
 
 typedef struct stack_ {
   long ptr;
   void* *arr;
-} Stack;
+} Stack; // Perhaps something like "Region" or "Space" would be a better name?
+
 
 Stack* createStack(long size) {
   Stack* s = (Stack*) malloc(sizeof(Stack));
   s->arr = malloc(size * sizeof(void*));
   return s;
 }
+
 
 long push(Stack* stack, void* value) {
   long r = stack->ptr;
@@ -84,7 +102,9 @@ void* pop(Stack* stack) {
   return stack->arr[--stack->ptr];
 }
 
+
 typedef void (*Fn)();
+
 
 typedef struct scope_ {
   char*          key;
@@ -94,40 +114,40 @@ typedef struct scope_ {
 } Scope;
 
 
-Stack* stack = NULL;
-Stack* calls = NULL;
-Stack* heap  = NULL;
-Stack* code  = NULL;
-Scope* scope = NULL; // dictionary of words / closures
+Scope* scope = NULL; // dictionary of words -> closures
+Stack* stack = NULL; // used to pass arguments
+Stack* heap  = NULL; // used for everything else, including frames
+Stack* code  = NULL; // where code is generated to, shares memory with heap but has own pointer
 long   ip    = 0;    // instruction pointer, code being run
-long   fp    = 0;    // frame pointer, pointer on heap of current frame / activation-record ???: can replace 'calls'?
+long   fp    = 0;    // frame pointer, pointer on heap of current frame / activation-record
 
 
-void* nextI() { return heap->arr[ip++]; }
+void* nextI() { return heap->arr[ip++]; } // next instruction or instruction argument
 
 
+// Execute a single closure stored at the pointed to heap location. Not 'ret' terminated.
 void callClosure(long ptr) {
   long ret = ip;
   ip = ptr;
-  Fn fn = (Fn) nextI();
-  (fn)();
+    Fn fn = (Fn) nextI();
+    (fn)();
   ip = ret;
 }
 
 
 Scope* createScope(char* key, long ptr) {
   Scope* node = (Scope*) malloc(sizeof(Scope));
-  node->key = (char*) malloc(strlen(key) + 1);
-  strcpy(node->key, key);
+  node->key   = (char*)  malloc(sizeof(key));
   node->ip    = ptr;
   node->left  = node->right = NULL;
+  strcpy(node->key, key);
   return node;
 }
 
 
 /* Immutable version of addSym. Creates a new tree with added binding. */
 Scope* addSym(Scope* root, char* key, long ptr) {
-  if ( root == NULL )  return createScope(key, ptr);
+  if ( root == NULL ) return createScope(key, ptr);
 
   int cmp = strcmp(key, root->key);
 
@@ -149,10 +169,7 @@ Scope* addSym(Scope* root, char* key, long ptr) {
 
 void emitFn() { push(code, nextI()); }
 
-long emitFnClosure(Fn fn) { return push2(heap, emitFn, fn); }
-
-
-Scope* addFn(Scope* root, char* key, Fn fn) { return addSym(root, key, emitFnClosure(fn)); }
+Scope* addFn(Scope* root, char* key, Fn fn)  { return addSym(root, key, push2(heap, emitFn, fn)); }
 
 Scope* addCmd(Scope* root, char* key, Fn fn) { return addSym(root, key, push(heap, fn)); }
 
@@ -203,20 +220,24 @@ void execute(long ptr) {
 }
 
 
-/* The () word which calls a function on the top of the stack */
+// The "()" word which calls a function on the top of the stack
 void call() {
   long ptr = (long) pop(stack);
-  push(calls, (void*) ip);
 
-  printf("Calling function at: %ld from: %ld\n", ptr, ip);
+  fp = push(heap, (void*) fp); // previous FP
+  push(heap, (void*) ip);      // return address
+
+  // printf("Calling function at: %ld from: %ld\n", ptr, ip);
   ip = ptr;
   execute(ip++);
-  printf("Returned to: %ld\n", ip);
+  // fp = (long) heap->arr[fp];
+  // printf("Returned to: %ld\n", ip);
 }
 
 
 void ret() {
-  ip = (long) pop(calls);
+  ip = (long) heap->arr[fp+1]; // jump to return address
+  fp = (long) heap->arr[fp];   // restore previous fp
   // printf("returning to %ld\n", ip);
 }
 
@@ -227,49 +248,102 @@ void constant() {
   push(stack, (void*) c);
 }
 
-long constantClosure(void* value) { return push2(heap, constant, value); }
-
-
-void frameReference() {
-  // Consume next constant value stored in the heap and push to stack
-  push2(code, constant, nextI());
-}
-
-
-void evalSym(char* sym);
 
 void autoConstant() {
   // Consume next constant value stored in the heap and push to stack
   long c = (long) nextI();
   push(stack, (void*) c);
-  printf("autoConstant call %ld\n", c);
-  push(calls, (void*) -1); // psedo return address causes stop to execution
   evalSym("()");
 }
 
-long autoConstantClosure(void* value) { return push2(heap, autoConstant, value); }
+
+void frameReference() {
+  long offset = (long) nextI();
+  // printf("frame reference fp: %ld offset: %ld value: %ld\n", fp, offset, (long) heap->arr[2+fp+offset]);
+  // Consume next constant value stored in the heap and push to stack
+  push(stack, (void*) heap->arr[2+fp+offset]);
+}
+
+void frameReferenceEmitter() {
+  // Consume next constant value stored in the heap and push to stack
+  push2(code, frameReference, nextI());
+}
+
+void frameSetter() {
+  long offset = (long) nextI();
+  void* value = pop(stack);
+  // printf("frame setter fp: %ld offset: %ld = value: %ld\n", fp, offset, (long) value);
+  // Consume next constant value stored in the heap and push to stack
+  heap->arr[2+fp+offset] = value;
+}
+
+void frameIncr() {
+  long offset = (long) nextI();
+  heap->arr[2+fp+offset]++;
+}
+
+void frameIncrEmitter() {
+  // Consume next constant value stored in the heap and push to stack
+  push2(code, frameIncr, nextI());
+}
+
+void frameDecr() {
+  long offset = (long) nextI();
+  heap->arr[2+fp+offset]--;
+}
+
+void frameDecrEmitter() {
+  // Consume next constant value stored in the heap and push to stack
+  push2(code, frameDecr, nextI());
+}
+
+void frameSetterEmitter() {
+  // Consume next constant value stored in the heap and push to stack
+  push2(code, frameSetter, nextI());
+}
+
+// Copy argument values from stack to the heap, as part of the activation record, where they can be accessed as frameReferences
+void localVarSetup() {
+  long numVars = (long) nextI();
+
+  // printf("Copying %ld vars, fp: %ld\n", numVars, fp);
+  for ( long i = 0 ; i < numVars ; i++ ) {
+    // printf("%ld : %ld  @ %ld\n", i, (long) stack->arr[stack->ptr-1], heap->ptr);
+    push(heap, pop(stack));
+  }
+}
 
 
+// Define a top-level constant value, Ex. 42 :answer or { x | x 2 * } :double
 void define() {
   void* value = pop(stack);  // Definition Value
   char* sym   = nextI();     // Definition Key
-  printf("define: %s %ld\n", sym, (long) value);
+  // printf("define: %s %ld\n", sym, (long) value);
 
-  scope = addSym(scope, sym, constantClosure(value));
+  scope = addSym(scope, sym, push2(heap, constant, value));
 }
+
+
+
+char* strAdd(char* s1, char* s2) {
+  int l1 = strlen(s1);
+  char* s3 = (char*) malloc(l1 + sizeof(s2));
+
+  strcpy(s3, s1);
+  strcpy(s3+l1, s2);
+
+  return s3;
+}
+
 
 // Define a function that automatically executes when accessed without requiring ()
 void defineAuto() {
   void* value = pop(stack);      // Definition Value
   char* sym   = nextI(); // Definition Key
-  printf("defineAuto: %s %ld\n", sym, (long) value);
+  // printf("defineAuto: %s %ld\n", sym, (long) value);
 
-  scope = addSym(scope, sym, autoConstantClosure(value));
-
-  char* sym2 = (char*) malloc(sizeof(sym)+1);
-  sym2[0] = '&';
-  strcpy(sym2+1, sym);
-  scope = addSym(scope, sym2, constantClosure(value));
+  scope = addSym(scope, sym,              push2(heap, autoConstant, value));
+  scope = addSym(scope, strAdd("&", sym), push2(heap, constant, value));
 }
 
 
@@ -309,11 +383,11 @@ void unknownSymbol() {
 
   if ( sym[0] == ':' ) {
     if ( sym[1] == ':' ) {
-      // function definition appears as ::name
+      // function definition appears as ::name, an auto variable
       char* s = strdup(sym+2);
       push2(code, defineAuto, s);
     } else {
-      // function definition appears as :name
+      // function definition appears as :name, a regular variable
       char* s = strdup(sym+1);
       push2(code, define, s);
     }
@@ -341,18 +415,13 @@ void evalSym(char* sym) {
 }
 
 
-void defineVar(int i, char* name) {
-  printf("defineVar: %d %s\n", i, name);
-}
-
-
 void defineFn() {
   char buf[256];
 
   Scope* s    = scope;
   long   vars = push(heap, 0 /* # of vars */);
   long   ocp  = code->ptr;
-  int    i    = 0;
+  int    i    = 0; // number of vars / arguments
 
   while ( true ) {
 
@@ -382,15 +451,20 @@ void defineFn() {
   }
 
   for ( long j = 0 ; j < i ; j++ ) {
-    defineVar(j, heap->arr[vars+1+j]);
-    scope = addSym(scope, heap->arr[vars+1+j], push2(heap, frameReference, (void*) j+100));
+    char* varName = heap->arr[vars+1+j];
+    scope = addSym(scope, varName,               push2(heap, frameReferenceEmitter, (void*) (i-j-1)));
+    scope = addSym(scope, strAdd(":", varName),  push2(heap, frameSetterEmitter,    (void*) (i-j-1)));
+    scope = addSym(scope, strAdd(varName, "++"), push2(heap, frameIncrEmitter,      (void*) (i-j-1)));
+    scope = addSym(scope, strAdd(varName, "--"), push2(heap, frameDecrEmitter,      (void*) (i-j-1)));
   }
 
   long ptr = code->ptr = heap->ptr;
 
+  push2(code, localVarSetup, (void*) (long) i);
+
   while ( readSym(buf, sizeof(buf)) ) {
     if ( strcmp(buf, "}") == 0 ) {
-      printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
+      // printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
       push(code, ret);
       heap->ptr = code->ptr;
       code->ptr = ocp;
@@ -409,10 +483,8 @@ void defineFn() {
 }
 
 
-// Ignore C++ // style comments
-void cppComment() {
-  while ( getchar() != '\n' );
-}
+// Ignore C++ style // comments
+void cppComment() { while ( getchar() != '\n' ); }
 
 
 // Ignore C style /* */ comments
@@ -423,18 +495,16 @@ void cComment() {
 
 
 void printStack() {
-  for ( long i = 0 ; i < stack->ptr ; i++ ) {
+  for ( long i = 0 ; i < stack->ptr ; i++ )
     printf("%ld ", (long) stack->arr[i]);
-  }
 }
 
 
 int main() {
-  char buf[256];
+  char buf[256]; // Used to hold next read symbols
 
   heap  = createStack(1000000);
   stack = createStack(16000);
-  calls = createStack(4000); // call stack
   code  = createStack(0);
 
   // Code stack shares memory with heap, just has its own ptr
@@ -459,20 +529,22 @@ int main() {
   scope = addFn(scope, ".",     &print); // like forth
   scope = addFn(scope, "()",    &call);
 
+  // Create a top-level frame which points to itself as the previous frame
+  // so it can be reused forever.
+  push(code, (void*) 0);  // points to itself as previous frame
+  push(code, (void*) -1); // psedo return address causes stop of execution
+
   while ( true ) {
     printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
-    code->ptr = 0;
-    evalSym(buf);
+    code->ptr = 2;    // skip over frame info
+    evalSym(buf);     // compile symbol
+    push(code, ret);  // add a return statement
+    execute(2);       // execute
 
-    push(code, ret);
-    push(calls, (void*) -1); // psedo return address causes stop of execution
-
-    printf("compiled %ld bytes\n", code->ptr);
-
-    execute(0);
+    // printf("compiled %ld bytes\n", code->ptr-2);
   }
 
   printf("\n");
