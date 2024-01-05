@@ -7,6 +7,7 @@
 2 2 + .
 5 132 + .
 3.1415926 .
+10 -1 + .
 1 1 = .
 1 0 = .
 1 ! .
@@ -14,3 +15,17 @@
 5 :five
 five .
 five five + .
+1 1 = :true
+1 0 = :false
+false false && .
+false true  && .
+true  false && .
+true  true  && .
+false false || .
+false true  || .
+true  false || .
+true  true  || .
+{ o | o o } ::dup
+42 dup dup dup
+{ a b | b a } ::swap
+1 2 swap
