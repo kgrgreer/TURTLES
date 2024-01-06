@@ -55,9 +55,10 @@
     - addFn() adds a Closure which will emit the supplied function as code when run (compiled)
 
   Issues:
-    - malloc() is used in some places where the heap should be usedinstead so
+    - malloc() is used in some places where the heap should be used instead so
       that memory can be GC'ed in the future
     - frame references could/should be reused
+    - nested functions will write into each other, need to use scratch spaces then copy?
 */
 
 void evalSym(char* sym);
@@ -420,7 +421,7 @@ void defineFn() {
 
   Scope* s    = scope;
   long   vars = push(heap, 0 /* # of vars */);
-  long   ocp  = code->ptr;
+  long   ocp  = code->ptr; // ???: Is this needed
   int    i    = 0; // number of vars / arguments
 
   while ( true ) {
@@ -462,24 +463,27 @@ void defineFn() {
 
   push2(code, localVarSetup, (void*) (long) i);
 
-  while ( readSym(buf, sizeof(buf)) ) {
-    if ( strcmp(buf, "}") == 0 ) {
-      // printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
-      push(code, ret);
-      heap->ptr = code->ptr;
-      code->ptr = ocp;
-
-      push2(code, constant, (void*) ptr);
-
-      scope = s; // revert to old scope
-
+  while ( true ) {
+    if ( ! readSym(buf, sizeof(buf)) ) {
+      printf("Syntax Error: Unclosed function, missing }");
       return;
     }
+
+    if ( strcmp(buf, "}") == 0 ) break;
 
     evalSym(buf);
   }
 
-  printf("Syntax Error: Unclosed function, missing }");
+  // printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
+  push(code, ret);
+  heap->ptr = code->ptr;
+  code->ptr = ocp;
+
+  push2(code, constant, (void*) ptr);
+
+  scope = s; // revert to old scope
+
+  return;
 }
 
 
