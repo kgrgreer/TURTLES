@@ -421,7 +421,6 @@ void defineFn() {
 
   Scope* s    = scope;
   long   vars = push(heap, 0 /* # of vars */);
-  long   ocp  = code->ptr; // ???: Is this needed
   int    i    = 0; // number of vars / arguments
 
   while ( true ) {
@@ -459,7 +458,13 @@ void defineFn() {
     scope = addSym(scope, strAdd(varName, "--"), push2(heap, frameDecrEmitter,      (void*) (i-j-1)));
   }
 
-  long ptr = code->ptr = heap->ptr;
+  Stack* oldCode = code;
+  Stack  code2;
+  void* arr[1024];
+
+  code2.ptr = 0;
+  code2.arr = arr;
+  code      = &code2;
 
   push2(code, localVarSetup, (void*) (long) i);
 
@@ -476,9 +481,14 @@ void defineFn() {
 
   // printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
   push(code, ret);
-  heap->ptr = code->ptr;
-  code->ptr = ocp;
 
+  long ptr = heap->ptr;
+  printf("copying %ld bytes\n", (long) code2.ptr);
+  for ( int i = 0 ; i < code2.ptr ; i++ ) {
+    push(heap, arr[i]);
+  }
+
+  code = oldCode;
   push2(code, constant, (void*) ptr);
 
   scope = s; // revert to old scope
