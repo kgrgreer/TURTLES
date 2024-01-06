@@ -459,8 +459,8 @@ void defineFn() {
   }
 
   Stack* oldCode = code;
-  Stack  code2;
-  void* arr[1024];
+  Stack  code2; // A temp code buffer to allow for reentrant function parsing
+  void*  arr[1024];
 
   code2.ptr = 0;
   code2.arr = arr;
@@ -482,13 +482,12 @@ void defineFn() {
   // printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
   push(code, ret);
 
-  long ptr = heap->ptr;
-  printf("copying %ld bytes\n", (long) code2.ptr);
-  for ( int i = 0 ; i < code2.ptr ; i++ ) {
-    push(heap, arr[i]);
-  }
+  long ptr = heap->ptr; // location where function will be copied to
+
+  for ( int i = 0 ; i < code2.ptr ; i++ ) push(heap, arr[i]);
 
   code = oldCode;
+
   push2(code, constant, (void*) ptr);
 
   scope = s; // revert to old scope
