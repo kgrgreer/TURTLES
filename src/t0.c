@@ -221,12 +221,21 @@ void execute(long ptr) {
 }
 
 
+void closure() {
+  // Consume next constant value stored in the heap and push to stack
+  void* fn = nextI();
+  push(stack, (void*) push2(heap, (void*) fp, fn));
+}
+
+
 // The "()" word which calls a function on the top of the stack
 void call() {
-  long ptr = (long) pop(stack);
+  long closure = (long) pop(stack);
+  long ptr     = (long) heap->arr[closure+1];
+  long pfp     = (long) heap->arr[closure]; // previous fp
 
-  fp = push(heap, (void*) fp); // previous FP
-  push(heap, (void*) ip);      // return address
+  fp = push(heap, (void*) pfp); // previous FP
+  push(heap, (void*) ip);       // return address
 
   // printf("Calling function at: %ld from: %ld\n", ptr, ip);
   ip = ptr;
@@ -488,7 +497,8 @@ void defineFn() {
 
   code = oldCode;
 
-  push2(code, constant, (void*) ptr);
+  push2(code, closure, (void*) ptr);
+//   push2(code, constant, (void*) ptr);
 
   scope = s; // revert to old scope
 
