@@ -461,10 +461,11 @@ void defineFn() {
 
   for ( long j = 0 ; j < i ; j++ ) {
     char* varName = heap->arr[vars+1+j];
-    scope = addSym(scope, varName,               push2(heap, frameReferenceEmitter, (void*) (i-j-1)));
-    scope = addSym(scope, strAdd(":", varName),  push2(heap, frameSetterEmitter,    (void*) (i-j-1)));
-    scope = addSym(scope, strAdd(varName, "++"), push2(heap, frameIncrEmitter,      (void*) (i-j-1)));
-    scope = addSym(scope, strAdd(varName, "--"), push2(heap, frameDecrEmitter,      (void*) (i-j-1)));
+    void* k = (void*) (i-j-1);
+    scope = addSym(scope, varName,               push2(heap, frameReferenceEmitter, k));
+    scope = addSym(scope, strAdd(":", varName),  push2(heap, frameSetterEmitter,    k));
+    scope = addSym(scope, strAdd(varName, "++"), push2(heap, frameIncrEmitter,      k));
+    scope = addSym(scope, strAdd(varName, "--"), push2(heap, frameDecrEmitter,      k));
   }
 
   Stack* oldCode = code;
