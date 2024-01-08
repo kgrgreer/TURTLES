@@ -557,9 +557,7 @@ void cComment() {
 }
 
 
-void clearSpace() {
-  stack->ptr = 0;
-}
+void clearStack() { stack->ptr = 0; }
 
 
 void printStack() {
@@ -596,7 +594,7 @@ int main() {
   scope = addCmd(scope, "/*",    &cComment);
   scope = addCmd(scope, "//",    &cppComment);
   scope = addCmd(scope, "{",     &defineFn);
-  scope = addCmd(scope, "clear", &clearSpace);
+  scope = addCmd(scope, "clear", &clearStack);
 
   scope = addFn(scope, "+",      &plus);
   scope = addFn(scope, "-",      &minus);
