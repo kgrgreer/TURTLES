@@ -121,6 +121,7 @@ Stack* heap  = NULL; // used for everything else, including frames
 Stack* code  = NULL; // where code is generated to, shares memory with heap but has own pointer
 long   ip    = 0;    // instruction pointer, code being run
 long   fp    = 0;    // frame pointer, pointer on heap of current frame / activation-record
+int    fd    = 0;    // frame depth
 
 
 void* nextI() { return heap->arr[ip++]; } // next instruction or instruction argument
@@ -231,11 +232,10 @@ void closure() {
 // The "()" word which calls a function on the top of the stack
 void call() {
   long closure = (long) pop(stack);
-  long ptr     = (long) heap->arr[closure+1];
-  long pfp     = (long) heap->arr[closure]; // previous fp
+  long pfp     = (long) heap->arr[closure];   // previous fp
+  long ptr     = (long) heap->arr[closure+1]; // fn ptr
 
-  fp = push(heap, (void*) pfp); // previous FP
-  push(heap, (void*) ip);       // return address
+  fp = push2(heap, (void*) pfp, (void*) ip); // previous FP, return address
 
   // printf("Calling function at: %ld from: %ld\n", ptr, ip);
   ip = ptr;
@@ -267,50 +267,60 @@ void autoConstant() {
 }
 
 
+long frameOffset(long depth, long offset) {
+  long f = fp;
+  printf("frame offset: depth: %ld offset: %ld fd: %d\n", depth, offset, fd);
+  for ( int i = 0 ; i < depth ; i++ ) f = (long) heap->arr[f];
+  return f+2+offset;
+}
+
+
 void frameReference() {
+  int  frame  = (int)  nextI();
   long offset = (long) nextI();
   // printf("frame reference fp: %ld offset: %ld value: %ld\n", fp, offset, (long) heap->arr[2+fp+offset]);
   // Consume next constant value stored in the heap and push to stack
-  push(stack, (void*) heap->arr[2+fp+offset]);
+  push(stack, (void*) heap->arr[frameOffset(frame, offset)]);
 }
 
 void frameReferenceEmitter() {
   // Consume next constant value stored in the heap and push to stack
-  push2(code, frameReference, nextI());
+  push3(code, frameReference, (void*) (long) (fd-(int)nextI()), nextI());
 }
 
 void frameSetter() {
+  int  frame  = (int)  nextI();
   long offset = (long) nextI();
   void* value = pop(stack);
   // printf("frame setter fp: %ld offset: %ld = value: %ld\n", fp, offset, (long) value);
   // Consume next constant value stored in the heap and push to stack
-  heap->arr[2+fp+offset] = value;
-}
-
-void frameIncr() {
-  long offset = (long) nextI();
-  heap->arr[2+fp+offset]++;
-}
-
-void frameIncrEmitter() {
-  // Consume next constant value stored in the heap and push to stack
-  push2(code, frameIncr, nextI());
-}
-
-void frameDecr() {
-  long offset = (long) nextI();
-  heap->arr[2+fp+offset]--;
-}
-
-void frameDecrEmitter() {
-  // Consume next constant value stored in the heap and push to stack
-  push2(code, frameDecr, nextI());
+  heap->arr[frameOffset(frame, offset)] = value;
 }
 
 void frameSetterEmitter() {
-  // Consume next constant value stored in the heap and push to stack
-  push2(code, frameSetter, nextI());
+  push3(code, frameSetter, (void*) (long) (fd-(int)nextI()), nextI());
 }
+
+void frameIncr() {
+  int  frame  = (int)  nextI();
+  long offset = (long) nextI();
+  heap->arr[frameOffset(frame, offset)]++;
+}
+
+void frameIncrEmitter() {
+  push3(code, frameIncr, (void*) (long) (fd-(int)nextI()), nextI());
+}
+
+void frameDecr() {
+  int  frame  = (int)  nextI();
+  long offset = (long) nextI();
+  heap->arr[frameOffset(frame, offset)]--;
+}
+
+void frameDecrEmitter() {
+  push3(code, frameDecr, (void*) (long) (fd-(int)nextI()), nextI());
+}
+
 
 // Copy argument values from stack to the heap, as part of the activation record, where they can be accessed as frameReferences
 void localVarSetup() {
@@ -432,6 +442,8 @@ void defineFn() {
   long   vars = push(heap, 0 /* # of vars */);
   int    i    = 0; // number of vars / arguments
 
+  fd++;
+
   while ( true ) {
 
     if ( ! readSym(buf, sizeof(buf)) ) {
@@ -461,11 +473,11 @@ void defineFn() {
 
   for ( long j = 0 ; j < i ; j++ ) {
     char* varName = heap->arr[vars+1+j];
-    void* k = (void*) (i-j-1);
-    scope = addSym(scope, varName,               push2(heap, frameReferenceEmitter, k));
-    scope = addSym(scope, strAdd(":", varName),  push2(heap, frameSetterEmitter,    k));
-    scope = addSym(scope, strAdd(varName, "++"), push2(heap, frameIncrEmitter,      k));
-    scope = addSym(scope, strAdd(varName, "--"), push2(heap, frameDecrEmitter,      k));
+    void* k       = (void*) (i-j-1);
+    scope = addSym(scope, varName,               push3(heap, frameReferenceEmitter, (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(":", varName),  push3(heap, frameSetterEmitter,    (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "++"), push3(heap, frameIncrEmitter,      (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "--"), push3(heap, frameDecrEmitter,      (void*) (long) fd, k));
   }
 
   Stack* oldCode = code;
@@ -502,6 +514,8 @@ void defineFn() {
 //   push2(code, constant, (void*) ptr);
 
   scope = s; // revert to old scope
+
+  fd--;
 
   return;
 }
@@ -559,7 +573,7 @@ int main() {
   push(code, (void*) -1); // psedo return address causes stop of execution
 
   while ( true ) {
-    printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
+    // printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
