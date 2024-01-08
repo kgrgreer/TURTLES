@@ -30,6 +30,7 @@ true  true  | .
 
 // Forth-like stack operators
 { _ | } ::drop  { o | o o } ::dup  { a b | b a } ::swap
+
 1 2 3 drop drop drop
 42 dup dup dup . . . .
 1 2 swap . .
@@ -40,6 +41,7 @@ true  true  | .
 1 { | 2 . 1 } ||
 0 { | 2 . 1 } ||
 
+// if and ifElse
 1 { | 666 . } if
 0 { | 777 . } if
 
@@ -56,6 +58,7 @@ true  true  | .
 1 { | 100 . } { | 200 . } ifElse2
 0 { | 100 . } { | 200 . } ifElse2
 
+// While loop
 1 5 { start end | { | start end <= } { | start . start start++ } while } ()
 
 // Make for loops

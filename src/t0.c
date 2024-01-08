@@ -390,6 +390,8 @@ void divide() {
 
 void eq() { push(stack, (void*) (long) (pop(stack) == pop(stack))); }
 
+void neq() { push(stack, (void*) (long) (pop(stack) != pop(stack))); }
+
 void lt() { push(stack, (void*) (long) (pop(stack) > pop(stack))); }
 
 void gt() { push(stack, (void*) (long) (pop(stack) < pop(stack))); }
@@ -600,6 +602,7 @@ int main() {
   scope = addFn(scope, "*",      &multiply);
   scope = addFn(scope, "/",      &divide);
   scope = addFn(scope, "=",      &eq);
+  scope = addFn(scope, "!=",     &neq);
   scope = addFn(scope, "<",      &lt);
   scope = addFn(scope, ">",      &gt);
   scope = addFn(scope, "<=",     &lte);
