@@ -206,6 +206,9 @@ bool readSym(char* buf, int bufSize) {
   }
   buf[size] = '\0';
 
+   // This is so the character isn't lost if the read command wants to consume input
+   ungetc(c, stdin);
+
   return true;
 }
 
