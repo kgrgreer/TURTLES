@@ -285,7 +285,7 @@ void frameReference() {
 
 void frameReferenceEmitter() {
   // Consume next constant value stored in the heap and push to stack
-  push3(code, frameReference, (void*) (long) (fd-(int)nextI()), nextI());
+  push3(code, frameReference, (void*) (long) (fd-(int) nextI()), nextI());
 }
 
 void frameSetter() {
@@ -298,17 +298,19 @@ void frameSetter() {
 }
 
 void frameSetterEmitter() {
-  push3(code, frameSetter, (void*) (long) (fd-(int)nextI()), nextI());
+  push3(code, frameSetter, (void*) (long) (fd-(int) nextI()), nextI());
 }
 
 void frameIncr() {
   int  frame  = (int)  nextI();
   long offset = (long) nextI();
+  printf("11111 frameIncr %d %ld %ld %ld\n", frame, offset, frameOffset(frame, offset), (long) heap->arr[frameOffset(frame, offset)]);
   heap->arr[frameOffset(frame, offset)]++;
+  printf("22222 frameIncr %d %ld %ld %ld\n", frame, offset, frameOffset(frame, offset), (long) heap->arr[frameOffset(frame, offset)]);
 }
 
 void frameIncrEmitter() {
-  push3(code, frameIncr, (void*) (long) (fd-(int)nextI()), nextI());
+  push3(code, frameIncr, (void*) (long) (fd-(int) nextI()), nextI());
 }
 
 void frameDecr() {
@@ -318,7 +320,7 @@ void frameDecr() {
 }
 
 void frameDecrEmitter() {
-  push3(code, frameDecr, (void*) (long) (fd-(int)nextI()), nextI());
+  push3(code, frameDecr, (void*) (long) (fd-(int) nextI()), nextI());
 }
 
 
@@ -384,6 +386,14 @@ void divide() {
 }
 
 void eq() { push(stack, (void*) (long) (pop(stack) == pop(stack))); }
+
+void lt() { push(stack, (void*) (long) (pop(stack) > pop(stack))); }
+
+void gt() { push(stack, (void*) (long) (pop(stack) < pop(stack))); }
+
+void lte() { push(stack, (void*) (long) (pop(stack) >= pop(stack))); }
+
+void gte() { push(stack, (void*) (long) (pop(stack) <= pop(stack))); }
 
 void not() { push(stack, (void*) (long) (! (bool) pop(stack))); }
 
@@ -574,6 +584,10 @@ int main() {
   scope = addFn(scope, "*",     &multiply);
   scope = addFn(scope, "/",     &divide);
   scope = addFn(scope, "=",     &eq);
+  scope = addFn(scope, "<",     &lt);
+  scope = addFn(scope, ">",     &gt);
+  scope = addFn(scope, "<=",    &lte);
+  scope = addFn(scope, ">=",    &gte);
   scope = addFn(scope, "!",     &not);
   scope = addFn(scope, "&",     &and);
   scope = addFn(scope, "|",     &or);
