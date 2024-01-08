@@ -35,16 +35,20 @@ true  true  | .
 0 { | 2 . 1 } &&
 1 { | 2 . 1 } ||
 0 { | 2 . 1 } ||
-{ flag block | flag block && } ::if
 1 { | 666 . } if
 0 { | 777 . } if
-{ flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifElse
+{ flag block | flag block && } ::if2
 1 { | 100 . } { | 200 . } ifElse
 0 { | 100 . } { | 200 . } ifElse
-{ start end block | start . end . { | start end <= } { | start block () start++ } while } ::for
-1 9 { i | i . } for // doesn't work
-{ start end block | start . end . { | start end <= } { | start block () start++ } dup dup dup dup dup dup () () () () () () } ::for
-1 9 { i | i . } for // works
+1 { | 666 . } if2
+0 { | 777 . } if2
+{ flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifElse2
+1 { | 100 . } { | 200 . } ifElse2
+0 { | 100 . } { | 200 . } ifElse2
+{ s e block |
+  { | s e <= } { | s block () s++ s . } while
+} ::for
+1 3 { i | i } for // doesn't work
 
-  1   3 { start end | { | start end <= } { | start . start start++ } while } ()
-101 103 { start end | { | start end <= } { | start . start start++ } while } ()
+  1   2 { start end | { | start end <= } { | start . start start++ } while } ()
+101 102 { start end | { | start end <= } { | start . start start++ } while } ()

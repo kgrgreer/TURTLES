@@ -243,8 +243,9 @@ void call() {
   // printf("Calling function at: %ld from: %ld\n", ptr, ip);
   ip = ptr;
   execute(ip++);
-  // fp = (long) heap->arr[fp];
-  // printf("Returned to: %ld\n", ip);
+
+//  ip = (long) heap->arr[fp+1];
+//  fp = pfp;
 }
 
 
@@ -418,6 +419,10 @@ void whileStatement() {
   }
 }
 
+void ifStatement() { void* block = pop(stack); if ( pop(stack) ) { push(stack, block); call(); } }
+
+void ifElseStatement() { void* fBlock = pop(stack); void* tBlock = pop(stack); push(stack, pop(stack) ? tBlock : fBlock); call(); }
+
 void print() { printf("%ld\n", (long) pop(stack)); }
 
 
@@ -477,6 +482,9 @@ void defineFn() {
       printf("Syntax Error: Unclosed function, missing |");
       return;
     }
+
+    printf("\ndefineFn input: '%s'\n", buf);
+
 
     if ( strcmp(buf, "|") == 0 ) break;
 
@@ -588,24 +596,26 @@ int main() {
   scope = addCmd(scope, "{",     &defineFn);
   scope = addCmd(scope, "clear", &clearStack);
 
-  scope = addFn(scope, "+",     &plus);
-  scope = addFn(scope, "-",     &minus);
-  scope = addFn(scope, "*",     &multiply);
-  scope = addFn(scope, "/",     &divide);
-  scope = addFn(scope, "=",     &eq);
-  scope = addFn(scope, "<",     &lt);
-  scope = addFn(scope, ">",     &gt);
-  scope = addFn(scope, "<=",    &lte);
-  scope = addFn(scope, ">=",    &gte);
-  scope = addFn(scope, "!",     &not);
-  scope = addFn(scope, "&",     &and);
-  scope = addFn(scope, "|",     &or);
-  scope = addFn(scope, "&&",    &andand);
-  scope = addFn(scope, "||",    &oror);
-  scope = addFn(scope, "while", &whileStatement);
-  scope = addFn(scope, "print", &print);
-  scope = addFn(scope, ".",     &print); // like forth
-  scope = addFn(scope, "()",    &call);
+  scope = addFn(scope, "+",      &plus);
+  scope = addFn(scope, "-",      &minus);
+  scope = addFn(scope, "*",      &multiply);
+  scope = addFn(scope, "/",      &divide);
+  scope = addFn(scope, "=",      &eq);
+  scope = addFn(scope, "<",      &lt);
+  scope = addFn(scope, ">",      &gt);
+  scope = addFn(scope, "<=",     &lte);
+  scope = addFn(scope, ">=",     &gte);
+  scope = addFn(scope, "!",      &not);
+  scope = addFn(scope, "&",      &and);
+  scope = addFn(scope, "|",      &or);
+  scope = addFn(scope, "&&",     &andand);
+  scope = addFn(scope, "||",     &oror);
+  scope = addFn(scope, "if",     &ifStatement);
+  scope = addFn(scope, "ifelse", &ifElseStatement);
+  scope = addFn(scope, "while",  &whileStatement);
+  scope = addFn(scope, "print",  &print);
+  scope = addFn(scope, ".",      &print); // like forth
+  scope = addFn(scope, "()",     &call);
 
   // Create a top-level frame which points to itself as the previous frame
   // so it can be reused forever.
@@ -613,9 +623,13 @@ int main() {
   push(code, (void*) -1); // psedo return address causes stop of execution
 
   while ( true ) {
+    fp = 0;
+    printf("fp: %ld, fd: %d\n", fp, fd);
     printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
+
+    printf("\nREPL input: '%s'\n", buf);
 
     code->ptr = 2;    // skip over frame info
     evalSym(buf);     // compile symbol
