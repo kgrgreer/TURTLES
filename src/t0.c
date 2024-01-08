@@ -488,18 +488,6 @@ void defineFn() {
 
     if ( strcmp(buf, "|") == 0 ) break;
 
-    /*
-    function countFrames() { var d = 0, s = scope; while ( s !== curScope ) { s = s.__proto__; d++; } return d; }
-    function framesUp(d) { var p = hp; for ( var i = 0 ; i < d ; i++ ) p = heap[p]; return p; }
-    function accessor(index, f) { return code => { var d = countFrames(); code.push(() => f(framesUp(d) + index)); } }
-    function defineVar(v, index) {
-      scope[v]        = accessor(index, i => stack.push(heap[i]));
-      scope[':' + v]  = accessor(index, i => { heap2[i] = v; heap[i] = stack.pop(); });
-      scope[v + '++'] = accessor(index, i => heap[i]++);
-      scope[v + '--'] = accessor(index, i => heap[i]--);
-    }
-    */
-
     // Add var name to 'vars'
     push(heap, strdup(buf));
     heap->arr[vars]++;
