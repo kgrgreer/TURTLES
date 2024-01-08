@@ -313,9 +313,7 @@ void frameSetterEmitter() {
 void frameIncr() {
   int  frame  = (int)  nextI();
   long offset = (long) nextI();
-  printf("11111 frameIncr %d %ld %ld %ld\n", frame, offset, frameOffset(frame, offset), (long) heap->arr[frameOffset(frame, offset)]);
   heap->arr[frameOffset(frame, offset)]++;
-  printf("22222 frameIncr %d %ld %ld %ld\n", frame, offset, frameOffset(frame, offset), (long) heap->arr[frameOffset(frame, offset)]);
 }
 
 void frameIncrEmitter() {
