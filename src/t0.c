@@ -58,7 +58,7 @@
     - malloc() is used in some places where the heap should be used instead so
       that memory can be GC'ed in the future
     - frame references could/should be reused
-    - nested functions will write into each other, need to use scratch spaces then copy?
+    - :for doesn't work
 */
 
 void evalSym(char* sym);

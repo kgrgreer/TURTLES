@@ -25,6 +25,8 @@ false false | .
 false true  | .
 true  false | .
 true  true  | .
+{ _ | } ::drop
+1 2 3 drop drop drop
 { o | o o } ::dup
 42 dup dup dup
 { a b | b a } ::swap
@@ -39,5 +41,5 @@ true  true  | .
 { flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifElse
 1 { | 100 . } { | 200 . } ifElse
 0 { | 100 . } { | 200 . } ifElse
-{ start end block | { | start end <= } { | start block () start++ start . } while } ::for
-1 99 { i | i . } for
+{ start end block | { | start end <= } { | start block () start++ 999 . start . } while } ::for
+1 9 { i | i . } for
