@@ -562,7 +562,7 @@ void clearSpace() {
 }
 
 
-void printSpace() {
+void printStack() {
   for ( long i = 0 ; i < stack->ptr ; i++ )
     printf("%ld ", (long) stack->arr[i]);
 }
@@ -572,7 +572,7 @@ void printSpace() {
 void guru() {
   printf("------------------------------\n");
   printf("GURU MEDIATION\n");
-  printf("stack: "); printSpace(); printf("\n");
+  printf("stack: "); printStack(); printf("\n");
   printf("depth: %d\n", fd);
   printf("frame: %ld\n", fp);
   printf("ip: %ld\n", ip);
@@ -628,7 +628,7 @@ int main() {
 
   while ( true ) {
     fp = 0; // ???: needed?
-    printf("heap: %ld, stack: ", heap->ptr); printSpace(); printf("> ");
+    printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
