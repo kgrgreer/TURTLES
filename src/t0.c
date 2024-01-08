@@ -62,7 +62,6 @@
     - malloc() is used in some places where the heap should be used instead so
       that memory can be GC'ed in the future
     - frame references could/should be reused
-    - :for doesn't work
 */
 
 void evalSym(char* sym);
@@ -274,6 +273,8 @@ void autoConstant() {
   evalSym("()");
 }
 
+
+// TODO: cleanup frameOffset / emitter code
 
 long frameOffset(long depth, long offset) {
   long f = fp;
