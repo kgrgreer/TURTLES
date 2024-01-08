@@ -572,10 +572,10 @@ void printSpace() {
 void guru() {
   printf("------------------------------\n");
   printf("GURU MEDIATION\n");
-  printf("Space: "); printSpace(); printf("\n");
-  printf("Depth: %d\n", fd);
-  printf("Frame: %ld\n", fp);
-  printf("IP: %ld\n", ip);
+  printf("stack: "); printSpace(); printf("\n");
+  printf("depth: %d\n", fd);
+  printf("frame: %ld\n", fp);
+  printf("ip: %ld\n", ip);
   printf("------------------------------\n");
 }
 
