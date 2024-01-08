@@ -39,3 +39,5 @@ true  true  | .
 { flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifElse
 1 { | 100 . } { | 200 . } ifElse
 0 { | 100 . } { | 200 . } ifElse
+{ start end block | { | start end <= } { | start block () start++ start . } while } ::for
+1 99 { i | i . } for

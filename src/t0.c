@@ -395,6 +395,16 @@ void andand() { void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*
 
 void oror() { void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); } }
 
+void whileStatement() {
+  void* block = pop(stack);
+  void* cond  = pop(stack);
+  while ( true ) {
+    push(stack, cond); call();
+    if ( ! pop(stack) ) break;
+    push(stack, block); call();
+  }
+}
+
 void print() { printf("%ld\n", (long) pop(stack)); }
 
 
@@ -569,6 +579,7 @@ int main() {
   scope = addFn(scope, "|",     &or);
   scope = addFn(scope, "&&",    &andand);
   scope = addFn(scope, "||",    &oror);
+  scope = addFn(scope, "while", &whileStatement);
   scope = addFn(scope, "print", &print);
   scope = addFn(scope, ".",     &print); // like forth
   scope = addFn(scope, "()",    &call);
