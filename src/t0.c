@@ -567,13 +567,16 @@ void printStack() {
 
 // Display Guru Medidation Information
 void guru() {
+  printf("\033[1;31m");
   printf("------------------------------\n");
   printf("GURU MEDIATION\n");
+  printf("------------------------------\n");
   printf("stack: "); printStack(); printf("\n");
   printf("depth: %d\n", fd);
   printf("frame: %ld\n", fp);
   printf("ip: %ld\n", ip);
   printf("------------------------------\n");
+  printf("\033[0m");
 }
 
 
