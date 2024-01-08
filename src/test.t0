@@ -33,3 +33,9 @@ true  true  | .
 0 { | 2 . 1 } &&
 1 { | 2 . 1 } ||
 0 { | 2 . 1 } ||
+{ flag block | flag block && } ::if
+1 { | 666 . } if
+0 { | 777 . } if
+{ flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifElse
+1 { | 100 . } { | 200 . } ifElse
+0 { | 100 . } { | 200 . } ifElse
