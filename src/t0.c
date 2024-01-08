@@ -213,18 +213,6 @@ bool readSym(char* buf, int bufSize) {
 }
 
 
-/** Execute code starting at ip until 0 found. **/
-void execute(long ptr) {
-  for ( ip = ptr ; ; ) {
-    // printf("executing: %ld %ld\n", ip, (long) heap->arr[ip]);
-    Fn fn = (Fn) nextI();
-    fn();
-    // printf("executed %ld\n", ip);
-    if ( ip == -1 ) return;
-  }
-}
-
-
 void closure() {
   // Consume next constant value stored in the heap and push to stack
   void* fn = nextI();
@@ -232,9 +220,28 @@ void closure() {
 }
 
 
+void ret() {
+  // ip = (long) heap->arr[fp+1]; // jump to return address
+  // fp = (long) heap->arr[fp];   // restore previous fp
+  // printf("returning to %ld\n", ip);
+}
+
+
+/** Execute code starting at ip until 0 found. **/
+void execute(long ptr) {
+  for ( ip = ptr ; ; ) {
+    // printf("executing: %ld %ld\n", ip, (long) heap->arr[ip]);
+    Fn fn = (Fn) nextI();
+    if ( fn == ret ) return;
+    fn();
+  }
+}
+
+
 // The "()" word which calls a function on the top of the stack
 void call() {
   long closure = (long) pop(stack);
+  long ofp     = fp;
   long pfp     = (long) heap->arr[closure];   // previous fp
   long ptr     = (long) heap->arr[closure+1]; // fn ptr
 
@@ -244,15 +251,8 @@ void call() {
   ip = ptr;
   execute(ip++);
 
-//  ip = (long) heap->arr[fp+1];
-//  fp = pfp;
-}
-
-
-void ret() {
-  ip = (long) heap->arr[fp+1]; // jump to return address
-  fp = (long) heap->arr[fp];   // restore previous fp
-  // printf("returning to %ld\n", ip);
+  ip = (long) heap->arr[fp+1];
+  fp = ofp;
 }
 
 
