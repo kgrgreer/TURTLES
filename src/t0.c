@@ -350,7 +350,6 @@ void define() {
 }
 
 
-
 char* strAdd(char* s1, char* s2) {
   int l1 = strlen(s1);
   char* s3 = (char*) malloc(l1 + sizeof(s2));
@@ -566,6 +565,18 @@ void printStack() {
 }
 
 
+// Display Guru Medidation Information
+void guru() {
+  printf("------------------------------\n");
+  printf("GURU MEDIATION\n");
+  printf("Stack: "); printStack(); printf("\n");
+  printf("Depth: %d\n", fd);
+  printf("Frame: %ld\n", fp);
+  printf("IP: %ld\n", ip);
+  printf("------------------------------\n");
+}
+
+
 int main() {
   char buf[256]; // Used to hold next read symbols
 
@@ -604,6 +615,7 @@ int main() {
   scope = addFn(scope, "print",  &print);
   scope = addFn(scope, ".",      &print); // like forth
   scope = addFn(scope, "()",     &call);
+  scope = addFn(scope, "guru",   &guru);
 
   // Create a top-level frame which points to itself as the previous frame
   // so it can be reused forever.
@@ -612,7 +624,7 @@ int main() {
 
   while ( true ) {
     fp = 0;
-    printf("fp: %ld, fd: %d\n", fp, fd);
+    printf("fp: %ld, fd: %d, ", fp, fd);
     printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
