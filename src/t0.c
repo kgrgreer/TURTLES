@@ -391,6 +391,10 @@ void and() { push(stack, (void*) (long) ((bool) pop(stack) && (bool) pop(stack))
 
 void or() { push(stack, (void*) (long) ((bool) pop(stack) || (bool) pop(stack))); }
 
+void andand() { void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call(); } }
+
+void oror() { void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); } }
+
 void print() { printf("%ld\n", (long) pop(stack)); }
 
 
@@ -561,8 +565,10 @@ int main() {
   scope = addFn(scope, "/",     &divide);
   scope = addFn(scope, "=",     &eq);
   scope = addFn(scope, "!",     &not);
-  scope = addFn(scope, "&&",    &and);
-  scope = addFn(scope, "||",    &or);
+  scope = addFn(scope, "&",     &and);
+  scope = addFn(scope, "|",     &or);
+  scope = addFn(scope, "&&",    &andand);
+  scope = addFn(scope, "||",    &oror);
   scope = addFn(scope, "print", &print);
   scope = addFn(scope, ".",     &print); // like forth
   scope = addFn(scope, "()",    &call);
@@ -573,7 +579,7 @@ int main() {
   push(code, (void*) -1); // psedo return address causes stop of execution
 
   while ( true ) {
-    // printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
+    printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 

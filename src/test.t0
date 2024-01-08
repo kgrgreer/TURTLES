@@ -17,15 +17,19 @@ five .
 five five + .
 1 1 = :true
 1 0 = :false
-false false && .
-false true  && .
-true  false && .
-true  true  && .
-false false || .
-false true  || .
-true  false || .
-true  true  || .
+false false & .
+false true  & .
+true  false & .
+true  true  & .
+false false | .
+false true  | .
+true  false | .
+true  true  | .
 { o | o o } ::dup
 42 dup dup dup
 { a b | b a } ::swap
 1 2 swap
+1 { | 2 . 1 } &&
+0 { | 2 . 1 } &&
+1 { | 2 . 1 } ||
+0 { | 2 . 1 } ||
