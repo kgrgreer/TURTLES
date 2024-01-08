@@ -68,39 +68,39 @@
 void evalSym(char* sym);
 
 
-typedef struct stack_ {
+typedef struct space_ {
   long ptr;
   void* *arr;
-} Stack; // Perhaps something like "Region" or "Space" would be a better name?
+} Space;
 
 
-Stack* createStack(long size) {
-  Stack* s = (Stack*) malloc(sizeof(Stack));
+Space* createSpace(long size) {
+  Space* s = (Space*) malloc(sizeof(Space));
   s->arr = malloc(size * sizeof(void*));
   return s;
 }
 
 
-long push(Stack* stack, void* value) {
+long push(Space* stack, void* value) {
   long r = stack->ptr;
   stack->arr[stack->ptr++] = value;
   return r;
 }
 
-long push2(Stack* stack, void* v1, void* v2) {
+long push2(Space* stack, void* v1, void* v2) {
   long r = push(stack, v1);
   push(stack, v2);
   return r;
 }
 
-long push3(Stack* stack, void* v1, void* v2, void* v3) {
+long push3(Space* stack, void* v1, void* v2, void* v3) {
   long r = push2(stack, v1, v2);
   push(stack, v3);
   return r;
 }
 
 
-void* pop(Stack* stack) {
+void* pop(Space* stack) {
 #ifdef DEBUG
   if ( stack->ptr <= 0 ) printf("POP from empty stack.\n");
 #endif
@@ -120,9 +120,9 @@ typedef struct scope_ {
 
 
 Scope* scope = NULL; // dictionary of words -> closures
-Stack* stack = NULL; // used to pass arguments
-Stack* heap  = NULL; // used for everything else, including frames
-Stack* code  = NULL; // where code is generated to, shares memory with heap but has own pointer
+Space* stack = NULL; // used to pass arguments
+Space* heap  = NULL; // used for everything else, including frames
+Space* code  = NULL; // where code is generated to, shares memory with heap but has own pointer
 long   ip    = 0;    // instruction pointer, code being run
 long   fp    = 0;    // frame pointer, pointer on heap of current frame / activation-record
 int    fd    = 0;    // frame depth
@@ -505,8 +505,8 @@ void defineFn() {
     scope = addSym(scope, strAdd(varName, "--"), push3(heap, frameDecrEmitter,      (void*) (long) fd, k));
   }
 
-  Stack* oldCode = code;
-  Stack  code2; // A temp code buffer to allow for reentrant function parsing
+  Space* oldCode = code;
+  Space  code2; // A temp code buffer to allow for reentrant function parsing
   void*  arr[1024];
 
   code2.ptr = 0;
@@ -557,12 +557,12 @@ void cComment() {
 }
 
 
-void clearStack() {
+void clearSpace() {
   stack->ptr = 0;
 }
 
 
-void printStack() {
+void printSpace() {
   for ( long i = 0 ; i < stack->ptr ; i++ )
     printf("%ld ", (long) stack->arr[i]);
 }
@@ -572,7 +572,7 @@ void printStack() {
 void guru() {
   printf("------------------------------\n");
   printf("GURU MEDIATION\n");
-  printf("Stack: "); printStack(); printf("\n");
+  printf("Space: "); printSpace(); printf("\n");
   printf("Depth: %d\n", fd);
   printf("Frame: %ld\n", fp);
   printf("IP: %ld\n", ip);
@@ -583,9 +583,9 @@ void guru() {
 int main() {
   char buf[256]; // Used to hold next read symbols
 
-  heap  = createStack(1000000);
-  stack = createStack(16000);
-  code  = createStack(0);
+  heap  = createSpace(1000000);
+  stack = createSpace(16000);
+  code  = createSpace(0);
 
   // Code stack shares memory with heap, just has its own ptr
   code->arr = heap->arr;
@@ -596,7 +596,7 @@ int main() {
   scope = addCmd(scope, "/*",    &cComment);
   scope = addCmd(scope, "//",    &cppComment);
   scope = addCmd(scope, "{",     &defineFn);
-  scope = addCmd(scope, "clear", &clearStack);
+  scope = addCmd(scope, "clear", &clearSpace);
 
   scope = addFn(scope, "+",      &plus);
   scope = addFn(scope, "-",      &minus);
@@ -628,7 +628,7 @@ int main() {
 
   while ( true ) {
     fp = 0; // ???: needed?
-    printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
+    printf("heap: %ld, stack: ", heap->ptr); printSpace(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
