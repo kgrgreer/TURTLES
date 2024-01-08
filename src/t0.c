@@ -556,6 +556,11 @@ void cComment() {
 }
 
 
+void clearStack() {
+  stack->ptr = 0;
+}
+
+
 void printStack() {
   for ( long i = 0 ; i < stack->ptr ; i++ )
     printf("%ld ", (long) stack->arr[i]);
@@ -574,10 +579,11 @@ int main() {
 
   heap->ptr = 1000; // Make space for REPL scratch space
 
-  scope = addCmd(scope, "???",  &unknownSymbol);
-  scope = addCmd(scope, "/*",   &cComment);
-  scope = addCmd(scope, "//",   &cppComment);
-  scope = addCmd(scope, "{",    &defineFn);
+  scope = addCmd(scope, "???",   &unknownSymbol);
+  scope = addCmd(scope, "/*",    &cComment);
+  scope = addCmd(scope, "//",    &cppComment);
+  scope = addCmd(scope, "{",     &defineFn);
+  scope = addCmd(scope, "clear", &clearStack);
 
   scope = addFn(scope, "+",     &plus);
   scope = addFn(scope, "-",     &minus);

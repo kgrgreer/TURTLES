@@ -41,5 +41,10 @@ true  true  | .
 { flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifElse
 1 { | 100 . } { | 200 . } ifElse
 0 { | 100 . } { | 200 . } ifElse
-{ start end block | { | start end <= } { | start block () start++ 999 . start . } while } ::for
-1 9 { i | i . } for
+{ start end block | start . end . { | start end <= } { | start block () start++ } while } ::for
+1 9 { i | i . } for // doesn't work
+{ start end block | start . end . { | start end <= } { | start block () start++ } dup dup dup dup dup dup () () () () () () } ::for
+1 9 { i | i . } for // works
+
+1 4 { start end | { | start end <= } { | start . start start++ } while } () //
+1 4 { start end | { | start end <= } { | start . start start++ } while } () //
