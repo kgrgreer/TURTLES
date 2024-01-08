@@ -80,30 +80,30 @@ Space* createSpace(long size) {
 }
 
 
-long push(Space* stack, void* value) {
-  long r = stack->ptr;
-  stack->arr[stack->ptr++] = value;
+long push(Space* s, void* value) {
+  long r = s->ptr;
+  s->arr[s->ptr++] = value;
   return r;
 }
 
-long push2(Space* stack, void* v1, void* v2) {
-  long r = push(stack, v1);
-  push(stack, v2);
+long push2(Space* s, void* v1, void* v2) {
+  long r = push(s, v1);
+  push(s, v2);
   return r;
 }
 
-long push3(Space* stack, void* v1, void* v2, void* v3) {
-  long r = push2(stack, v1, v2);
-  push(stack, v3);
+long push3(Space* s, void* v1, void* v2, void* v3) {
+  long r = push2(s, v1, v2);
+  push(s, v3);
   return r;
 }
 
 
-void* pop(Space* stack) {
+void* pop(Space* s) {
 #ifdef DEBUG
-  if ( stack->ptr <= 0 ) printf("POP from empty stack.\n");
+  if ( s->ptr <= 0 ) printf("POP from empty stack.\n");
 #endif
-  return stack->arr[--stack->ptr];
+  return s->arr[--s->ptr];
 }
 
 
