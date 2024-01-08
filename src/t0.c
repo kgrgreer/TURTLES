@@ -484,9 +484,6 @@ void defineFn() {
       return;
     }
 
-    printf("\ndefineFn input: '%s'\n", buf);
-
-
     if ( strcmp(buf, "|") == 0 ) break;
 
     // Add var name to 'vars'
@@ -626,13 +623,10 @@ int main() {
   push(code, (void*) -1); // psedo return address causes stop of execution
 
   while ( true ) {
-    fp = 0;
-    printf("fp: %ld, fd: %d, ", fp, fd);
+    fp = 0; // ???: needed?
     printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
-
-    printf("\nREPL input: '%s'\n", buf);
 
     code->ptr = 2;    // skip over frame info
     evalSym(buf);     // compile symbol
