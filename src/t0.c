@@ -19,11 +19,15 @@
     - symbol dictionary entries point to Closures which execute directly,
       however, most symbols actually push/emit/compile code onto the "code" stack
 
-  Closures:
+  Instructions:
     - a heap pointer to a function
     - followed by its arguments
     - without a ret, so only a single statement
     - created like: push2(heap, constant, value), where, in this case, "constant" is a function and "value" is a value that it remembers/uses
+
+  Closures:
+    - a heap pointer to the frame-pointer under which the function was defined (ie. its closure)
+    - a pointer to the code to execute
 
   Code:
     - a heap pointer to zero or more Closures
@@ -50,7 +54,7 @@
 
   Symbol Table
     - maps String keys to heap pointers to Closures
-    - Closure are executed when a symbol is looked up
+    - Instructions are executed when a symbol is looked up
     - addCmd() adds a Closure directly (interpreted)
     - addFn() adds a Closure which will emit the supplied function as code when run (compiled)
 
