@@ -70,8 +70,6 @@ cc cc cc cc cc
 { s e block | { | s e <= } { | s block () s++ } while } ::for
 100 105 { i | i . } for
 
-{ | guru 1000 1005 { i | i . } for } () // doesn't work
-
 0 { count |
   1 1000 { i |
     i .
