@@ -82,3 +82,12 @@ cc cc cc cc cc
   } for
   count .
 } ()
+
+{ n | 0 n - } :neg
+
+{ block | now
+  { start |
+    block ()
+    now start - .
+  } ()
+} ::bench

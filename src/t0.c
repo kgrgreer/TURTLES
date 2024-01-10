@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/time.h>
 
 #define DEBUG 1
 
@@ -61,7 +62,8 @@
   Issues:
     - malloc() is used in some places where the heap should be used instead so
       that memory can be GC'ed in the future
-    - frame references could/should be reused
+    - | could be replaced with |0 |1 |2 ...
+
 
   Todo:
     - better command dictionary which supports reverse lookup and argument information
@@ -244,6 +246,7 @@ void frameIncr();
 void frameDecr();
 void localVarSetup();
 void guru();
+void now();
 void defineAuto();
 void define();
 void forStatement();
@@ -259,6 +262,7 @@ char* findKey(Scope* root, Fn fn) {
   if ( fn == &ret ) return "ret";
   if ( fn == &call ) return "()";
   if ( fn == &guru ) return "guru";
+  if ( fn == &now ) return "now";
   if ( fn == &frameReference ) return "@";
   if ( fn == &frameSetter ) return ":@";
   if ( fn == &frameIncr ) return "++";
@@ -685,6 +689,15 @@ void printFrames(long fp) {
   }
 }
 
+
+void now() {
+	struct timeval tp;
+
+	gettimeofday(&tp, NULL);
+	push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));
+}
+
+
 // Display Guru Medidation Information
 void guru() {
   printf("\n\033[1;31m");
@@ -768,6 +781,7 @@ int main() {
   scope = addFn(scope, ".",          &print); // like forth
   scope = addFn(scope, "()",         &call);
   scope = addFn(scope, "guru",       &guru);
+  scope = addFn(scope, "now",        &now);
   scope = addFn(scope, "dump",       &dump);
   scope = addFn(scope, "dumpFrames", &dumpFrames);
 
