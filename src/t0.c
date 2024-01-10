@@ -64,10 +64,14 @@
       that memory can be GC'ed in the future
     - | could be replaced with |0 |1 |2 ...
 
-
   Todo:
     - better command dictionary which supports reverse lookup and argument information
     - support for emitting code comments in DEBUG mode or tagging non-code items like closures
+
+  Ideas:
+    - What if stack frames had their own heap? That would make it more likely
+      that they could be unwound.
+
 */
 
 void evalSym(char* sym);
@@ -514,9 +518,10 @@ void forStatement() {
 
 void repeatStatement() {
   long block = (long) pop(stack);
-  long times     = (long) pop(stack);
-  for ( long i = 0 ; i <= times ; i++ )
+  long times = (long) pop(stack);
+  for ( long i = 0 ; i <= times ; i++ ) {
     call_(block);
+  }
 }
 
 
@@ -540,6 +545,11 @@ void print() {
   printf("\033[0m");      // Revert colour code
 }
 
+void printStr() {
+  printf("\n\033[1;30m"); // Print in bold black
+  printf("%s", (char *) pop(stack));
+  printf("\033[0m");      // Revert colour code
+}
 
 /*
  * Function used by evalSym() if an exact match isn't found.
@@ -562,6 +572,9 @@ void unknownSymbol() {
     // Parse Integers
     push2(code, constant, (void*) atol(sym));
     // printf("evaled number: %ld\n", (long) heap->arr[cp-1]);
+  } else if ( sym[0] == '\'' ) {
+    char* s = strdup(sym+1);
+    push2(code, constant, s);
   } else {
     printf("Unknown symbol: %s\n", sym);
   }
@@ -672,6 +685,19 @@ void cComment() {
 }
 
 
+void strLiteral() {
+  char buf[4096];
+  getchar(); // remove trailing whitespace
+  int i = 0;
+
+  while ( ( buf[i++] = getchar() ) != '"' );
+
+  buf[i-1] = '\0';
+
+  push2(code, constant, (void*) strdup(buf));
+}
+
+
 // Clear (empty) the stack and the screen
 void clearStack() { stack->ptr = 0; printf("\033c"); }
 
@@ -756,6 +782,7 @@ int main() {
   scope = addCmd(scope, "//",        &cppComment);
   scope = addCmd(scope, "{",         &defineFn);
   scope = addCmd(scope, "clear",     &clearStack);
+  scope = addCmd(scope, "\"",        &strLiteral);
 
   scope = addFn(scope, "+",          &plus);
   scope = addFn(scope, "-",          &minus);
@@ -778,6 +805,7 @@ int main() {
   scope = addFn(scope, "for",        &forStatement);
   scope = addFn(scope, "repeat",     &repeatStatement);
   scope = addFn(scope, "print",      &print);
+  scope = addFn(scope, "print$",     &printStr);
   scope = addFn(scope, ".",          &print); // like forth
   scope = addFn(scope, "()",         &call);
   scope = addFn(scope, "guru",       &guru);

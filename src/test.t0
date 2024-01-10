@@ -66,9 +66,11 @@ cc cc cc cc cc
 1 5 { start end | { | start end <= } { | start . start start++ } while } ()
 
 // For loops
-
-{ s e block | { | s e <= } { | s block () s++ } while } ::for
 100 105 { i | i . } for
+
+// Make your own for statement
+{ s e block | { | s e <= } { | s block () s++ } while } ::for2
+100 105 { i | i . } for2
 
 0 { count |
   1 1000 { i |
