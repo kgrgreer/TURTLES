@@ -35,6 +35,10 @@ true  true  | .
 42 dup dup dup . . . .
 1 2 swap . .
 
+// Closure Test
+1000 { counter | { | counter++ counter } } () ::cc
+cc cc cc cc cc
+
 // Short-circuited logical operators
 1 { | 2 . 1 } &&
 0 { | 2 . 1 } &&
@@ -61,10 +65,20 @@ true  true  | .
 // While loop
 1 5 { start end | { | start end <= } { | start . start start++ } while } ()
 
-// Make for loops
-{ s e block | { | s e <= } { | s block () s++ } while } ::for
-1 3 { i | i . } for
+// For loops
 
-// Closure Test
-1000 { counter | { | counter++ counter } } () ::cc
-cc cc cc cc cc
+{ s e block | { | s e <= } { | s block () s++ } while } ::for
+100 105 { i | i . } for
+
+{ | guru 1000 1005 { i | i . } for } () // doesn't work
+
+0 { count |
+  1 1000 { i |
+    i .
+    1 1000 { j |
+      drop
+      count++
+    } for
+  } for
+  count .
+} ()

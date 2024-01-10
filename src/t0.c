@@ -62,6 +62,10 @@
     - malloc() is used in some places where the heap should be used instead so
       that memory can be GC'ed in the future
     - frame references could/should be reused
+
+  Todo:
+    - better command dictionary which supports reverse lookup and argument information
+    - support for emitting code comments in DEBUG mode or tagging non-code items like closures
 */
 
 void evalSym(char* sym);
@@ -215,9 +219,8 @@ bool readSym(char* buf, int bufSize) {
   return true;
 }
 
-
+// Create a closure (
 void closure() {
-  // Consume next constant value stored in the heap and push to stack
   void* fn = nextI();
   push(stack, (void*) push2(heap, (void*) fp, fn));
 }
@@ -229,12 +232,53 @@ void ret() {
   // printf("returning to %ld\n", ip);
 }
 
+void plus();
+void print();
+void closure();
+void constant();
+void call();
+void call_();
+void frameReference();
+void frameSetter();
+void frameIncr();
+void frameDecr();
+void localVarSetup();
+void guru();
+void defineAuto();
+void define();
+void forStatement();
+void whileStatement();
+void repeatStatement();
+
+// TODO: temporary, use a better instruction dictionary
+char* findKey(Scope* root, Fn fn) {
+  if ( fn == &closure  ) return "closure";
+  if ( fn == &constant  ) return "constant";
+  if ( fn == &plus  ) return "+";
+  if ( fn == &print ) return "print";
+  if ( fn == &ret ) return "ret";
+  if ( fn == &call ) return "()";
+  if ( fn == &guru ) return "guru";
+  if ( fn == &frameReference ) return "@";
+  if ( fn == &frameSetter ) return ":@";
+  if ( fn == &frameIncr ) return "++";
+  if ( fn == &frameDecr ) return "--";
+  if ( fn == &localVarSetup ) return "|";
+  if ( fn == &define) return ":";
+  if ( fn == &defineAuto) return "::";
+  if ( fn == &forStatement ) return "for";
+  if ( fn == &whileStatement ) return "while";
+  if ( fn == &repeatStatement ) return "repeat";
+
+  return "UNKNOWN";
+}
+
 
 /** Execute code starting at ip until 0 found. **/
 void execute(long ptr) {
   for ( ip = ptr ; ; ) {
-    // printf("executing: %ld %ld\n", ip, (long) heap->arr[ip]);
     Fn fn = (Fn) nextI();
+    // printf("executing: %ld %s\n", ip, findKey(scope, fn));
     if ( fn == ret ) return;
     fn();
   }
@@ -244,25 +288,44 @@ void execute(long ptr) {
 // The "()" word which calls a function on the top of the stack
 void call() {
   long closure = (long) pop(stack);
-  long ofp     = fp;
-  long pfp     = (long) heap->arr[closure];   // previous fp
-  long ptr     = (long) heap->arr[closure+1]; // fn ptr
+  call_(closure);
+}
+
+void call_(long closure) {
+  long ofp = fp;
+  long pfp = (long) heap->arr[closure];   // parent fp
+  long fn  = (long) heap->arr[closure+1]; // fn ptr
 
   fp = push2(heap, (void*) pfp, (void*) ip); // previous FP, return address
-
-  // printf("Calling function at: %ld from: %ld\n", ptr, ip);
-  ip = ptr;
+  long ohp = heap->ptr;
+  // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
+  ip = fn;
   execute(ip++);
 
-  ip = (long) heap->arr[fp+1];
+  ip = (long) heap->arr[fp+1]; // oldip
+
+  // Optimization, if nothing extra has been allocated on the heap, treat
+  // it like a stack and revert back to position before making this call.
+  if ( heap->ptr == ohp ) heap->ptr = fp;
+
   fp = ofp;
 }
+
 
 
 void constant() {
   // Consume next constant value stored in the heap and push to stack
   long c = (long) nextI();
+  // printf("constant %ld\n", c);
   push(stack, (void*) c);
+}
+
+
+void emitConstant() {
+  // Consume next constant value stored in the heap and push to stack
+  long c = (long) nextI();
+  // printf("emit constant %ld\n", c);
+  push2(code, constant, (void*) c);
 }
 
 
@@ -270,7 +333,15 @@ void autoConstant() {
   // Consume next constant value stored in the heap and push to stack
   long c = (long) nextI();
   push(stack, (void*) c);
-  evalSym("()");
+  call();
+}
+
+
+void emitAutoConstant() {
+  // Consume next constant value stored in the heap and push to stack
+  long c = (long) nextI();
+  // printf("emit constant %ld\n", c);
+  push2(code, autoConstant, (void*) c);
 }
 
 
@@ -278,7 +349,7 @@ void autoConstant() {
 
 long frameOffset(long depth, long offset) {
   long f = fp;
-  printf("frame offset: depth: %ld offset: %ld fd: %d\n", depth, offset, fd);
+  // printf("frame offset: depth: %ld offset: %ld fd: %d\n", depth, offset, fd);
   for ( int i = 0 ; i < depth ; i++ ) f = (long) heap->arr[f];
   return f+2+offset;
 }
@@ -287,13 +358,12 @@ long frameOffset(long depth, long offset) {
 void frameReference() {
   int  frame  = (int)  nextI();
   long offset = (long) nextI();
-  // printf("frame reference fp: %ld offset: %ld value: %ld\n", fp, offset, (long) heap->arr[2+fp+offset]);
+  // printf("\nframe reference fp: %ld offset: %ld value: %ld\n", fp, offset, (long) heap->arr[2+fp+offset]);
   // Consume next constant value stored in the heap and push to stack
   push(stack, (void*) heap->arr[frameOffset(frame, offset)]);
 }
 
 void frameReferenceEmitter() {
-  // Consume next constant value stored in the heap and push to stack
   push3(code, frameReference, (void*) (long) (fd-(int) nextI()), nextI());
 }
 
@@ -316,8 +386,20 @@ void frameIncr() {
   heap->arr[frameOffset(frame, offset)]++;
 }
 
+void frameIncr00() { heap->arr[fp+2]++; }
+
+void frameIncr10() { heap->arr[(long) heap->arr[fp]+2]++; }
+
 void frameIncrEmitter() {
-  push3(code, frameIncr, (void*) (long) (fd-(int) nextI()), nextI());
+  int  frame  = fd-(int) nextI();
+  long offset = (long) nextI();
+  if ( frame == 0 && offset == 0 ) {
+    push(code, frameIncr00);
+  } else if ( frame == 1 && offset == 0 ) {
+    push(code, frameIncr10);
+  } else {
+    push3(code, frameIncr, (void*) (long) frame, (void*) offset);
+  }
 }
 
 void frameDecr() {
@@ -349,7 +431,7 @@ void define() {
   char* sym   = nextI();     // Definition Key
   // printf("define: %s %ld\n", sym, (long) value);
 
-  scope = addSym(scope, sym, push2(heap, constant, value));
+  scope = addSym(scope, sym, push2(heap, emitConstant, value));
 }
 
 
@@ -370,8 +452,7 @@ void defineAuto() {
   char* sym   = nextI(); // Definition Key
   // printf("defineAuto: %s %ld\n", sym, (long) value);
 
-  scope = addSym(scope, sym,              push2(heap, autoConstant, value));
-  scope = addSym(scope, strAdd("&", sym), push2(heap, constant, value));
+  scope = addSym(scope, sym, push2(heap, emitAutoConstant, value));
 }
 
 
@@ -413,6 +494,28 @@ void andand() { void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*
 
 void oror() { void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); } }
 
+// Could be written in T0 as:
+// { s e block | { | s e <= } { | s block () s++ } while } ::for
+
+void forStatement() {
+  long block = (long) pop(stack);
+  long e     = (long) pop(stack);
+  long s     = (long) pop(stack);
+  for ( long i = s ; i <= e ; i++ ) {
+    push(stack, (void*) i);
+    call_(block);
+  }
+}
+
+
+void repeatStatement() {
+  long block = (long) pop(stack);
+  long times     = (long) pop(stack);
+  for ( long i = 0 ; i <= times ; i++ )
+    call_(block);
+}
+
+
 void whileStatement() {
   void* block = pop(stack);
   void* cond  = pop(stack);
@@ -427,7 +530,11 @@ void ifStatement() { void* block = pop(stack); if ( pop(stack) ) { push(stack, b
 
 void ifElseStatement() { void* fBlock = pop(stack); void* tBlock = pop(stack); push(stack, pop(stack) ? tBlock : fBlock); call(); }
 
-void print() { printf("%ld\n", (long) pop(stack)); }
+void print() {
+  printf("\n\033[1;30m"); // Print in bold black
+  printf("%ld", (long) pop(stack));
+  printf("\033[0m");      // Revert colour code
+}
 
 
 /*
@@ -512,7 +619,11 @@ void defineFn() {
   code2.arr = arr;
   code      = &code2;
 
-  push2(code, localVarSetup, (void*) (long) i);
+  if ( i > 0 ) {
+    push2(code, localVarSetup, (void*) (long) i);
+  } else {
+    heap->ptr--; // space for vars not needed
+  }
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
@@ -522,10 +633,11 @@ void defineFn() {
 
     if ( strcmp(buf, "}") == 0 ) break;
 
+    // printf("evalSym %s\n", buf);
     evalSym(buf);
   }
 
-  // printf("defineFn %ld bytes to %ld\n", code->ptr-ptr, ptr);
+  // printf("defineFn %ld bytes to %ld\n", code->ptr, heap->ptr);
   push(code, ret);
 
   long ptr = heap->ptr; // location where function will be copied to
@@ -556,7 +668,8 @@ void cComment() {
 }
 
 
-void clearStack() { stack->ptr = 0; }
+// Clear (empty) the stack and the screen
+void clearStack() { stack->ptr = 0; printf("\033c"); }
 
 
 void printStack() {
@@ -564,27 +677,60 @@ void printStack() {
     printf("%ld ", (long) stack->arr[i]);
 }
 
+void printFrames(long fp) {
+  for ( long f = fp ; ; fp = (long) heap->arr[fp] ) {
+    printf("%ld", (long) fp);
+    if ( ! fp ) break;
+    printf(" -> ");
+  }
+}
 
 // Display Guru Medidation Information
 void guru() {
-  printf("\033[1;31m");
-  printf("------------------------------\n");
-  printf("GURU MEDIATION\n");
-  printf("------------------------------\n");
-  printf("stack: "); printStack(); printf("\n");
-  printf("depth: %d\n", fd);
-  printf("frame: %ld\n", fp);
-  printf("ip: %ld\n", ip);
+  printf("\n\033[1;31m");
+  printf("-------------------------------\n");
+  printf("       Guru Meditation\n");
+  printf("-------------------------------\n");
+  printf("ip:     %ld\n", ip);
+  printf("frames: "); printFrames(fp); printf("\n");
+  printf("stack:  [ "); printStack(); printf("]\n");
+//  printf("depth: %d\n", fd);
   printf("------------------------------\n");
   printf("\033[0m");
 }
+
+void dump() {
+  long ptr = (long) pop(stack);
+
+  printf("\n");
+
+  for ( int i = 0 ; i < 40 ; i++, ptr++ ) {
+    Fn fn = (Fn) heap->arr[ptr];
+    char* desc = findKey(scope, fn);
+    if ( strcmp(desc, "UNKNOWN") == 0 ) {
+      printf("%ld : %ld\n", ptr, (long) fn);
+    } else {
+      printf("%ld : %s\n", ptr, desc);
+    }
+    if ( fn == ret ) return;
+  }
+}
+
+
+void dumpFrames() {
+  long fp = (long) pop(stack);
+
+  printFrames(fp);
+}
+
+
 
 
 int main() {
   char buf[256]; // Used to hold next read symbols
 
-  heap  = createSpace(1000000);
-  stack = createSpace(16000);
+  heap  = createSpace(500000000);
+  stack = createSpace(50000);
   code  = createSpace(0);
 
   // Code stack shares memory with heap, just has its own ptr
@@ -592,34 +738,38 @@ int main() {
 
   heap->ptr = 1000; // Make space for REPL scratch space
 
-  scope = addCmd(scope, "???",   &unknownSymbol);
-  scope = addCmd(scope, "/*",    &cComment);
-  scope = addCmd(scope, "//",    &cppComment);
-  scope = addCmd(scope, "{",     &defineFn);
-  scope = addCmd(scope, "clear", &clearStack);
+  scope = addCmd(scope, "???",       &unknownSymbol);
+  scope = addCmd(scope, "/*",        &cComment);
+  scope = addCmd(scope, "//",        &cppComment);
+  scope = addCmd(scope, "{",         &defineFn);
+  scope = addCmd(scope, "clear",     &clearStack);
 
-  scope = addFn(scope, "+",      &plus);
-  scope = addFn(scope, "-",      &minus);
-  scope = addFn(scope, "*",      &multiply);
-  scope = addFn(scope, "/",      &divide);
-  scope = addFn(scope, "=",      &eq);
-  scope = addFn(scope, "!=",     &neq);
-  scope = addFn(scope, "<",      &lt);
-  scope = addFn(scope, ">",      &gt);
-  scope = addFn(scope, "<=",     &lte);
-  scope = addFn(scope, ">=",     &gte);
-  scope = addFn(scope, "!",      &not);
-  scope = addFn(scope, "&",      &and);
-  scope = addFn(scope, "|",      &or);
-  scope = addFn(scope, "&&",     &andand);
-  scope = addFn(scope, "||",     &oror);
-  scope = addFn(scope, "if",     &ifStatement);
-  scope = addFn(scope, "ifelse", &ifElseStatement);
-  scope = addFn(scope, "while",  &whileStatement);
-  scope = addFn(scope, "print",  &print);
-  scope = addFn(scope, ".",      &print); // like forth
-  scope = addFn(scope, "()",     &call);
-  scope = addFn(scope, "guru",   &guru);
+  scope = addFn(scope, "+",          &plus);
+  scope = addFn(scope, "-",          &minus);
+  scope = addFn(scope, "*",          &multiply);
+  scope = addFn(scope, "/",          &divide);
+  scope = addFn(scope, "=",          &eq);
+  scope = addFn(scope, "!=",         &neq);
+  scope = addFn(scope, "<",          &lt);
+  scope = addFn(scope, ">",          &gt);
+  scope = addFn(scope, "<=",         &lte);
+  scope = addFn(scope, ">=",         &gte);
+  scope = addFn(scope, "!",          &not);
+  scope = addFn(scope, "&",          &and);
+  scope = addFn(scope, "|",          &or);
+  scope = addFn(scope, "&&",         &andand);
+  scope = addFn(scope, "||",         &oror);
+  scope = addFn(scope, "if",         &ifStatement);
+  scope = addFn(scope, "ifelse",     &ifElseStatement);
+  scope = addFn(scope, "while",      &whileStatement);
+  scope = addFn(scope, "for",        &forStatement);
+  scope = addFn(scope, "repeat",     &repeatStatement);
+  scope = addFn(scope, "print",      &print);
+  scope = addFn(scope, ".",          &print); // like forth
+  scope = addFn(scope, "()",         &call);
+  scope = addFn(scope, "guru",       &guru);
+  scope = addFn(scope, "dump",       &dump);
+  scope = addFn(scope, "dumpFrames", &dumpFrames);
 
   // Create a top-level frame which points to itself as the previous frame
   // so it can be reused forever.
@@ -628,14 +778,16 @@ int main() {
 
   while ( true ) {
     fp = 0; // ???: needed?
-    printf("heap: %ld, stack: ", heap->ptr); printStack(); printf("> ");
+    printf("\033[0;34m"); // Print in blue
+    printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");
+    printf("\033[0m");      // Revert colour code
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
     code->ptr = 2;    // skip over frame info
     evalSym(buf);     // compile symbol
     push(code, ret);  // add a return statement
-    execute(2);       // execute
+    execute(2);       // execute compiled code
 
     // printf("compiled %ld bytes\n", code->ptr-2);
   }
