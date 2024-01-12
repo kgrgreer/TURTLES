@@ -150,7 +150,7 @@ void callInstruction(long ptr) {
 }
 
 
-Scope* createScope(char* key, long ptr) {
+Scope* createScope(char* key /* copied */, long ptr) {
   Scope* node = (Scope*) malloc(sizeof(Scope));
   node->key   = (char*)  malloc(sizeof(key));
   node->ip    = ptr;
@@ -249,7 +249,7 @@ void frameSetter();
 void frameIncr();
 void frameDecr();
 void localVarSetup();
-void guru();
+//void guru();
 void now();
 void defineAuto();
 void define();
@@ -263,9 +263,9 @@ char* findKey(Scope* root, Fn fn) {
   if ( fn == &constant  ) return "constant";
   if ( fn == &plus  ) return "+";
   if ( fn == &print ) return "print";
-  if ( fn == &ret ) return "ret";
+  if ( fn == &ret ) return "<-";
   if ( fn == &call ) return "()";
-  if ( fn == &guru ) return "guru";
+//  if ( fn == &guru ) return "guru";
   if ( fn == &now ) return "now";
   if ( fn == &frameReference ) return "@";
   if ( fn == &frameSetter ) return ":@";
@@ -480,6 +480,12 @@ void divide() {
   push(stack, (void*) (l1 / l2));
 }
 
+void mod() {
+  long l2 = (long) pop(stack);
+  long l1 = (long) pop(stack);
+  push(stack, (void*) (l1 % l2));
+}
+
 void eq() { push(stack, (void*) (long) (pop(stack) == pop(stack))); }
 
 void neq() { push(stack, (void*) (long) (pop(stack) != pop(stack))); }
@@ -502,9 +508,33 @@ void andand() { void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*
 
 void oror() { void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); } }
 
+/*
+'[]WithValue': fn(() => {
+  var value = stack.pop(), length = stack.pop(), a = [];
+  for ( var i = 0 ; i < length ; i++ ) a[i] = value;
+  stack.push(a);
+}),
+'[]WithFn': fn(() => {
+  var fn = stack.pop(), length = stack.pop(), a = [];
+  for ( var i = 0 ; i < length ; i++ ) { stack.push(i); fn(); a[i] = stack.pop(); }
+  stack.push(a);
+}),
+'@':  bfn((a, i) => a[i]),
+':@': fn(() => { var i = stack.pop(), a = stack.pop(), v = stack.pop(); a[i] = v; }),
+'[':  fn(() => stack.push(__arrayStart__)),
+']':  fn(() => {
+  var start = stack.length-1;
+  for ( ; start && stack[start] !== __arrayStart__ ; start-- );
+  var a = new Array(stack.length-start-1);
+  for ( var i = a.length-1 ; i >= 0 ; i-- ) a[i] = stack.pop();
+  stack.pop(); // remove arrayStart
+  stack.push(a);
+}),
+
+*/
+
 // Could be written in T0 as:
 // { s e block | { | s e <= } { | s block () s++ } while } ::for
-
 void forStatement() {
   long block = (long) pop(stack);
   long e     = (long) pop(stack);
@@ -595,38 +625,14 @@ void evalSym(char* sym) {
 }
 
 
-void defineFn() {
-  char buf[256];
-
-  Scope* s    = scope;
-  long   vars = push(heap, 0 /* # of vars */);
-  int    i    = 0; // number of vars / arguments
+// Ex. { a b let 0 :i 1 :j | ... } is like 0 1 { a b i j | ... }
+void defun() {
+  char  buf[256];
+  char* vars[32];
+  int   i = 0; // number of vars / arguments
+  Scope* s = scope;
 
   fd++;
-
-  while ( true ) {
-
-    if ( ! readSym(buf, sizeof(buf)) ) {
-      printf("Syntax Error: Unclosed function, missing |");
-      return;
-    }
-
-    if ( strcmp(buf, "|") == 0 ) break;
-
-    // Add var name to 'vars'
-    push(heap, strdup(buf));
-    heap->arr[vars]++;
-    i++;
-  }
-
-  for ( long j = 0 ; j < i ; j++ ) {
-    char* varName = heap->arr[vars+1+j];
-    void* k       = (void*) (i-j-1);
-    scope = addSym(scope, varName,               push3(heap, frameReferenceEmitter, (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(":", varName),  push3(heap, frameSetterEmitter,    (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "++"), push3(heap, frameIncrEmitter,      (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "--"), push3(heap, frameDecrEmitter,      (void*) (long) fd, k));
-  }
 
   Space* oldCode = code;
   Space  code2; // A temp code buffer to allow for reentrant function parsing
@@ -636,11 +642,53 @@ void defineFn() {
   code2.arr = arr;
   code      = &code2;
 
-  if ( i > 0 ) {
-    push2(code, localVarSetup, (void*) (long) i);
-  } else {
-    heap->ptr--; // space for vars not needed
+  while ( true ) {
+    if ( ! readSym(buf, sizeof(buf)) ) {
+      printf("Syntax Error: Unclosed function, missing |");
+      return;
+    }
+
+    if ( strcmp(buf, "|") == 0 ) break;
+
+    if ( strcmp(buf, "let") == 0 ) {
+      while ( true ) {
+        while ( true ) {
+          if ( ! readSym(buf, sizeof(buf)) ) {
+            printf("Syntax Error: Unclosed function, missing |");
+            return;
+          }
+
+          if ( buf[0] == ':' ) break;
+
+          if ( strcmp(buf, "|") == 0 ) goto outer;
+
+          evalSym(buf); // TODO: is done too soon because code2 hasn't been setup yet
+        }
+
+        // Add var name after the : to 'vars'
+        vars[i++] = strdup(buf+1); // TODO free()
+
+        if ( strcmp(buf, "|") == 0 ) goto outer;
+      }
+    }
+
+    // Add var name to 'vars'
+    vars[i++] = strdup(buf);
   }
+
+  outer:
+
+  // ???: does this need to be delayed or can we just execute directly above?
+  for ( long j = 0 ; j < i ; j++ ) {
+    char* varName = vars[j];
+    void* k       = (void*) (i-j-1);
+    scope = addSym(scope, varName,               push3(heap, frameReferenceEmitter, (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(":", varName),  push3(heap, frameSetterEmitter,    (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "++"), push3(heap, frameIncrEmitter,      (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "--"), push3(heap, frameDecrEmitter,      (void*) (long) fd, k));
+  }
+
+  if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
@@ -654,8 +702,11 @@ void defineFn() {
     evalSym(buf);
   }
 
-  // printf("defineFn %ld bytes to %ld\n", code->ptr, heap->ptr);
+  // printf("defun %ld bytes to %ld\n", code->ptr, heap->ptr);
   push(code, ret);
+#ifdef DEBUG
+  push(code, 0); // zero needed so dump() knows when the function is over
+#endif
 
   long ptr = heap->ptr; // location where function will be copied to
 
@@ -664,9 +715,8 @@ void defineFn() {
   code = oldCode;
 
   push2(code, closure, (void*) ptr);
-//   push2(code, constant, (void*) ptr);
 
-  scope = s; // revert to old scope
+  scope = s; // revert to old scope, TODO: free dead scope
 
   fd--;
 
@@ -687,7 +737,7 @@ void cComment() {
 
 void strLiteral() {
   char buf[4096];
-  getchar(); // remove trailing whitespace
+  getchar(); // remove whitespace after "
   int i = 0;
 
   while ( ( buf[i++] = getchar() ) != '"' );
@@ -702,6 +752,15 @@ void strLiteral() {
 void clearStack() { stack->ptr = 0; printf("\033c"); }
 
 
+void now() {
+	struct timeval tp;
+
+	gettimeofday(&tp, NULL);
+	push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));
+}
+
+#ifdef DEBUG
+
 void printStack() {
   for ( long i = 0 ; i < stack->ptr ; i++ )
     printf("%ld ", (long) stack->arr[i]);
@@ -714,15 +773,6 @@ void printFrames(long fp) {
     printf(" -> ");
   }
 }
-
-
-void now() {
-	struct timeval tp;
-
-	gettimeofday(&tp, NULL);
-	push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));
-}
-
 
 // Display Guru Medidation Information
 void guru() {
@@ -738,20 +788,24 @@ void guru() {
   printf("\033[0m");
 }
 
+
 void dump() {
   long ptr = (long) pop(stack);
 
   printf("\n");
 
-  for ( int i = 0 ; i < 40 ; i++, ptr++ ) {
+  int uc = 0;
+  for ( int i = 0 ; i < 100 ; i++, ptr++ ) {
     Fn fn = (Fn) heap->arr[ptr];
     char* desc = findKey(scope, fn);
     if ( strcmp(desc, "UNKNOWN") == 0 ) {
+      if ( uc++ == 4 ) return;
       printf("%ld : %ld\n", ptr, (long) fn);
     } else {
+      uc = 0;
       printf("%ld : %s\n", ptr, desc);
     }
-    if ( fn == ret ) return;
+    if ( fn == ret && heap->arr[ptr+1] == 0 ) return;
   }
 }
 
@@ -762,6 +816,7 @@ void dumpFrames() {
   printFrames(fp);
 }
 
+#endif
 
 
 
@@ -780,7 +835,7 @@ int main() {
   scope = addCmd(scope, "???",       &unknownSymbol);
   scope = addCmd(scope, "/*",        &cComment);
   scope = addCmd(scope, "//",        &cppComment);
-  scope = addCmd(scope, "{",         &defineFn);
+  scope = addCmd(scope, "{",         &defun);
   scope = addCmd(scope, "clear",     &clearStack);
   scope = addCmd(scope, "\"",        &strLiteral);
 
@@ -788,6 +843,7 @@ int main() {
   scope = addFn(scope, "-",          &minus);
   scope = addFn(scope, "*",          &multiply);
   scope = addFn(scope, "/",          &divide);
+  scope = addFn(scope, "%",          &mod);
   scope = addFn(scope, "=",          &eq);
   scope = addFn(scope, "!=",         &neq);
   scope = addFn(scope, "<",          &lt);
@@ -808,10 +864,14 @@ int main() {
   scope = addFn(scope, "print$",     &printStr);
   scope = addFn(scope, ".",          &print); // like forth
   scope = addFn(scope, "()",         &call);
-  scope = addFn(scope, "guru",       &guru);
   scope = addFn(scope, "now",        &now);
+  scope = addFn(scope, "<-",         &ret); // TODO: end functions with a 0 so dump() can work
+
+#ifdef DEBUG
+  scope = addFn(scope, "guru",       &guru);
   scope = addFn(scope, "dump",       &dump);
   scope = addFn(scope, "dumpFrames", &dumpFrames);
+#endif
 
   // Create a top-level frame which points to itself as the previous frame
   // so it can be reused forever.
@@ -819,10 +879,11 @@ int main() {
   push(code, (void*) -1); // psedo return address causes stop of execution
 
   while ( true ) {
-    fp = 0; // ???: needed?
+#ifdef DEBUG
     printf("\033[0;34m"); // Print in blue
     printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");
     printf("\033[0m");      // Revert colour code
+#endif
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
