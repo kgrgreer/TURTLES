@@ -307,13 +307,12 @@ void call_(long closure) {
   fp = push2(heap, (void*) pfp, (void*) ip); // previous FP, return address
   long ohp = heap->ptr;
   // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
-  ip = fn;
-  execute(ip++);
+  execute(fn);
 
   ip = (long) heap->arr[fp+1]; // oldip
 
   // Optimization, if nothing extra has been allocated on the heap, treat
-  // it like a stack and revert back to position before making this call.
+  // it like a stack and revert back to position before pushing this frame.
   if ( heap->ptr == ohp ) heap->ptr = fp;
 
   fp = ofp;
