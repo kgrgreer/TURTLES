@@ -687,7 +687,11 @@ void defun() {
     scope = addSym(scope, strAdd(varName, "--"), push3(heap, frameDecrEmitter,      (void*) (long) fd, k));
   }
 
-  if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
+  if ( i > 0 ) {
+    push2(code, localVarSetup, (void*) (long) i);
+  } else {
+//    fd--;
+  }
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
