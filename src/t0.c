@@ -593,8 +593,6 @@ void repeatStatement() {
     long pfp = (long) nextI(); // parent fp
     long fn  = (long) nextI(); // fn ptr
 
-    // TODO: replace fn with the instruction in fn is size is 1
-
     // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
     fp = pfp;
     for ( long i = 0 ; i <= times ; i+=10 ) {
