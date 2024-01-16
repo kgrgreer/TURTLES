@@ -141,7 +141,9 @@ int    fd    = 0;    // frame depth
 void* nextI() { return heap->arr[ip++]; } // next instruction or instruction argument
 
 
-// Execute a single closure stored at the pointed to heap location. Not 'ret' terminated.
+// Execute a single instruction stored at the pointed to heap location.
+// Not 'ret' terminated.
+// Restores ip.
 void callInstruction(long ptr) {
   long ret = ip;
   ip = ptr;
