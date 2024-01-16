@@ -1,0 +1,8 @@
+{ block let now :start |
+  'start print$
+  block ()
+  'end print$
+  now start - .
+} ::bench
+
+100 { count | { | 1000000000 { | count++ } repeat count . } bench } ()
