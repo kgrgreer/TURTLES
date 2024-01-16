@@ -7,7 +7,8 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
-#define DEBUG 1
+#define DEBUG       1
+#define PERFORMANCE 1
 
 /*
   Symbols:
@@ -225,10 +226,18 @@ bool readSym(char* buf, int bufSize) {
   return true;
 }
 
-// Create a closure (
-void closure() {
+void callClosure();
+void callClosure0();
+
+void createClosure() {
   void* fn = nextI();
-  push(stack, (void*) push2(heap, (void*) fp, fn));
+  push(stack, (void*) push3(heap, callClosure, (void*) fp, fn));
+}
+
+
+void createClosure0() {
+  void* fn = nextI();
+  push(stack, (void*) push3(heap, callClosure0, (void*) fp, fn));
 }
 
 
@@ -240,16 +249,15 @@ void ret() {
 
 void plus();
 void print();
-void closure();
+void createClosure();
 void constant();
 void call();
-void call_();
+void callClosure0();
 void frameReference();
 void frameSetter();
 void frameIncr();
 void frameDecr();
 void localVarSetup();
-//void guru();
 void now();
 void defineAuto();
 void define();
@@ -257,26 +265,36 @@ void forStatement();
 void whileStatement();
 void repeatStatement();
 
+#ifdef DEBUG
+void guru();
+#endif
+
 // TODO: temporary, use a better instruction dictionary
 char* findKey(Scope* root, Fn fn) {
-  if ( fn == &closure  ) return "closure";
-  if ( fn == &constant  ) return "constant";
-  if ( fn == &plus  ) return "+";
-  if ( fn == &print ) return "print";
-  if ( fn == &ret ) return "<-";
-  if ( fn == &call ) return "()";
-//  if ( fn == &guru ) return "guru";
-  if ( fn == &now ) return "now";
-  if ( fn == &frameReference ) return "@";
-  if ( fn == &frameSetter ) return ":@";
-  if ( fn == &frameIncr ) return "++";
-  if ( fn == &frameDecr ) return "--";
-  if ( fn == &localVarSetup ) return "|";
-  if ( fn == &define) return ":";
-  if ( fn == &defineAuto) return "::";
-  if ( fn == &forStatement ) return "for";
-  if ( fn == &whileStatement ) return "while";
+  if ( fn == &callClosure     ) return "callClosure";
+  if ( fn == &createClosure   ) return "createClosure";
+  if ( fn == &callClosure0    ) return "callClosure0";
+  if ( fn == &createClosure0  ) return "createClosure0";
+  if ( fn == &constant        ) return "constant";
+  if ( fn == &plus            ) return "+";
+  if ( fn == &print           ) return "print";
+  if ( fn == &ret             ) return "<-";
+  if ( fn == &call            ) return "()";
+  if ( fn == &now             ) return "now";
+  if ( fn == &frameReference  ) return "@";
+  if ( fn == &frameSetter     ) return ":@";
+  if ( fn == &frameIncr       ) return "++";
+  if ( fn == &frameDecr       ) return "--";
+  if ( fn == &localVarSetup   ) return "|";
+  if ( fn == &define          ) return ":";
+  if ( fn == &defineAuto      ) return "::";
+  if ( fn == &forStatement    ) return "for";
+  if ( fn == &whileStatement  ) return "while";
   if ( fn == &repeatStatement ) return "repeat";
+
+#ifdef DEBUG
+  if ( fn == &guru            ) return "guru";
+#endif
 
   return "UNKNOWN";
 }
@@ -284,32 +302,26 @@ char* findKey(Scope* root, Fn fn) {
 
 /** Execute code starting at ip until 0 found. **/
 void execute(long ptr) {
+  long rip = ip;
   for ( ip = ptr ; ; ) {
     Fn fn = (Fn) nextI();
     // printf("executing: %ld %s\n", ip, findKey(scope, fn));
-    if ( fn == ret ) return;
+    if ( fn == ret ) break;
     fn();
   }
+  ip = rip;
 }
 
 
-// The "()" word which calls a function on the top of the stack
-void call() {
-  long closure = (long) pop(stack);
-  call_(closure);
-}
-
-void call_(long closure) {
+void callClosure() {
   long ofp = fp;
-  long pfp = (long) heap->arr[closure];   // parent fp
-  long fn  = (long) heap->arr[closure+1]; // fn ptr
+  long pfp = (long) nextI(); // parent fp
+  long fn  = (long) nextI(); // fn ptr
 
-  fp = push2(heap, (void*) pfp, (void*) ip); // previous FP, return address
+  fp = push(heap, (void*) pfp); // previous FP
   long ohp = heap->ptr;
   // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
   execute(fn);
-
-  ip = (long) heap->arr[fp+1]; // oldip
 
   // Optimization, if nothing extra has been allocated on the heap, treat
   // it like a stack and revert back to position before pushing this frame.
@@ -318,6 +330,22 @@ void call_(long closure) {
   fp = ofp;
 }
 
+
+void callClosure0() {
+  long ofp = fp;
+  long pfp = (long) nextI(); // parent fp
+  long fn  = (long) nextI(); // fn ptr
+
+  // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
+  fp = pfp;
+  execute(fn);
+  fp = ofp;
+}
+
+
+void call() {
+  callInstruction((long) pop(stack));
+}
 
 
 void constant() {
@@ -358,7 +386,7 @@ long frameOffset(long depth, long offset) {
   long f = fp;
   // printf("frame offset: depth: %ld offset: %ld fd: %d\n", depth, offset, fd);
   for ( int i = 0 ; i < depth ; i++ ) f = (long) heap->arr[f];
-  return f+2+offset;
+  return f+1+offset;
 }
 
 
@@ -393,18 +421,23 @@ void frameIncr() {
   heap->arr[frameOffset(frame, offset)]++;
 }
 
-void frameIncr00() { heap->arr[fp+2]++; }
+void frameIncr00() { heap->arr[fp+1]++; }
 
-void frameIncr10() { heap->arr[(long) heap->arr[fp]+2]++; }
+void frameIncr10() { heap->arr[(long) heap->arr[fp]+1]++; }
 
 void frameIncrEmitter() {
   int  frame  = fd-(int) nextI();
   long offset = (long) nextI();
+
+#ifdef PERFORMANCE
   if ( frame == 0 && offset == 0 ) {
     push(code, frameIncr00);
   } else if ( frame == 1 && offset == 0 ) {
     push(code, frameIncr10);
-  } else {
+  }
+  else
+#endif
+  {
     push3(code, frameIncr, (void*) (long) frame, (void*) offset);
   }
 }
@@ -540,7 +573,7 @@ void forStatement() {
   long s     = (long) pop(stack);
   for ( long i = s ; i <= e ; i++ ) {
     push(stack, (void*) i);
-    call_(block);
+    callInstruction(block);
   }
 }
 
@@ -548,25 +581,64 @@ void forStatement() {
 void repeatStatement() {
   long block = (long) pop(stack);
   long times = (long) pop(stack);
-  for ( long i = 0 ; i <= times ; i++ ) {
-    call_(block);
+
+  // Faster Version
+  long ret = ip;
+  ip = block;
+  Fn fn = (Fn) nextI();
+  if ( fn == callClosure0 ) {
+    long ofp = fp;
+    long pfp = (long) nextI(); // parent fp
+    long fn  = (long) nextI(); // fn ptr
+
+    // TODO: replace fn with the instruction in fn is size is 1
+
+    // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
+    fp = pfp;
+    for ( long i = 0 ; i <= times ; i+=10 ) {
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+      callInstruction(fn);
+    }
+    fp = ofp;
+    ip = ret;
+  } else {
+    long pp = ip;
+    for ( long i = 0 ; i <= times ; i++ ) {
+      ip = pp;
+      (fn)();
+    }
+    ip = ret;
   }
+  /*
+  // Simpler Version
+  for ( long i = 0 ; i <= times ; i++ ) {
+    callInstruction(block);
+  }
+  */
 }
 
 
 void whileStatement() {
-  void* block = pop(stack);
-  void* cond  = pop(stack);
+  long block = (long) pop(stack);
+  long cond  = (long) pop(stack);
   while ( true ) {
-    push(stack, cond); call();
+    callInstruction(cond);
     if ( ! pop(stack) ) break;
-    push(stack, block); call();
+    callInstruction(block);
   }
 }
 
-void ifStatement() { void* block = pop(stack); if ( pop(stack) ) { push(stack, block); call(); } }
+void ifStatement() { long block = (long) pop(stack); if ( pop(stack) ) callInstruction(block); }
 
-void ifElseStatement() { void* fBlock = pop(stack); void* tBlock = pop(stack); push(stack, pop(stack) ? tBlock : fBlock); call(); }
+void ifElseStatement() { long fBlock = (long) pop(stack); long tBlock = (long) pop(stack); callInstruction(pop(stack) ? tBlock : fBlock); }
 
 void print() {
   printf("\n\033[1;30m"); // Print in bold black
@@ -631,8 +703,6 @@ void defun() {
   int   i = 0; // number of vars / arguments
   Scope* s = scope;
 
-  fd++;
-
   Space* oldCode = code;
   Space  code2; // A temp code buffer to allow for reentrant function parsing
   void*  arr[1024];
@@ -677,6 +747,8 @@ void defun() {
 
   outer:
 
+  if ( i > 0 ) fd++;
+
   // ???: does this need to be delayed or can we just execute directly above?
   for ( long j = 0 ; j < i ; j++ ) {
     char* varName = vars[j];
@@ -690,7 +762,7 @@ void defun() {
   if ( i > 0 ) {
     push2(code, localVarSetup, (void*) (long) i);
   } else {
-//    fd--;
+    // fd--;
   }
 
   while ( true ) {
@@ -717,11 +789,15 @@ void defun() {
 
   code = oldCode;
 
-  push2(code, closure, (void*) ptr);
+  if ( i > 0 ) {
+    push2(code, createClosure, (void*) ptr);
+  } else {
+    push2(code, createClosure0, (void*) ptr);
+  }
 
   scope = s; // revert to old scope, TODO: free dead scope
 
-  fd--;
+  if ( i > 0 ) fd--;
 
   return;
 }
