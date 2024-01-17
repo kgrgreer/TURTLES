@@ -1,0 +1,65 @@
+t0.c can increase performance in a number of ways:
+
+1. Replace @(frame, offset) with hard-coded versions which don't take arguments.
+Ex. @[0-5][0-5]
+
+2. Different versions of the callClosure instruction depending on:
+a. if a new closure is created
+b. if local variables are created
+c. if the function has only one instruction or not
+
+3. Don't create a stack frame when running in the current context.
+Ex. { | ... } if
+
+4. Create constant version of common arguments like +-%/<==.
+Ex. so instead of "constant(1) +" you would have a +1 instruction.
+Same for other common instructions and constant values.
+In the event of adding a non common constant a +constant command would
+combine the behaviour of constant and +.
+
+5. Closures could also provide their own looping support for things like
+repeat or for loops. Repeat and for would just delegate to the function
+itself to perform these operations. This would allow functions to reuse
+duplicating function setup and teardown costs.
+
+6. array.filter(fn) and array.orderBy(comparator) could optimize function
+call overhead.
+
+7. Similar to #4, create custom versions of the "constant" instruction for
+common values like -1, 0, 1 ... 10, 100, etc.
+
+8. Add concurrent looping options like fold/reduce and parallel sorting and filtering.
+
+9. Experimental: try running multiple virtual "threads" in parallel in the execute()
+function to take advantage of instruction level parallelism so that one function
+can be called while another is blocked on a memory read.
+
+10. Combine data-structure maintenance with GC, so that if an array or hashtable
+is resized, or a tree is rebalanced, it is either postponed until the next GC
+or done as part of an early partial GC, creating the cleaner structure in the
+next arena.
+
+11. Create classes of String for things like sub-strings and concatenated strings.
+This is faster than copying strings to create new ones. Convert these to normal
+Strings on the next GC, which will increase their performance. Many temporary
+strings will never live that long and never need to be converted. This eliminates
+the need for things like StringBuilders and Buffers.
+
+12. Polymorphic Inline Caches
+
+13. Duplicate methods based on class. Even without any other effort like
+#14 and #15 below, this should still increase performance by improving
+effectiveness of #12 above.
+
+14. Super-Fly
+
+15. Partial Eval
+
+16. Create a large class X method lookup matrix in the unused GC arena.
+This will use a relatively large amount of memory, but that memory wasn't
+being used anyway and would be a simple method to greatly increase performance
+of polymorphic calls.
+
+In general, creating larger compound instructions reduces the instruction
+call overhead and lets the system perform more work per instruction.
+It also reduces program sizes.
