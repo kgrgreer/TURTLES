@@ -542,6 +542,9 @@ void andand() { void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*
 
 void oror() { void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); } }
 
+// Could be defined as: { _ | }
+void drop() { pop(stack); }
+
 /*
 '[]WithValue': fn(() => {
   var value = stack.pop(), length = stack.pop(), a = [];
@@ -581,37 +584,41 @@ void forStatement() {
 
 
 void repeatStatement() {
-  long block = (long) pop(stack);
-  long times = (long) pop(stack);
+  const long block = (long) pop(stack);
+  const long times = (long) pop(stack);
 
   // Faster Version
   long ret = ip;
   ip = block;
   Fn fn = (Fn) nextI();
-  if ( fn == callClosure0 ) {
+  if ( fn == callClosure0 && false ) {
     long ofp = fp;
     long pfp = (long) nextI(); // parent fp
     long fn  = (long) nextI(); // fn ptr
 
     // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
     fp = pfp;
-    for ( long i = 0 ; i <= times ; i+=10 ) {
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
-      callInstruction(fn);
+    ip = fn;
+    const Fn f = (Fn) nextI();
+    long iip = ip;
+    for ( long i = 0 ; i < times ; i+=4 ) {
+      /*
+      (f)();
+      (f)();
+      (f)();
+      (f)();
+      */
+      // faster: ???
+      ip = iip; (f)();
+      ip = iip; (f)();
+      ip = iip; (f)();
+      ip = iip; (f)();
     }
     fp = ofp;
     ip = ret;
   } else {
     long pp = ip;
-    for ( long i = 0 ; i <= times ; i++ ) {
+    for ( long i = 0 ; i < times ; i++ ) {
       ip = pp;
       (fn)();
     }
@@ -934,6 +941,7 @@ int main() {
   scope = addFn(scope, "|",          &or);
   scope = addFn(scope, "&&",         &andand);
   scope = addFn(scope, "||",         &oror);
+  scope = addFn(scope, "drop",       &drop);
   scope = addFn(scope, "if",         &ifStatement);
   scope = addFn(scope, "ifelse",     &ifElseStatement);
   scope = addFn(scope, "while",      &whileStatement);
