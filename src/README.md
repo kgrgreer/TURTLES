@@ -1,10 +1,10 @@
 # C
 To run the C version of T0, do:
-`$ cc t0.c; ./a.out`
+`$ cd C; ./build.sh; ./a.out`
 
 or:
 
-`$ cc t0.c; ./a.out < test.t0`
+`$ cd C; ./build.sh; ./a.out < test.t0`
 
 
 # JS
