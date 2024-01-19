@@ -10,6 +10,10 @@ c. if the function has only one instruction or not
 
 3. Don't create a stack frame when running in the current context.
 Ex. { | ... } if
+Maybe create custom versions of if and if/else.
+{} {} ifelse could combine closure/closure/ifelse so that it would
+only create the closure for the required block.
+Also, create a combined closure/closure/while instruction.
 
 4. Create constant version of common arguments like +-%/<==.
 Ex. so instead of "constant(1) +" you would have a +1 instruction.
@@ -45,7 +49,7 @@ Strings on the next GC, which will increase their performance. Many temporary
 strings will never live that long and never need to be converted. This eliminates
 the need for things like StringBuilders and Buffers.
 
-12. Polymorphic Inline Caches
+12. Polymorphic Inline Caches (PIC)
 
 13. Duplicate methods based on class. Even without any other effort like
 #14 and #15 below, this should still increase performance by improving
@@ -55,11 +59,59 @@ effectiveness of #12 above.
 
 15. Partial Eval
 
+16. Many stdlib functions can easily be implemented in T0
+(ex. dup, filter, for, while, if, ifelse, etc.) but should be re-implemented
+in C for better performance.
+
 16. Create a large class X method lookup matrix in the unused GC arena.
 This will use a relatively large amount of memory, but that memory wasn't
 being used anyway and would be a simple method to greatly increase performance
-of polymorphic calls.
+of polymorphic calls. Could only be done for those classXmethod combinations
+which repeatedly cause PIC faults.
+
+17. partialEval when creating closures. So something like:
+{ fn | { | ... fn ... } } hard-codes / inlines fn in a copy of the inner function.
+This would allow for function composition without overhead. Could also be
+done before using a closure with loops. Would require knowing which values
+are constant. Could be detected if the :fn emitter is never called. This is
+very useful for style of programming FOAM does internally and with mlangs and
+effectively gives you a functional style of code-generation.
+
+18. Contexts - If contexts are treated like Superfly classes without a value,
+then the same optimizations used to specialize for Superfly would also work
+to eliminate context lookup overhead. Flyweights are objects without class
+and contexts are objects without a value.
+
+19. Peephole Optimizer - many of the optimizations could be implemented
+as a peephole optimizer. After push code onto the code space, call the "peep"
+global function which has a table of peephole rules which it attempts to apply.
+Things like:
+  @ 0 0 -> @00
+  constant 1 + -> +1
+  closure $1 closure $2 ifelse -> closureclosureifelse $1 $2
+
+This would have the advantage of simplifying the rest of the code base as it
+wouldn't need to deal with these types of optimizations. The peep optimizer
+could be written in T0 and could be loaded or not depending on requirements.
+
+It would isolate and separate these types of optimizations making the core
+system cleaner and easier to understand. It would also be extensible, as
+"peep" could be decorated to add new optimizations.
+
+--
 
 In general, creating larger compound instructions reduces the instruction
 call overhead and lets the system perform more work per instruction.
 It also reduces program sizes.
+
+Ensure that fundamental operations like function/method calls are
+performed as efficiently as possible.
+
+It is impossible to perform a lot of work without some kind of looping
+or iterating over some large data-structure, so ensure that looping, traversal,
+filtering, etc. are all done as efficiently as possible.
+
+Combine efficient looping with efficient function calls where possible.
+
+Currently compiling with -O2 doesn't work. Break the source code into multiple
+.c files and compile non-offending code with -O2.

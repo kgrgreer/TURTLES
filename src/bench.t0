@@ -5,4 +5,30 @@
   now start - .
 } ::bench
 
-100 { count | { | 1000000000 { | count++ } repeat count . } bench } ()
+0 { count | { | 1000000000 { | count++ } repeat count . } bench } ()
+
+// Random ported from https://dada.perl.it/shootout/gcc.html
+/*
+139968 :IM
+3877 :IA
+29573 :IC
+
+{ let 42 :last |
+  { |
+    IM IC IA last * + % :last
+    last
+  }
+} () ::random
+
+{ | 10000000 { | random drop } repeat } bench
+
+
+{ let 42 :last |
+  { |
+    last
+    last IA * IC + IM % :last
+  }
+} () ::fastrandom
+
+{ | 10000000 { | fastrandom drop } repeat } bench
+*/

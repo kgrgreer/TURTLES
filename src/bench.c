@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
 
   long max = atol(argv[1]);
 
-  for ( long i = 0 ; i < 1000000000l ; i++ ) count++;
+  for ( long i = 0 ; i < max ; i++ ) count++;
 
   printf("%ld\n", count);
 }
