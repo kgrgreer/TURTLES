@@ -68,17 +68,14 @@
     - | could be replaced with |0 |1 |2 ...
 
   Todo:
-    - better command dictionary which supports reverse lookup and argument information
     - support for emitting code comments in DEBUG mode or tagging non-code items like closures
+    - move define and defineAuto to cmdgen
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
       that they could be unwound.
 
 */
-
-void evalSym(char* sym);
-
 
 Space* createSpace(long size) {
   Space* s = (Space*) malloc(sizeof(Space));

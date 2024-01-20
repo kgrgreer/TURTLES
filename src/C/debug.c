@@ -1,3 +1,7 @@
+// debug.c -- debugging related code
+
+// ???: could some of this code be rewritten in T0?
+
 void printStack() {
   for ( long i = 0 ; i < stack->ptr ; i++ )
     printf("%ld ", (long) stack->arr[i]);
