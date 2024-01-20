@@ -42,9 +42,12 @@ ${code}
 INSTRUCTIONS.forEach(i => {
   var [ name, args, code, emit ] = i;
 
-  var aa = args.split(',');
+  declDefs += `void ${name}();\n`;
+  cmdToStr += `  if ( fn == &${name} ) return "${name}";\n`;
 
-  var argDef = aa.map(arg => {
+  args = args.split(',');
+
+  var argDef = args.map(arg => {
     var [type, name] = arg.split(' ');
     return `  ${type} ${name} = (${type}) nextI();`;
   }).join('\n');
@@ -56,17 +59,12 @@ ${code};
 
 `;
 
-  declDefs += `void ${name}();\n`;
-  cmdToStr += `  if ( fn == &${name} ) return "${name}";\n`;
-
   if ( emit ) {
-    // TODO: complete
-
-    const argCode1 = aa.map(arg => {
+    const argCode1 = args.map(arg => {
       var [type, name] = arg.split(' ');
       return `  void* ${name} = nextI();`;
     }).join('\n');
-    const argCode2 = aa.map(arg => {
+    const argCode2 = args.map(arg => {
       var [type, name] = arg.split(' ');
       return `  push(code, ${name});`;
     }).join('\n');
