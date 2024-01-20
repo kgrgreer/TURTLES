@@ -276,22 +276,6 @@ void callClosure0() {
 
 
 
-void emitConstant() {
-  // Consume next constant value stored in the heap and push to stack
-  long c = (long) nextI();
-  // printf("emit constant %ld\n", c);
-  push2(code, constant, (void*) c);
-}
-
-
-void emitAutoConstant() {
-  // Consume next constant value stored in the heap and push to stack
-  long c = (long) nextI();
-  // printf("emit constant %ld\n", c);
-  push2(code, autoConstant, (void*) c);
-}
-
-
 long frameOffset(long depth, long offset) {
   long f = fp;
   // printf("frame offset: depth: %ld offset: %ld fd: %d\n", depth, offset, fd);
