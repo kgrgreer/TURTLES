@@ -1,12 +1,12 @@
 // t0.h
 
+typedef void (*Fn)();
+
+
 typedef struct space_ {
   long ptr;
   void* *arr;
 } Space;
-
-
-typedef void (*Fn)();
 
 
 typedef struct scope_ {
