@@ -62,11 +62,11 @@ ${code};
   if ( emit ) {
     const argCode1 = args.map(arg => {
       var [type, name] = arg.split(' ');
-      return `  void* ${name} = nextI();`;
+      return `  ${type} ${name} = (${type}) nextI();`;
     }).join('\n');
-    const argCode2 = args.map(arg => {
+    const argCode2 = typeof emit === 'string' ? emit + ';' : args.map(arg => {
       var [type, name] = arg.split(' ');
-      return `  push(code, ${name});`;
+      return `  push(code, (void*) ${name});`;
     }).join('\n');
 
     const signature = `void emit${name[0].toUpperCase() + name.substring(1)}()`;

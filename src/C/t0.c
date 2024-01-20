@@ -564,7 +564,8 @@ void defun() {
   code = oldCode;
 
   if ( i > 0 ) {
-    emitCreateClosure(ptr);
+    push2(code, createClosure, (void*) ptr);
+    // emitCreateClosure(ptr);
   } else {
     push2(code, createClosure0, (void*) ptr);
   }

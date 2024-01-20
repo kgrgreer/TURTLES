@@ -35,11 +35,13 @@ exports.CMDS = [
   ]
 ];
 
+//void frameReferenceEmitter() { push3(code, frameReference, (void*) (long) (fd-(int) nextI()), nextI()); }
+
 
 exports.INSTRUCTIONS = [
   [ 'constant',       'void* v',               'push(stack, v)', true ],
   [ 'autoConstant',   'void* v',               'push(stack, v); call()', true ],
-  [ 'frameReference', 'int frame,long offset', 'push(stack, (void*) heap->arr[frameOffset(frame, offset)])' ],
+  [ 'frameReference', 'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
   [ 'frameSetter',    'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)' ],
   [ 'frameIncr',      'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++' ],
   [ 'frameDecr',      'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--' ],
@@ -58,5 +60,5 @@ exports.INSTRUCTIONS = [
     fp = ofp;
     `
   ],
-  [ 'createClosure',  'void* fn',              'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))', true ]
+  [ 'createClosure',  'void* fn',              'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ]
 ];
