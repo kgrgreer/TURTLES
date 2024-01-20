@@ -25,8 +25,6 @@ const { CMDS, INSTRUCTIONS } = require('./cmds.js');
 
 CMDS.forEach(i => {
   var [ name, op, code ] = i;
-  name += '_';
-
   fnDefs += `
 void ${name}() {
 ${code}

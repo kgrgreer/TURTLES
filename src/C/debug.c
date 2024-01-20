@@ -48,7 +48,7 @@ void dump() {
       uc = 0;
       printf("%ld : %s\n", ptr, desc);
     }
-    if ( fn == ret_ && heap->arr[ptr+1] == 0 ) return;
+    if ( fn == ret && heap->arr[ptr+1] == 0 ) return;
   }
 }
 

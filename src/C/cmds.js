@@ -4,7 +4,7 @@ exports.CMDS = [
   [ 'plus',   '+',        sf('a,b',   'a+b')  ],
   [ 'minus',  '-',        sf('a,b',   'a-b')  ],
   [ 'mul',    '*',        sf('a,b',   'a*b')  ],
-  [ 'div',    '/',        sf('a,b',   'a/b')  ],
+  [ 'div_',   '/',        sf('a,b',   'a/b')  ],
   [ 'mod',    '%',        sf('a,b',   'a%b')  ],
   [ 'eq',     '=',        sf('a,b',   'a==b') ],
   [ 'neq',    '!=',       sf('a,b',   'a!=b') ],
@@ -15,13 +15,13 @@ exports.CMDS = [
   [ 'not',    '!',        sf('a',     '!a')   ],
   [ 'and',    '&',        sf('a,b',   'a&&b') ],
   [ 'or',     '|',        sf('a,b',   'a||b') ],
-  [ 'if',     'if',       af('c,b',   'if ( c ) callInstruction(b);') ],
-  [ 'ifelse', 'ifelse',   af('c,i,e', 'callInstruction(c ? i : e);')  ],
+  [ 'if_',    'if',       af('c,b',   'if ( c ) callInstruction(b);') ],
+  [ 'ifelse_','ifelse',   af('c,i,e', 'callInstruction(c ? i : e);')  ],
   [ 'drop',   'drop',     'pop(stack);' ],
-  [ 'andand', '&&',       'void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call_(); }' ],
-  [ 'oror',   '||',       'void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call_(); }'   ],
-  [ 'for',    'for',      af('s,e,b', `  for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callInstruction(b); }`)   ],
-  [ 'while',  'while',    af('c,b', `  while ( true ) { callInstruction(c); if ( ! pop(stack) ) break; callInstruction(b); }`) ],
+  [ 'andand', '&&',       'void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call(); }' ],
+  [ 'oror',   '||',       'void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
+  [ 'for_',   'for',      af('s,e,b', `  for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callInstruction(b); }`)   ],
+  [ 'while_', 'while',    af('c,b', `  while ( true ) { callInstruction(c); if ( ! pop(stack) ) break; callInstruction(b); }`) ],
   [ 'now',    'now',      `struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));` ],
   [ 'print',  'print',    af('a', `
     printf("\\n\\033[1;30m"); // Print in bold black
@@ -38,7 +38,7 @@ exports.CMDS = [
 
 exports.INSTRUCTIONS = [
   [ 'constant',       'void* v',               'push(stack, v)', true ],
-  [ 'autoConstant',   'void* v',               'push(stack, v); call_()', true ],
+  [ 'autoConstant',   'void* v',               'push(stack, v); call()', true ],
   [ 'frameReference', 'int frame,long offset', 'push(stack, (void*) heap->arr[frameOffset(frame, offset)])' ],
   [ 'frameSetter',    'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)' ],
   [ 'frameIncr',      'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++' ],

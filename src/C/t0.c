@@ -256,7 +256,7 @@ void execute(long ptr) {
   for ( ip = ptr ; ; ) {
     Fn fn = (Fn) nextI();
     // printf("executing: %ld %s\n", ip, findKey(scope, fn));
-    if ( fn == ret_ ) break;
+    if ( fn == ret ) break;
     fn();
   }
   ip = rip;
@@ -553,7 +553,7 @@ void defun() {
   }
 
   // printf("defun %ld bytes to %ld\n", code->ptr, heap->ptr);
-  push(code, ret_);
+  push(code, ret);
 #ifdef DEBUG
   push(code, 0); // zero needed so dump() knows when the function is over
 #endif
@@ -633,7 +633,7 @@ int main() {
   scope = addCmds(scope);
 
   scope = addFn(scope, "repeat",     &repeatStatement);
-  scope = addFn(scope, ".",          &print_); // like forth
+  scope = addFn(scope, ".",          &print); // like forth
 
 #ifdef DEBUG
   scope = addFn(scope, "guru",       &guru);
@@ -657,7 +657,7 @@ int main() {
 
     code->ptr = 2;    // skip over frame info
     evalSym(buf);     // compile symbol
-    push(code, ret_); // add a return statement
+    push(code, ret); // add a return statement
     execute(2);       // execute compiled code
 
     // printf("compiled %ld bytes\n", code->ptr-2);
