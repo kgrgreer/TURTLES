@@ -218,7 +218,6 @@ void createClosure0() {
 }
 
 
-void createClosure();
 void callClosure0();
 void localVarSetup();
 void defineAuto();
@@ -565,7 +564,7 @@ void defun() {
   code = oldCode;
 
   if ( i > 0 ) {
-    push2(code, createClosure, (void*) ptr);
+    emitCreateClosure(ptr);
   } else {
     push2(code, createClosure0, (void*) ptr);
   }
