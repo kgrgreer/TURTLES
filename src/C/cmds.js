@@ -4,7 +4,7 @@ exports.CMDS = [
   [ 'plus',   '+',        sf('a,b',   'a+b')  ],
   [ 'minus',  '-',        sf('a,b',   'a-b')  ],
   [ 'mul',    '*',        sf('a,b',   'a*b')  ],
-  [ 'div_',   '/',        sf('a,b',   'a/b')  ],
+  [ 'divide', '/',        sf('a,b',   'a/b')  ],
   [ 'mod',    '%',        sf('a,b',   'a%b')  ],
   [ 'eq',     '=',        sf('a,b',   'a==b') ],
   [ 'neq',    '!=',       sf('a,b',   'a!=b') ],
