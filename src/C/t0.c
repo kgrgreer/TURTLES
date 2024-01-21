@@ -126,7 +126,7 @@ void* nextI() { return heap->arr[ip++]; } // next instruction or instruction arg
 // Execute a single instruction stored at the pointed to heap location.
 // Not 'ret' terminated.
 // Restores ip.
-void callInstruction(long ptr) {
+void callInstr(long ptr) {
   long ret = ip;
   ip = ptr;
     Fn fn = (Fn) nextI();
@@ -389,7 +389,7 @@ void evalSym(char* sym) {
     // Would allow for context inheritance
   }
 
-  callInstruction(ptr);
+  callInstr(ptr);
 }
 
 
@@ -566,10 +566,10 @@ int main() {
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
-    code->ptr = 2;    // skip over frame info
-    evalSym(buf);     // compile symbol
+    code->ptr = 2;   // skip over frame info
+    evalSym(buf);    // compile symbol
     push(code, ret); // add a return statement
-    execute(2);       // execute compiled code
+    execute(2);      // execute compiled code
 
     // printf("compiled %ld bytes\n", code->ptr-2);
   }

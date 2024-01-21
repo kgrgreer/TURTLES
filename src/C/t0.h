@@ -27,7 +27,7 @@ void* pop(Space* s);
 
 Scope* addFn(Scope* root, char* key, Fn fn);
 
-void callInstruction(long ptr);
+void callInstr(long ptr);
 
 void* nextI();
 
