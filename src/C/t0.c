@@ -246,12 +246,11 @@ char* findKey(Scope* root, Fn fn) {
 }
 
 
-/** Execute code starting at ip until 0 found. **/
+/** Execute code starting at ip until ret. **/
 void execute(long ptr) {
   long rip = ip;
   for ( ip = ptr ; ; ) {
     Fn fn = (Fn) nextI();
-    // printf("executing: %ld %s\n", ip, findKey(scope, fn));
     if ( fn == ret ) break;
     fn();
   }
@@ -264,7 +263,6 @@ void callClosure0() {
   long pfp = (long) nextI(); // parent fp
   long fn  = (long) nextI(); // fn ptr
 
-  // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
   fp = pfp;
   execute(fn);
   fp = ofp;
@@ -274,7 +272,6 @@ void callClosure0() {
 
 long frameOffset(long depth, long offset) {
   long f = fp;
-  // printf("frame offset: depth: %ld offset: %ld fd: %d\n", depth, offset, fd);
   for ( int i = 0 ; i < depth ; i++ ) f = (long) heap->arr[f];
   return f+1+offset; // TODO: remove need for +1
 }
@@ -284,9 +281,7 @@ long frameOffset(long depth, long offset) {
 void localVarSetup() {
   long numVars = (long) nextI();
 
-  // printf("Copying %ld vars, fp: %ld\n", numVars, fp);
   for ( long i = 0 ; i < numVars ; i++ ) {
-    // printf("%ld : %ld  @ %ld\n", i, (long) stack->arr[stack->ptr-1], heap->ptr);
     push(heap, pop(stack));
   }
 }
@@ -296,7 +291,6 @@ void localVarSetup() {
 void define() {
   void* value = pop(stack);  // Definition Value
   char* sym   = nextI();     // Definition Key
-  // printf("define: %s %ld\n", sym, (long) value);
 
   scope = addSym(scope, sym, push2(heap, emitConstant, value));
 }
@@ -315,9 +309,8 @@ char* strAdd(char* s1, char* s2) {
 
 // Define a function that automatically executes when accessed without requiring ()
 void defineAuto() {
-  void* value = pop(stack);      // Definition Value
-  char* sym   = nextI(); // Definition Key
-  // printf("defineAuto: %s %ld\n", sym, (long) value);
+  void* value = pop(stack);  // Definition Value
+  char* sym   = nextI();     // Definition Key
 
   scope = addSym(scope, sym, push2(heap, emitAutoConstant, value));
 }
@@ -342,7 +335,6 @@ void unknownSymbol() {
   } else if ( sym[0] >= '0' && sym[0] <= '9' || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {
     // Parse Integers
     push2(code, constant, (void*) atol(sym));
-    // printf("evaled number: %ld\n", (long) heap->arr[cp-1]);
   } else if ( sym[0] == '\'' ) {
     char* s = strdup(sym+1);
     push2(code, constant, s);
@@ -438,11 +430,9 @@ void defun() {
 
     if ( strcmp(buf, "}") == 0 ) break;
 
-    // printf("evalSym %s\n", buf);
     evalSym(buf);
   }
 
-  // printf("defun %ld bytes to %ld\n", code->ptr, heap->ptr);
   push(code, ret);
 #ifdef DEBUG
   push(code, 0); // zero needed so dump() knows when the function is over
@@ -502,10 +492,8 @@ int main() {
   stack = createSpace(50000);
   code  = createSpace(0);
 
-  // Code stack shares memory with heap, just has its own ptr
-  code->arr = heap->arr;
-
-  heap->ptr = 1000; // Make space for REPL scratch space
+  code->arr = heap->arr; // Code stack shares memory with heap, just has its own ptr
+  heap->ptr = 1000;      // Make space for REPL scratch space
 
   scope = addCmd(scope, "???",       &unknownSymbol);
   scope = addCmd(scope, "/*",        &cComment);
@@ -541,8 +529,6 @@ int main() {
     evalSym(buf);    // compile symbol
     push(code, ret); // add a return statement
     execute(2);      // execute compiled code
-
-    // printf("compiled %ld bytes\n", code->ptr-2);
   }
 
   printf("\n");
