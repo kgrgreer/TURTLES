@@ -1,5 +1,5 @@
 exports.CMDS = [
-  [ 'call',   '()',       af('i',     'callInstr(i);') ],
+  [ 'call',   '()',       af('i',     'callI(i);') ],
   [ 'ret',    '<-',       '' ],
   [ 'plus',   '+',        sf('a,b',   'a+b')  ],
   [ 'minus',  '-',        sf('a,b',   'a-b')  ],
@@ -15,14 +15,14 @@ exports.CMDS = [
   [ 'not',    '!',        sf('a',     '!a')   ],
   [ 'and',    '&',        sf('a,b',   'a&&b') ],
   [ 'or',     '|',        sf('a,b',   'a||b') ],
-  [ 'if_',    'if',       af('c,b',   'if ( c ) callInstr(b);') ],
-  [ 'ifelse_','ifelse',   af('c,i,e', 'callInstr(c ? i : e);')  ],
+  [ 'if_',    'if',       af('c,b',   'if ( c ) callI(b);') ],
+  [ 'ifelse_','ifelse',   af('c,i,e', 'callI(c ? i : e);')  ],
   [ 'drop',   'drop',     'pop(stack);' ],
   [ 'andand', '&&',       'void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call(); }' ],
   [ 'oror',   '||',       'void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
-  [ 'for_',   'for',      af('s,e,b', 'for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callInstr(b); }')   ],
-  [ 'while_', 'while',    af('c,b',   'while ( true ) { callInstr(c); if ( ! pop(stack) ) break; callInstr(b); }') ],
-  [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callInstr(b);') ],
+  [ 'for_',   'for',      af('s,e,b', 'for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }')   ],
+  [ 'while_', 'while',    af('c,b',   'while ( true ) { callI(c); if ( ! pop(stack) ) break; callI(b); }') ],
+  [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callI(b);') ],
   [ 'now',    'now',      `struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));` ],
   [ 'print',  'print',    af('a', `
     printf("\\n\\033[1;30m"); // Print in bold black

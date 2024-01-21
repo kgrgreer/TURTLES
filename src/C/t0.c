@@ -126,7 +126,7 @@ void* nextI() { return heap->arr[ip++]; } // next instruction or instruction arg
 // Execute a single instruction stored at the pointed to heap location.
 // Not 'ret' terminated.
 // Restores ip.
-void callInstr(long ptr) {
+void callI(long ptr) {
   long ret = ip;
   ip = ptr;
     Fn fn = (Fn) nextI();
@@ -389,7 +389,7 @@ void evalSym(char* sym) {
     // Would allow for context inheritance
   }
 
-  callInstr(ptr);
+  callI(ptr);
 }
 
 
