@@ -283,34 +283,6 @@ long frameOffset(long depth, long offset) {
 }
 
 
-void frameReferenceEmitter() { push3(code, frameReference, (void*) (long) (fd-(int) nextI()), nextI()); }
-
-void frameSetterEmitter() { push3(code, frameSetter, (void*) (long) (fd-(int) nextI()), nextI()); }
-
-void frameIncr00() { heap->arr[fp+1]++; }
-
-void frameIncr10() { heap->arr[(long) heap->arr[fp]+1]++; }
-
-void frameIncrEmitter() {
-  int  frame  = fd-(int) nextI();
-  long offset = (long) nextI();
-
-#ifdef PERFORMANCE
-  if ( frame == 0 && offset == 0 ) {
-    push(code, frameIncr00);
-  } else if ( frame == 1 && offset == 0 ) {
-    push(code, frameIncr10);
-  }
-  else
-#endif
-  {
-    push3(code, frameIncr, (void*) (long) frame, (void*) offset);
-  }
-}
-
-void frameDecrEmitter() { push3(code, frameDecr, (void*) (long) (fd-(int) nextI()), nextI()); }
-
-
 // Copy argument values from stack to the heap, as part of the activation record, where they can be accessed as frameReferences
 void localVarSetup() {
   long numVars = (long) nextI();
@@ -529,10 +501,10 @@ void defun() {
   for ( long j = 0 ; j < i ; j++ ) {
     char* varName = vars[j];
     void* k       = (void*) (i-j-1);
-    scope = addSym(scope, varName,               push3(heap, frameReferenceEmitter, (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(":", varName),  push3(heap, frameSetterEmitter,    (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "++"), push3(heap, frameIncrEmitter,      (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "--"), push3(heap, frameDecrEmitter,      (void*) (long) fd, k));
+    scope = addSym(scope, varName,               push3(heap, emitFrameReference, (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(":", varName),  push3(heap, emitFrameSetter,    (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "++"), push3(heap, emitFrameIncr,      (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "--"), push3(heap, emitFrameDecr,      (void*) (long) fd, k));
   }
 
   if ( i > 0 ) {
