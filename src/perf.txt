@@ -115,3 +115,60 @@ Combine efficient looping with efficient function calls where possible.
 
 Currently compiling with -O2 doesn't work. Break the source code into multiple
 .c files and compile non-offending code with -O2.
+
+
+
+
+
+
+
+
+
+void repeatStatement() {
+  const long block = (long) pop(stack);
+  const long times = (long) pop(stack);
+
+  // Faster Version
+  long ret = ip;
+  ip = block;
+  Fn fn = (Fn) nextI();
+  if ( fn == callClosure0 && false ) {
+    long ofp = fp;
+    long pfp = (long) nextI(); // parent fp
+    long fn  = (long) nextI(); // fn ptr
+
+    // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
+    fp = pfp;
+    ip = fn;
+    const Fn f = (Fn) nextI();
+    long iip = ip;
+    for ( long i = 0 ; i < times ; i+=4 ) {
+      /*
+      (f)();
+      (f)();
+      (f)();
+      (f)();
+      */
+      // faster: ???
+      ip = iip; (f)();
+      ip = iip; (f)();
+      ip = iip; (f)();
+      ip = iip; (f)();
+    }
+    fp = ofp;
+    ip = ret;
+  } else {
+    long pp = ip;
+    for ( long i = 0 ; i < times ; i++ ) {
+      ip = pp;
+      (fn)();
+    }
+    ip = ret;
+  }
+  /*
+  // Simpler Version
+  for ( long i = 0 ; i <= times ; i++ ) {
+    callInstruction(block);
+  }
+  */
+}

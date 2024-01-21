@@ -222,7 +222,6 @@ void callClosure0();
 void localVarSetup();
 void defineAuto();
 void define();
-void repeatStatement();
 
 #ifdef DEBUG
 void guru();
@@ -239,7 +238,6 @@ char* findKey(Scope* root, Fn fn) {
   if ( fn == &localVarSetup   ) return "|";
   if ( fn == &define          ) return ":";
   if ( fn == &defineAuto      ) return "::";
-  if ( fn == &repeatStatement ) return "repeat";
 
 #ifdef DEBUG
   if ( fn == &guru            ) return "guru";
@@ -350,56 +348,6 @@ void defineAuto() {
 }),
 
 */
-
-void repeatStatement() {
-  const long block = (long) pop(stack);
-  const long times = (long) pop(stack);
-
-  // Faster Version
-  long ret = ip;
-  ip = block;
-  Fn fn = (Fn) nextI();
-  if ( fn == callClosure0 && false ) {
-    long ofp = fp;
-    long pfp = (long) nextI(); // parent fp
-    long fn  = (long) nextI(); // fn ptr
-
-    // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\n", closure, pfp, fn, ip);
-    fp = pfp;
-    ip = fn;
-    const Fn f = (Fn) nextI();
-    long iip = ip;
-    for ( long i = 0 ; i < times ; i+=4 ) {
-      /*
-      (f)();
-      (f)();
-      (f)();
-      (f)();
-      */
-      // faster: ???
-      ip = iip; (f)();
-      ip = iip; (f)();
-      ip = iip; (f)();
-      ip = iip; (f)();
-    }
-    fp = ofp;
-    ip = ret;
-  } else {
-    long pp = ip;
-    for ( long i = 0 ; i < times ; i++ ) {
-      ip = pp;
-      (fn)();
-    }
-    ip = ret;
-  }
-  /*
-  // Simpler Version
-  for ( long i = 0 ; i <= times ; i++ ) {
-    callInstruction(block);
-  }
-  */
-}
-
 
 /*
  * Function used by evalSym() if an exact match isn't found.
@@ -604,8 +552,7 @@ int main() {
 
   scope = addCmds(scope);
 
-  scope = addFn(scope, "repeat",     &repeatStatement);
-  scope = addFn(scope, ".",          &print); // like forth
+  scope = addFn(scope, ".",          &print); // like forth, TODO: move to prefix
 
 #ifdef DEBUG
   scope = addFn(scope, "guru",       &guru);
@@ -620,9 +567,10 @@ int main() {
 
   while ( true ) {
 #ifdef DEBUG
+    // TODO: move to T0
     printf("\033[0;34m"); // Print in blue
     printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");
-    printf("\033[0m");      // Revert colour code
+    printf("\033[0m");    // Revert colour code
 #endif
 
     if ( ! readSym(buf, sizeof(buf)) ) break;

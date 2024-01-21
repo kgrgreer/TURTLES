@@ -20,8 +20,9 @@ exports.CMDS = [
   [ 'drop',   'drop',     'pop(stack);' ],
   [ 'andand', '&&',       'void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call(); }' ],
   [ 'oror',   '||',       'void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
-  [ 'for_',   'for',      af('s,e,b', `  for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callInstruction(b); }`)   ],
-  [ 'while_', 'while',    af('c,b', `  while ( true ) { callInstruction(c); if ( ! pop(stack) ) break; callInstruction(b); }`) ],
+  [ 'for_',   'for',      af('s,e,b', 'for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callInstruction(b); }')   ],
+  [ 'while_', 'while',    af('c,b',   'while ( true ) { callInstruction(c); if ( ! pop(stack) ) break; callInstruction(b); }') ],
+  [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callInstruction(b);') ],
   [ 'now',    'now',      `struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));` ],
   [ 'print',  'print',    af('a', `
     printf("\\n\\033[1;30m"); // Print in bold black
