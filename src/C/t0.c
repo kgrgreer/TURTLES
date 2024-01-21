@@ -455,9 +455,7 @@ void defun() {
     scope = addSym(scope, strAdd(varName, "--"), push3(heap, emitVarDecr, (void*) (long) fd, k));
   }
 
-  if ( i > 0 ) {
-    push2(code, localVarSetup, (void*) (long) i);
-  }
+  if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
@@ -483,18 +481,11 @@ void defun() {
 
   code = oldCode;
 
-  if ( i > 0 ) {
-    push2(code, createClosure, (void*) ptr);
-    // emitCreateClosure(ptr);
-  } else {
-    push2(code, createClosure0, (void*) ptr);
-  }
+  push2(code, i > 0 ? createClosure : createClosure0, (void*) ptr);
 
   scope = s; // revert to old scope, TODO: free dead scope
 
   if ( i > 0 ) fd--;
-
-  return;
 }
 
 
