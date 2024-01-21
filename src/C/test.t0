@@ -47,37 +47,36 @@ cc cc cc cc cc
 1 { | 2 . 1 } ||
 0 { | 2 . 1 } ||
 
-" if and ifElse" section
+" if and ifelse" section
 1 { | 666 . } if
 0 { | 777 . } if
 
-1 { | 100 . } { | 200 . } ifElse
-0 { | 100 . } { | 200 . } ifElse
+1 { | 100 . } { | 200 . } ifelse
+0 { | 100 . } { | 200 . } ifelse
 
 " Make your own if statement" section
 { flag block | flag block && } ::if2
 1 { | 666 . } if2
 0 { | 777 . } if2
 
-" Make your own ifElse statement" section
-{ flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifElse2
-1 { | 100 . } { | 200 . } ifElse2
-0 { | 100 . } { | 200 . } ifElse2
+" Make your own if3lse statement" section
+{ flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifelse2
+1 { | 100 . } { | 200 . } ifelse2
+0 { | 100 . } { | 200 . } ifelse2
 
 " While loop" section
-1 5 { start end | { | start end <= } { | start . start start++ } while } ()
+// 1 5 { start end | { | start end <= } { | start . start++ } while } ()
 
 " For loops" section
-100 105 { i | i . } for
+// 100 105 { i | i . } for
 
 " Make your own for statement" section
-{ s e block | { | s e <= } { | s block () s++ } while } ::for2
-100 105 { i | i . } for2
+// { s e block | { | s e <= } { | s block () s++ } while } ::for2
+// 100 105 { i | i . } for2
 
 0 { count |
-  1 1000 { i |
-    i .
-    1 1000 { j |
+  1 10 { i |
+    1 10 { j |
       count++
     } for
   } for
