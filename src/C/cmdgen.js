@@ -4,21 +4,17 @@ const fs = require('node:fs');
 
 var fnDefs = '', scopeDefs = '', declDefs = '', cmdToStr = '';
 
-function sf(args, code) {
-  var argDefs = args.split(',').reverse().map(a => `  long ${a} = (long) pop(stack);`).join('\n');
-  var body    = code ? `  push(stack, (void*) (long) (${code}));` : '';
-
-  return argDefs + '\n' + body;
-}
-
 function af(args, code) {
   var argDefs = args.split(',').reverse().map(a => `  long ${a} = (long) pop(stack);`).join('\n');
-
   return argDefs + '\n' + code;
 }
 
-global.sf = sf;
+function sf(args, code) {
+  return af(args, code ? `  push(stack, (void*) (long) (${code}));` : '');
+}
+
 global.af = af;
+global.sf = sf;
 
 const { CMDS, INSTRUCTIONS } = require('./cmds.js');
 
