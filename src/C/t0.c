@@ -323,32 +323,6 @@ void defineAuto() {
   scope = addSym(scope, sym, push2(heap, emitAutoConstant, value));
 }
 
-
-/*
-'[]WithValue': fn(() => {
-  var value = stack.pop(), length = stack.pop(), a = [];
-  for ( var i = 0 ; i < length ; i++ ) a[i] = value;
-  stack.push(a);
-}),
-'[]WithFn': fn(() => {
-  var fn = stack.pop(), length = stack.pop(), a = [];
-  for ( var i = 0 ; i < length ; i++ ) { stack.push(i); fn(); a[i] = stack.pop(); }
-  stack.push(a);
-}),
-'@':  bfn((a, i) => a[i]),
-':@': fn(() => { var i = stack.pop(), a = stack.pop(), v = stack.pop(); a[i] = v; }),
-'[':  fn(() => stack.push(__arrayStart__)),
-']':  fn(() => {
-  var start = stack.length-1;
-  for ( ; start && stack[start] !== __arrayStart__ ; start-- );
-  var a = new Array(stack.length-start-1);
-  for ( var i = a.length-1 ; i >= 0 ; i-- ) a[i] = stack.pop();
-  stack.pop(); // remove arrayStart
-  stack.push(a);
-}),
-
-*/
-
 /*
  * Function used by evalSym() if an exact match isn't found.
  * Used to handle higher-level constructs like numbers, strings and functions.

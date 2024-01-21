@@ -33,8 +33,49 @@ exports.CMDS = [
     printf("\\n\\033[1;30m"); // Print in bold black
     printf("%s", (char *) a);
     printf("\\033[0m");      // Revert colour code`)
-  ]
+  ],
+  [ 'arrayStart', '[', 'push(stack, &arrayStart);' ],
+  [ 'arrayEnd',   ']', `
+    long start = stack->ptr-1;
+    for ( ; start && stack->arr[start] != &arrayStart ; start-- );
+    int len = stack->ptr-start-1;
+    long* a = (long*) malloc((len+1) * sizeof(long));
+    a[0] = len;
+    for ( int i = len-1 ; i >= 0 ; i-- ) a[i+1] = (long) pop(stack);
+    pop(stack); // remove arrayStart
+    push(stack, a);
+  ` ],
+
+  [ 'arrayPrint', '.[]', af('arr', `
+    long* a = (long*) arr;
+    int len = (int) a[0];
+    printf("[ ");
+    for ( int i = 1 ; i <= len ; i++ ) {
+      if ( i > 1 ) printf(", ");
+      printf("%ld", (long) a[i]);
+    }
+    printf(" ]");
+  `) ],
+
+//  [ '', '', f('', ``) ],
+
 ];
+
+/*
+'[]WithValue': fn(() => {
+  var value = stack.pop(), length = stack.pop(), a = [];
+  for ( var i = 0 ; i < length ; i++ ) a[i] = value;
+  stack.push(a);
+}),
+'[]WithFn': fn(() => {
+  var fn = stack.pop(), length = stack.pop(), a = [];
+  for ( var i = 0 ; i < length ; i++ ) { stack.push(i); fn(); a[i] = stack.pop(); }
+  stack.push(a);
+}),
+'@':  bfn((a, i) => a[i]),
+':@': fn(() => { var i = stack.pop(), a = stack.pop(), v = stack.pop(); a[i] = v; }),
+*/
+
 
 
 exports.INSTRUCTIONS = [
