@@ -24,12 +24,12 @@ exports.CMDS = [
   [ 'while_', 'while',    af('c,b',   'while ( true ) { callI(c); if ( ! pop(stack) ) break; callI(b); }') ],
   [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callI(b);') ],
   [ 'now',    'now',      `struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));` ],
-  [ 'print',  'print',    af('a', `
+  [ 'print',  '.',        af('a', `
     printf("\\n\\033[1;30m"); // Print in bold black
     printf("%ld", a);
     printf("\\033[0m");      // Revert colour code`)
   ],
-  [ 'printStr', 'print$', af('a', `
+  [ 'printStr', '.$',     af('a', `
     printf("\\n\\033[1;30m"); // Print in bold black
     printf("%s", (char *) a);
     printf("\\033[0m");      // Revert colour code`)

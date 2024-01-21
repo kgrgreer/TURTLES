@@ -543,8 +543,6 @@ int main() {
 
   scope = addCmds(scope);
 
-  scope = addFn(scope, ".",          &print); // like forth, TODO: move to prefix
-
 #ifdef DEBUG
   scope = addFn(scope, "guru",       &guru);
   scope = addFn(scope, "dump",       &dump);
