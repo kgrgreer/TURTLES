@@ -35,16 +35,14 @@ exports.CMDS = [
   ]
 ];
 
-//void frameReferenceEmitter() { push3(code, frameReference, (void*) (long) (fd-(int) nextI()), nextI()); }
-
 
 exports.INSTRUCTIONS = [
   [ 'constant',       'void* v',               'push(stack, v)', true ],
   [ 'autoConstant',   'void* v',               'push(stack, v); call()', true ],
-  [ 'frameReference', 'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'frameSetter',    'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'frameIncr',      'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'frameDecr',      'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varGet',         'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varSet',         'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varIncr',        'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varDecr',        'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
   [ 'callClosure',    'long pfp,long fn', `
     long ofp = fp;
 

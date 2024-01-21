@@ -501,10 +501,10 @@ void defun() {
   for ( long j = 0 ; j < i ; j++ ) {
     char* varName = vars[j];
     void* k       = (void*) (i-j-1);
-    scope = addSym(scope, varName,               push3(heap, emitFrameReference, (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(":", varName),  push3(heap, emitFrameSetter,    (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "++"), push3(heap, emitFrameIncr,      (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "--"), push3(heap, emitFrameDecr,      (void*) (long) fd, k));
+    scope = addSym(scope, varName,               push3(heap, emitVarGet,  (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(":", varName),  push3(heap, emitVarSet,  (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "++"), push3(heap, emitVarIncr, (void*) (long) fd, k));
+    scope = addSym(scope, strAdd(varName, "--"), push3(heap, emitVarDecr, (void*) (long) fd, k));
   }
 
   if ( i > 0 ) {
