@@ -211,17 +211,16 @@ bool readSym(char* buf, int bufSize) {
 }
 
 void callClosure0();
+void localVarSetup();
+void defineAuto();
+void define();
+
 
 void createClosure0() {
   void* fn = nextI();
   push(stack, (void*) push3(heap, callClosure0, (void*) fp, fn));
 }
 
-
-void callClosure0();
-void localVarSetup();
-void defineAuto();
-void define();
 
 #ifdef DEBUG
 void guru();
