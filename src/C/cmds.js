@@ -56,6 +56,9 @@ exports.CMDS = [
     }
     printf(" ]");
   `) ],
+    [ 'arrayAt',  '@',  sf('a,i',   '((long*)a)[i+1]') ],
+    [ 'arraySet', ':@', af('v,a,i', '((long*)a)[i+1] = v;') ],
+    [ 'arrayLen', '#',  sf('a',     '((long*)a)[0]') ],
 
 //  [ '', '', f('', ``) ],
 
@@ -71,9 +74,7 @@ exports.CMDS = [
   var fn = stack.pop(), length = stack.pop(), a = [];
   for ( var i = 0 ; i < length ; i++ ) { stack.push(i); fn(); a[i] = stack.pop(); }
   stack.push(a);
-}),
-'@':  bfn((a, i) => a[i]),
-':@': fn(() => { var i = stack.pop(), a = stack.pop(), v = stack.pop(); a[i] = v; }),
+})
 */
 
 
