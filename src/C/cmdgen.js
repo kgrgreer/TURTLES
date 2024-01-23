@@ -1,6 +1,6 @@
 // cmdgen.js - generates cmds.h and cmds.c
 
-const fs = require('node:fs');
+const fs = require('fs');
 
 var fnDefs = '', scopeDefs = '', declDefs = '', cmdToStr = '';
 
