@@ -195,7 +195,7 @@ bool readSym(char* buf, int bufSize) {
   /* Skip leading whitespace. */
   while ( isSpace(c = getchar()) );
 
-  if ( c == EOF ) return false;
+  if ( c == EOF || c == 0xff ) return false;
 
   buf[size++] = c;
 
@@ -518,7 +518,7 @@ int main() {
   while ( true ) {
 #ifdef DEBUG
     // TODO: move to T0
-    printf("\033[0;34m"); // Print in blue
+    printf("\033[0;32m"); // Print in blue
     printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");
     printf("\033[0m");    // Revert colour code
 #endif
