@@ -56,27 +56,29 @@ exports.CMDS = [
     }
     printf(" ]");
   `) ],
-    [ 'arrayAt',  '@',  sf('a,i',   '((long*)a)[i+1]') ],
-    [ 'arraySet', ':@', af('v,a,i', '((long*)a)[i+1] = v;') ],
-    [ 'arrayLen', '#',  sf('a',     '((long*)a)[0]') ],
+    [ 'arrayAt',        '@',               sf('a,i',   '((long*)a)[i+1]') ],
+    [ 'arraySet',       ':@',              af('v,a,i', '((long*)a)[i+1] = v;') ],
+    [ 'arrayLen',       '#',               sf('a',     '((long*)a)[0]') ],
+    [ 'arrayWithValue', '[]WithValue',     af('len,val', `
+      long* a = (long*) malloc((len+1) * sizeof(long));
+      a[0] = len;
+      for ( int i = 1 ; i <= len ; i++ ) a[i] = val;
+      push(stack, a);
+    `) ],
+    [ 'arrayWithFn',    '[]WithFn',        af('len,fn', `
+      long* a = (long*) malloc((len+1) * sizeof(long));
+      a[0] = len;
+      for ( int i = 1 ; i <= len ; i++ ) {
+        push(stack, (void*) (long) i);
+        callI(fn);
+        a[i] = (long) pop(stack);
+      }
+      push(stack, a);
+    `) ],
 
 //  [ '', '', f('', ``) ],
 
 ];
-
-/*
-'[]WithValue': fn(() => {
-  var value = stack.pop(), length = stack.pop(), a = [];
-  for ( var i = 0 ; i < length ; i++ ) a[i] = value;
-  stack.push(a);
-}),
-'[]WithFn': fn(() => {
-  var fn = stack.pop(), length = stack.pop(), a = [];
-  for ( var i = 0 ; i < length ; i++ ) { stack.push(i); fn(); a[i] = stack.pop(); }
-  stack.push(a);
-})
-*/
-
 
 
 exports.INSTRUCTIONS = [
