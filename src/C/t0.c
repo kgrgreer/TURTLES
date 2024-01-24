@@ -189,17 +189,13 @@ bool isSpace(char c) {
 
 
 bool readSym(char* buf, int bufSize) {
-  char c;
+  int c;
   int size = 0;
 
   /* Skip leading whitespace. */
   while ( isSpace(c = getchar()) );
 
-#ifdef LINUX
-  if ( c == 0xff ) return false;
-#elseif
-if ( c == EOF ) return false;
-#endif
+  if ( c == EOF ) return false;
 
   buf[size++] = c;
 
