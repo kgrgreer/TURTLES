@@ -195,7 +195,11 @@ bool readSym(char* buf, int bufSize) {
   /* Skip leading whitespace. */
   while ( isSpace(c = getchar()) );
 
-  if ( c == EOF || c == 0xff ) return false;
+#ifdef LINUX
+  if ( c == 0xff ) return false;
+#elseif
+if ( c == EOF ) return false;
+#endif
 
   buf[size++] = c;
 
