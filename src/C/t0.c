@@ -224,24 +224,6 @@ void guru();
 #endif
 
 
-// Define a top-level constant value, Ex. 42 :answer or { x | x 2 * } :double
-void define() {
-  void* value = pop(stack);  // Definition Value
-  char* sym   = nextI();     // Definition Key
-
-  scope = addSym(scope, sym, push2(heap, emitConstant, value));
-}
-
-
-// Define a function that automatically executes when accessed without requiring ()
-void defineAuto() {
-  void* value = pop(stack);  // Definition Value
-  char* sym   = nextI();     // Definition Key
-
-  scope = addSym(scope, sym, push2(heap, emitAutoConstant, value));
-}
-
-
 // TODO: temporary, use a better instruction dictionary
 char* findKey(Scope* root, Fn fn) {
   char* s = cmdToStr(fn);
@@ -251,8 +233,6 @@ char* findKey(Scope* root, Fn fn) {
   if ( fn == &callClosure0    ) return "callClosure0";
   if ( fn == &createClosure0  ) return "createClosure0";
   if ( fn == &localVarSetup   ) return "|";
-  if ( fn == &define          ) return ":";
-  if ( fn == &defineAuto      ) return "::";
 
 #ifdef DEBUG
   if ( fn == &guru            ) return "guru";
@@ -488,13 +468,13 @@ void nop() { }
 
 
 void initScope() {
-  scope = addCmd(scope, "???",       &unknownSymbol);
-  scope = addCmd(scope, "/*",        &cComment);
-  scope = addCmd(scope, "//",        &cppComment);
-  scope = addCmd(scope, "{",         &defun);
-  scope = addCmd(scope, "clear",     &clearStack);
-  scope = addCmd(scope, "\"",        &strLiteral);
-  scope = addCmd(scope, "prompt",    &nop);
+  scope = addCmd(scope, "???",    &unknownSymbol);
+  scope = addCmd(scope, "/*",     &cComment);
+  scope = addCmd(scope, "//",     &cppComment);
+  scope = addCmd(scope, "{",      &defun);
+  scope = addCmd(scope, "clear",  &clearStack);
+  scope = addCmd(scope, "\"",     &strLiteral);
+  scope = addCmd(scope, "prompt", &nop);
 
   scope = addCmds(scope);
 

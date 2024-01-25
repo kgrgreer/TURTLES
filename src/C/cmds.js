@@ -103,5 +103,7 @@ exports.INSTRUCTIONS = [
     fp = ofp;
     `
   ],
-  [ 'createClosure',  'void* fn',              'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ]
+  [ 'createClosure',  'void* fn',  'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ],
+  [ 'define',         'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant, pop(stack)));' ],
+  [ 'defineAuto',     'char* sym', 'scope = addSym(scope, sym, push2(heap, emitAutoConstant, pop(stack)));' ]
 ];
