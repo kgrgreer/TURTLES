@@ -58,3 +58,20 @@ void dumpFrames() {
 
   printFrames(fp);
 }
+
+
+void debugPrompt() {
+  printf("\033[0;32m"); // Print in blue
+  printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");
+  printf("\033[0m");    // Revert colour code
+}
+
+
+Scope* addDebugCmds(Scope* scope) {
+  scope = addCmd(scope, "prompt",     &debugPrompt);
+  scope = addFn(scope,  "guru",       &guru);
+  scope = addFn(scope,  "dump",       &dump);
+  scope = addFn(scope,  "dumpFrames", &dumpFrames);
+
+  return scope;
+}

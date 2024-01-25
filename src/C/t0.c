@@ -69,7 +69,6 @@
 
   Todo:
     - support for emitting code comments in DEBUG mode or tagging non-code items like closures
-    - move define and defineAuto to cmdgen
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -189,17 +188,13 @@ bool isSpace(char c) {
 
 
 bool readSym(char* buf, int bufSize) {
-  char c;
+  int c;
   int size = 0;
 
   /* Skip leading whitespace. */
   while ( isSpace(c = getchar()) );
 
-#ifdef LINUX
-  if ( c == 0xff ) return false;
-#elseif
-if ( c == EOF ) return false;
-#endif
+  if ( c == EOF ) return false;
 
   buf[size++] = c;
 
@@ -216,8 +211,6 @@ if ( c == EOF ) return false;
 
 void callClosure0();
 void localVarSetup();
-void defineAuto();
-void define();
 
 
 void createClosure0() {
@@ -229,6 +222,25 @@ void createClosure0() {
 #ifdef DEBUG
 void guru();
 #endif
+
+
+// Define a top-level constant value, Ex. 42 :answer or { x | x 2 * } :double
+void define() {
+  void* value = pop(stack);  // Definition Value
+  char* sym   = nextI();     // Definition Key
+
+  scope = addSym(scope, sym, push2(heap, emitConstant, value));
+}
+
+
+// Define a function that automatically executes when accessed without requiring ()
+void defineAuto() {
+  void* value = pop(stack);  // Definition Value
+  char* sym   = nextI();     // Definition Key
+
+  scope = addSym(scope, sym, push2(heap, emitAutoConstant, value));
+}
+
 
 // TODO: temporary, use a better instruction dictionary
 char* findKey(Scope* root, Fn fn) {
@@ -291,15 +303,6 @@ void localVarSetup() {
 }
 
 
-// Define a top-level constant value, Ex. 42 :answer or { x | x 2 * } :double
-void define() {
-  void* value = pop(stack);  // Definition Value
-  char* sym   = nextI();     // Definition Key
-
-  scope = addSym(scope, sym, push2(heap, emitConstant, value));
-}
-
-
 char* strAdd(char* s1, char* s2) {
   int l1 = strlen(s1);
   char* s3 = (char*) malloc(l1 + sizeof(s2));
@@ -310,14 +313,6 @@ char* strAdd(char* s1, char* s2) {
   return s3;
 }
 
-
-// Define a function that automatically executes when accessed without requiring ()
-void defineAuto() {
-  void* value = pop(stack);  // Definition Value
-  char* sym   = nextI();     // Definition Key
-
-  scope = addSym(scope, sym, push2(heap, emitAutoConstant, value));
-}
 
 /*
  * Function used by evalSym() if an exact match isn't found.
@@ -489,50 +484,51 @@ void clearStack() { stack->ptr = 0; printf("\033c"); }
 #endif
 
 
-int main() {
-  char buf[256]; // Used to hold next read symbols
+void nop() { }
 
-  heap  = createSpace(500000000);
-  stack = createSpace(50000);
-  code  = createSpace(0);
 
-  code->arr = heap->arr; // Code stack shares memory with heap, just has its own ptr
-  heap->ptr = 1000;      // Make space for REPL scratch space
-
+void initScope() {
   scope = addCmd(scope, "???",       &unknownSymbol);
   scope = addCmd(scope, "/*",        &cComment);
   scope = addCmd(scope, "//",        &cppComment);
   scope = addCmd(scope, "{",         &defun);
   scope = addCmd(scope, "clear",     &clearStack);
   scope = addCmd(scope, "\"",        &strLiteral);
+  scope = addCmd(scope, "prompt",    &nop);
 
   scope = addCmds(scope);
 
 #ifdef DEBUG
-  scope = addFn(scope, "guru",       &guru);
-  scope = addFn(scope, "dump",       &dump);
-  scope = addFn(scope, "dumpFrames", &dumpFrames);
+  scope = addDebugCmds(scope);
 #endif
+}
 
-  // Create a top-level frame which points to itself as the previous frame
-  // so it can be reused forever.
-  push(code, (void*) 0);  // points to itself as previous frame
-  push(code, (void*) -1); // psedo return address causes stop of execution
+
+void initSpace() {
+  heap  = createSpace(500000000);
+  stack = createSpace(50000);
+  code  = createSpace(0);
+
+  code->arr = heap->arr; // Code stack shares memory with heap, just has its own ptr
+  heap->ptr = 1000;      // Make space for REPL scratch space
+}
+
+
+int main() {
+  char buf[256]; // Used to hold next read symbols
+
+  initSpace();
+  initScope();
 
   while ( true ) {
-#ifdef DEBUG
-    // TODO: move to T0
-    printf("\033[0;32m"); // Print in blue
-    printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");
-    printf("\033[0m");    // Revert colour code
-#endif
+    evalSym("prompt");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
-    code->ptr = 2;   // skip over frame info
-    evalSym(buf);    // compile symbol
+    code->ptr = 0;
+    evalSym(buf);    // run symbol, which may compile to 'code'
     push(code, ret); // add a return statement
-    execute(2);      // execute compiled code
+    execute(0);      // execute any compiled code
   }
 
   printf("\n");
