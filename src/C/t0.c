@@ -505,10 +505,9 @@ int main() {
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
-    code->ptr = 0;
-    evalSym(buf);    // run symbol, which may compile to 'code'
-    push(code, ret); // add a return statement
-    execute(0);      // execute any compiled code
+    evalSym(buf);           // run symbol, which may compile to 'code'
+    push(code, ret);        // add a return statement
+    execute(code->ptr = 0); // execute any compiled code
   }
 
   printf("\n");
