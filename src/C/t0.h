@@ -29,6 +29,8 @@ Scope* addFn(Scope* root, char* key, Fn fn);
 
 Scope* addSym(Scope* root, char* key, long ptr);
 
+long findSym(Scope* root, char* key);
+
 void callI(long ptr);
 
 void* nextI();

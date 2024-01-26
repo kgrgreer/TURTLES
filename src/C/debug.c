@@ -32,9 +32,7 @@ void guru() {
 }
 
 
-void dump() {
-  long ptr = (long) pop(stack);
-
+void dump_(long ptr) {
   printf("\n");
 
   int uc = 0;
@@ -50,6 +48,11 @@ void dump() {
     }
     if ( fn == ret && heap->arr[ptr+1] == 0 ) return;
   }
+}
+
+
+void dump() {
+  dump_((long) pop(stack));
 }
 
 

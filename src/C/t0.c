@@ -318,7 +318,7 @@ void unknownSymbol() {
     char* s = strdup(sym+1);
     push2(code, constant, s);
   } else {
-    printf("Unknown symbol: %s\n", sym);
+    push2(code, forwardReference, strdup(sym));
   }
 }
 

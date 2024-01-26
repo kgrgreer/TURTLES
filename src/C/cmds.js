@@ -82,13 +82,13 @@ exports.CMDS = [
 
 
 exports.INSTRUCTIONS = [
-  [ 'constant',       'void* v',               'push(stack, v)', true ],
-  [ 'autoConstant',   'void* v',               'push(stack, v); call()', true ],
-  [ 'varGet',         'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'varSet',         'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'varIncr',        'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'varDecr',        'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'callClosure',    'long pfp,long fn', `
+  [ 'constant',         'void* v',               'push(stack, v)', true ],
+  [ 'autoConstant',     'void* v',               'push(stack, v); call()', true ],
+  [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varSet',           'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varIncr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varDecr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'callClosure',      'long pfp,long fn', `
     long ofp = fp;
 
     fp = push(heap, (void*) pfp); // previous FP
@@ -103,7 +103,20 @@ exports.INSTRUCTIONS = [
     fp = ofp;
     `
   ],
-  [ 'createClosure',  'void* fn',  'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ],
-  [ 'define',         'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant, pop(stack)));' ],
-  [ 'defineAuto',     'char* sym', 'scope = addSym(scope, sym, push2(heap, emitAutoConstant, pop(stack)));' ]
+  [ 'createClosure',    'void* fn',  'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ],
+  [ 'define',           'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant, pop(stack)));' ],
+  [ 'defineAuto',       'char* sym', 'scope = addSym(scope, sym, push2(heap, emitAutoConstant, pop(stack)));' ],
+  [ 'forwardReference', 'char* sym', `
+    long ptr = findSym(scope, sym);
+    if ( ptr == -1 ) {
+      printf("Unresolved reference: %s\\n", sym);
+    } else {
+      // printf("Resolving reference: %s\\n", sym);
+      long oldPtr = code->ptr;
+      code->ptr = ip-2; // back-up over [forwardReference, sym], two spaces
+      callI(ptr);
+      code->ptr = oldPtr;
+      ip -= 2; // back-up again so we re-run the new definition
+    }
+  `]
 ];
