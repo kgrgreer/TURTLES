@@ -111,6 +111,12 @@ exports.INSTRUCTIONS = [
     if ( ptr == -1 ) {
       printf("Unresolved reference: %s\\n", sym);
     } else {
+      // TODO: this works for new because define and defineAuto are the same size
+      // as forwardReference (2 words) but that could change (Ex. if common constan
+      // values get their own instructions and become length 1.
+      // Length 1 commands can be easily fixed by adding a NOP instruction,
+      // but longer instructions will require either a jump.
+
       // printf("Resolving reference: %s\\n", sym);
       long oldPtr = code->ptr;
       code->ptr = ip-2; // back-up over [forwardReference, sym], two spaces
