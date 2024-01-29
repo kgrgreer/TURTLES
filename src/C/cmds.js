@@ -75,8 +75,20 @@ exports.CMDS = [
       }
       push(stack, a);
     `) ],
+//    [ 'charAt',   'charAt',   af('s,i', 'push(stack, (void*) (i < strlen(s)) ? s[i] : NULL));') ],
+    [ 'charCode', 'charCode', af('c', 'char* s = (char*) malloc(2); s[0] = c; s[1] = 0; push(stack, s);') ],
+//    [ 'indexOf',  'indexOf',  f('', ``) ],
+    [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
 
 //  [ '', '', f('', ``) ],
+
+/*
+charAt:    bfn((s, i) => i < s.length ? s.charAt(i) : null),
+charCode:  fn(() => stack.push(String.fromCharCode(stack.pop()))),
+indexOf:   bfn((s, p) => s.indexOf(p)),
+len:       fn(() => { stack.push(stack.pop().length); }),
+
+*/
 
 ];
 
