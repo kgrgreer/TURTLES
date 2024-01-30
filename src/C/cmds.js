@@ -75,9 +75,20 @@ exports.CMDS = [
       }
       push(stack, a);
     `) ],
-//    [ 'charAt',   'charAt',   af('s,i', 'push(stack, (void*) (i < strlen(s)) ? s[i] : NULL));') ],
+    [ 'charAt',   'charAt',   af('s,i', 'push(stack, (void*) (long) ((i < strlen((char*) s)) ? (long) ((char*) s)[i] : (long) NULL));') ],
     [ 'charCode', 'charCode', af('c', 'char* s = (char*) malloc(2); s[0] = c; s[1] = 0; push(stack, s);') ],
-//    [ 'indexOf',  'indexOf',  f('', ``) ],
+    [ 'indexOf',  'indexOf',  af('a,v', `
+      printf("indexOf %ld\\n", v);
+      long* b  = (long*) a;
+      long len = b[0];
+      for ( int i = 1 ; i <= len ; i++ ) {
+        if ( b[i] == v ) { // TODO: better equals
+          push(stack, (void*) (long) (i-1));
+          return;
+        }
+      }
+      push(stack, (void*) -1);
+    `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
 
 //  [ '', '', f('', ``) ],
