@@ -360,8 +360,8 @@ void defun() {
     if ( strcmp(buf, "|") == 0 ) break;
 
     if ( strcmp(buf, "let") == 0 ) {
-      while ( true ) {
-        while ( true ) {
+      while ( true ) { // for each :<name>
+        while ( true ) { // for each word before :<name>
           if ( ! readSym(buf, sizeof(buf)) ) {
             printf("Syntax Error: Unclosed function, missing |");
             return;
