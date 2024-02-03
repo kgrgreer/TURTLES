@@ -90,15 +90,40 @@ exports.CMDS = [
       push(stack, (void*) -1);
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
+    [ 'switch_', 'switch',    `
+      char buf[256]; // Used to hold next read symbols
+      emitSwitchI();
+      while ( true ) {
+        if ( ! readSym(buf, sizeof(buf)) ) {
+          printf("Syntax Error: Unclosed function, missing }");
+          return;
+        }
+
+        if ( strcmp(buf, "end") == 0 ) break;
+
+        evalSym(buf);
+      }
+    ` ],
+
 
 //  [ '', '', f('', ``) ],
 
 /*
-charAt:    bfn((s, i) => i < s.length ? s.charAt(i) : null),
-charCode:  fn(() => stack.push(String.fromCharCode(stack.pop()))),
-indexOf:   bfn((s, p) => s.indexOf(p)),
-len:       fn(() => { stack.push(stack.pop().length); }),
-
+switch: function(code) {
+  var options = [], l;
+  while ( ( l = scope.readSym() ) != 'end' ) scope.evalSym(l, options);
+  for ( var i = 0 ; i < options.length-1 ; i += 2 ) { options[i](); options[i] = stack.pop(); }
+  code.push(function() {
+    var value = stack.pop();
+    for ( var i = 0 ; i < options.length ; i += 2 ) {
+      if ( value === options[i] ) {
+        options[i+1]();
+        return;
+      }
+    }
+    return options[options.length-1]();
+  });
+},
 */
 
 ];
@@ -147,5 +172,6 @@ exports.INSTRUCTIONS = [
       code->ptr = oldPtr;
       ip -= 2; // back-up again so we re-run the new definition
     }
-  `]
+  `],
+  [ 'switchI', 'char* c', 'push(stack, c)', true ]
 ];
