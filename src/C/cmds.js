@@ -89,23 +89,7 @@ exports.CMDS = [
       }
       push(stack, (void*) -1);
     `) ],
-    [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
-    [ 'switch_', 'switch',    `
-      char buf[256]; // Used to hold next read symbols
-      emitSwitchI();
-      while ( true ) {
-        if ( ! readSym(buf, sizeof(buf)) ) {
-          printf("Syntax Error: Unclosed function, missing }");
-          return;
-        }
-
-        if ( strcmp(buf, "end") == 0 ) break;
-
-        evalSym(buf);
-      }
-    ` ],
-
-
+    [ 'len',      'len',      sf('s', 'strlen((char*) s)') ]
 //  [ '', '', f('', ``) ],
 
 /*
@@ -173,5 +157,5 @@ exports.INSTRUCTIONS = [
       ip -= 2; // back-up again so we re-run the new definition
     }
   `],
-  [ 'switchI', 'char* c', 'push(stack, c)', true ]
+  [ 'switchI', 'char* c', 'push(stack, (void*) 42)', true ]
 ];

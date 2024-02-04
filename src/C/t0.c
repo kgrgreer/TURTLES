@@ -353,7 +353,7 @@ void defun() {
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
-      printf("Syntax Error: Unclosed function, missing |");
+      printf("Syntax Error: Unclosed function, missing |\n");
       return;
     }
 
@@ -363,7 +363,7 @@ void defun() {
       while ( true ) { // for each :<name>
         while ( true ) { // for each word before :<name>
           if ( ! readSym(buf, sizeof(buf)) ) {
-            printf("Syntax Error: Unclosed function, missing |");
+            printf("Syntax Error: Unclosed function, missing |\n");
             return;
           }
 
@@ -403,7 +403,7 @@ void defun() {
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
-      printf("Syntax Error: Unclosed function, missing }");
+      printf("Syntax Error: Unclosed function, missing }\n");
       return;
     }
 
@@ -429,6 +429,27 @@ void defun() {
 
   if ( i > 0 ) fd--;
 }
+
+
+void deswitch() {
+  char buf[256]; // Used to hold next read symbols
+  int i = 0;
+  emitSwitchI();
+  for ( ; true ; i++ ) {
+    if ( ! readSym(buf, sizeof(buf)) ) {
+      printf("Syntax Error: Unclosed function, missing }\n");
+      return;
+    }
+    printf("switch word: %s\n", buf);
+
+    if ( strcmp(buf, "end") == 0 ) break;
+
+    evalSym(buf);
+  }
+  printf("switch %d words\n", i);
+}
+
+
 
 
 // Ignore C++ style // comments
@@ -466,12 +487,19 @@ void clearStack() { stack->ptr = 0; printf("\033c"); }
 
 void nop() { }
 
+/*
+{ let 0 :c |
+  { | :c } :switch
+  { f | } :end
+}
+*/
 
 void initScope() {
   scope = addCmd(scope, "???",    &unknownSymbol);
   scope = addCmd(scope, "/*",     &cComment);
   scope = addCmd(scope, "//",     &cppComment);
   scope = addCmd(scope, "{",      &defun);
+  scope = addCmd(scope, "switch", &deswitch);
   scope = addCmd(scope, "clear",  &clearStack);
   scope = addCmd(scope, "\"",     &strLiteral);
   scope = addCmd(scope, "prompt", &nop);
