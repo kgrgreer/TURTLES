@@ -27,7 +27,9 @@
     - a heap pointer to a function
     - followed by its arguments
     - without a ret, so only a single statement
-    - created like: push2(heap, constant, value), where, in this case, "constant" is a function and "value" is a value that it remembers/uses
+    - created like:
+        push2(heap, constant, value),
+        where, in this case, "constant" is a function and "value" is a value that it remembers/uses
 
   Closures:
     - a heap pointer to the frame-pointer under which the function was defined (ie. its closure)
@@ -38,7 +40,7 @@
     - ends with a "ret", so can be many statements
 
   Activation Record
-    - Allocated on heap.
+    - Allocated on heap
 
     - Format:
       previous AR pointer called "fp" Frame-Pointer
