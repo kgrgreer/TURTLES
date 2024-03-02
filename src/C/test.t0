@@ -31,7 +31,9 @@ true  false | .
 true  true  | .
 
 " Forth-like stack operators" section
-{ _ | } ::drop  { o | o o } ::dup  { a b | b a } ::swap
+{ _ | } ::drop
+{ a | a a } ::dup
+{ a b | b a } ::swap
 
 1 2 3 drop drop drop
 42 dup dup dup . . . .
@@ -55,7 +57,7 @@ cc cc cc cc cc
 0 { | 100 . } { | 200 . } ifelse
 
 " Make your own if statement" section
-{ flag block | flag block && } ::if2
+{ flag block | flag block && drop } ::if2
 1 { | 666 . } if2
 0 { | 777 . } if2
 
