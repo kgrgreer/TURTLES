@@ -143,7 +143,7 @@ exports.INSTRUCTIONS = [
     if ( ptr == -1 ) {
       printf("Unresolved reference: %s\\n", sym);
     } else {
-      // TODO: this works for new because define and defineAuto are the same size
+      // TODO: this works for now because define and defineAuto are the same size
       // as forwardReference (2 words) but that could change (Ex. if common constan
       // values get their own instructions and become length 1.
       // Length 1 commands can be easily fixed by adding a NOP instruction,
@@ -157,5 +157,9 @@ exports.INSTRUCTIONS = [
       ip -= 2; // back-up again so we re-run the new definition
     }
   `],
-  [ 'switchI', 'char* c', 'push(stack, (void*) 42)', true ]
+  [ 'switchI', '', `
+    char* c = (char*) pop(stack);
+    printf("switchI %s\\n", c);
+    callI((long) nextI());
+  `, true ]
 ];
