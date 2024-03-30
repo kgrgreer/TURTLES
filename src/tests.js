@@ -356,7 +356,7 @@ auto
     'put       { newObj o | newObj Tree Tree TreeNode }
     'remove    { id o | o }
     'removeAll { o | o }
-    'do   { f o | }
+    'do        { f o | }
     'select    { s l f o | }
     'skip      { s o | o }
     'limit     { l o | o }
