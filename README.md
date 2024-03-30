@@ -11,7 +11,7 @@ T0 is the lowest-level language in TURTLES, and is meant to act like a VM for hi
 It is lexically scoped and supports closures.
 
 T0 is currently written in Javascript, as this provides an easy development environment,
-but the intent is to also have a C version.
+but is also the start of a C version.
 
 Goals
 
