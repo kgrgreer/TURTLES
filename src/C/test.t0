@@ -61,7 +61,7 @@ cc cc cc cc cc
 1 { | 666 . } if2
 0 { | 777 . } if2
 
-" Make your own if3lse statement" section
+" Make your own ifelse statement" section
 { flag ifBlock elseBlock | flag ifBlock && flag elseBlock || } ::ifelse2
 1 { | 100 . } { | 200 . } ifelse2
 0 { | 100 . } { | 200 . } ifelse2
