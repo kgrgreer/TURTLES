@@ -4,11 +4,17 @@ const fs = require('fs');
 
 var fnDefs = '', scopeDefs = '', declDefs = '', cmdToStr = '';
 
+function comma(s) {
+  return s === '' ? [] : s.split(',');
+}
+
+// Argument Function - defines local variables with values taken from stack
 function af(args, code) {
-  var argDefs = args.split(',').reverse().map(a => `  long ${a} = (long) pop(stack);`).join('\n');
+  var argDefs = comma(args).reverse().map(a => `  long ${a} = (long) pop(stack);`).join('\n');
   return argDefs + '\n' + code;
 }
 
+// Stack Function - like af(), put pushes result back onto the Stack
 function sf(args, code) {
   return af(args, code ? `  push(stack, (void*) (long) (${code}));` : '');
 }
@@ -41,7 +47,7 @@ INSTRUCTIONS.forEach(i => {
   declDefs += `void ${name}();\n`;
   cmdToStr += `  if ( fn == &${name} ) return "${name}";\n`;
 
-  args = args.split(',');
+  args = comma(args);
 
   var argDef = args.map(arg => {
     var [type, name] = arg.split(' ');
