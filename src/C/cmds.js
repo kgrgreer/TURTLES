@@ -111,15 +111,16 @@ switch: function(code) {
 
 ];
 
+const EMIT_VAR = 'push2(code, (void*) (long) (fd-frame), (void*) offset)';
 
 exports.INSTRUCTIONS = [
 //  name,               args,                    code,                      emit (String | Boolean)
   [ 'constant',         'void* v',               'push(stack, v)',          true ],
   [ 'autoConstant',     'void* v',               'push(stack, v); call()',  true ],
-  [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'varSet',           'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'varIncr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
-  [ 'varDecr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
+  [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', EMIT_VAR],
+  [ 'varSet',           'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', EMIT_VAR ],
+  [ 'varIncr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            EMIT_VAR ],
+  [ 'varDecr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--',            EMIT_VAR ],
   [ 'callClosure',      'long pfp,long fn', `
     long ofp = fp;
 
