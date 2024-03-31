@@ -45,7 +45,6 @@ exports.CMDS = [
     pop(stack); // remove arrayStart
     push(stack, a);
   ` ],
-
   [ 'arrayPrint', '.[]', af('arr', `
     long* a = (long*) arr;
     int len = (int) a[0];
@@ -114,6 +113,7 @@ switch: function(code) {
 
 
 exports.INSTRUCTIONS = [
+//  name,               args,                    code,             emit (String | Boolean)
   [ 'constant',         'void* v',               'push(stack, v)', true ],
   [ 'autoConstant',     'void* v',               'push(stack, v); call()', true ],
   [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
