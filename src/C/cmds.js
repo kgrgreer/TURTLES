@@ -9,9 +9,9 @@ exports.CMDS = [
   [ 'eq',     '=',        sf('a,b',   'a==b') ],
   [ 'neq',    '!=',       sf('a,b',   'a!=b') ],
   [ 'lt',     '<',        sf('a,b',   'a<b')  ],
-  [ 'gt',     '!=',       sf('a,b',   'a>b')  ],
-  [ 'lte',    '!=',       sf('a,b',   'a<=b') ],
-  [ 'gte',    '!=',       sf('a,b',   'a>=b') ],
+  [ 'gt',     '>',        sf('a,b',   'a>b')  ],
+  [ 'lte',    '<=',       sf('a,b',   'a<=b') ],
+  [ 'gte',    '>=',       sf('a,b',   'a>=b') ],
   [ 'not',    '!',        sf('a',     '!a')   ],
   [ 'and',    '&',        sf('a,b',   'a&&b') ],
   [ 'or',     '|',        sf('a,b',   'a||b') ],
@@ -19,7 +19,7 @@ exports.CMDS = [
   [ 'ifelse_','ifelse',   af('c,i,e', 'callI(c ? i : e);')  ],
   [ 'drop',   'drop',     'pop(stack);' ],
   [ 'andand', '&&',       'void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call(); }' ],
-  [ 'oror',   '||',       'void* aFn = pop(stack); if ( pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
+  [ 'oror',   '||',       'void* aFn = pop(stack); if (   pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
   [ 'for_',   'for',      af('s,e,b', 'for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }')   ],
   [ 'while_', 'while',    af('c,b',   'while ( true ) { callI(c); if ( ! pop(stack) ) break; callI(b); }') ],
   [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callI(b);') ],
@@ -113,9 +113,9 @@ switch: function(code) {
 
 
 exports.INSTRUCTIONS = [
-//  name,               args,                    code,             emit (String | Boolean)
-  [ 'constant',         'void* v',               'push(stack, v)', true ],
-  [ 'autoConstant',     'void* v',               'push(stack, v); call()', true ],
+//  name,               args,                    code,                      emit (String | Boolean)
+  [ 'constant',         'void* v',               'push(stack, v)',          true ],
+  [ 'autoConstant',     'void* v',               'push(stack, v); call()',  true ],
   [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
   [ 'varSet',           'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', 'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
   [ 'varIncr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            'push2(code, (void*) (long) (fd-frame), (void*) offset)' ],
