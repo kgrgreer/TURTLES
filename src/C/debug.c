@@ -35,12 +35,14 @@ void guru() {
 void dump_(long ptr) {
   printf("\n");
 
+  // Unknown count, assume we aren't dumping code if we don't recognize any
+  // functions.
   int uc = 0;
   for ( int i = 0 ; i < 100 ; i++, ptr++ ) {
     Fn fn = (Fn) heap->arr[ptr];
     char* desc = findKey(scope, fn);
     if ( strcmp(desc, "UNKNOWN") == 0 ) {
-      if ( uc++ == 4 ) return;
+      if ( uc++ == 20 ) return;
       printf("%ld : %ld\n", ptr, (long) fn);
     } else {
       uc = 0;
