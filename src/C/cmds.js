@@ -89,8 +89,9 @@ exports.CMDS = [
       push(stack, (void*) -1);
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
-    [ 'switch_',  'switch',   af('v', `
-      char   buf[256];
+    [ 'xxxswitch_',  'xxxswitch',   af('v', `
+      char buf[256];
+      int  count = 0;
 
       while ( true ) {
         if ( ! readSym(buf, sizeof(buf)) ) {
@@ -99,9 +100,12 @@ exports.CMDS = [
         }
 
         if ( strcmp(buf, "end") == 0 ) break;
+
+        count++;
       }
 
-      push(stack, (void*) (long) (42));
+      push2(code, switchI, (void*) (long) count);
+//      push(stack, (void*) (long) (count));
     `) ]
 //  [ '', '', f('', ``) ],
 
@@ -172,9 +176,22 @@ exports.INSTRUCTIONS = [
       ip -= 2; // back-up again so we re-run the new definition
     }
   `],
-  [ 'switchI', '', `
+  [ 'switchI', 'int count', `
     char* c = (char*) pop(stack);
-    printf("switchI %s\\n", c);
-    callI((long) nextI());
+    long i = 0;
+    for ( ; i < count ; i++ ) {
+      char* value = (char*) nextI();
+      printf("*** comparing %s %s\\n", c, value);
+      if ( strcmp(c, value) == 0 ) {
+        push(stack, nextI());
+        // Advance over unused constants in the switch statement
+        ip += ( count - i - 1 ) * 2 + 1;
+        return;
+      }
+
+      // skip over unused value
+      ip++;
+    }
+    push(stack, nextI());
   `, true ]
 ];

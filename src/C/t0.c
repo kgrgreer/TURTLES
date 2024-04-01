@@ -433,22 +433,25 @@ void defun() {
 }
 
 
-void deswitch() {
+void switch_() {
   char buf[256]; // Used to hold next read symbols
-  int i = 0;
-  emitSwitchI();
+  long i = 0;
+  long ptr = code->ptr;
+  // The 0 is a placeholder and will be replaced at the end
+  push2(code, switchI, (long*) 0l);
   for ( ; true ; i++ ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
-      printf("Syntax Error: Unclosed function, missing }\n");
+      printf("Syntax Error: Unclosed switch, missing end\n");
       return;
     }
-    printf("switch word: %s\n", buf);
 
     if ( strcmp(buf, "end") == 0 ) break;
 
     evalSym(buf);
+    code->arr[code->ptr-2] = code->arr[code->ptr-1];
+    code->ptr--;
   }
-  printf("switch %d words\n", i);
+  code->arr[ptr+1] = (void*) (i/2);
 }
 
 
@@ -501,7 +504,7 @@ void initScope() {
   scope = addCmd(scope, "/*",     &cComment);
   scope = addCmd(scope, "//",     &cppComment);
   scope = addCmd(scope, "{",      &defun);
-  scope = addCmd(scope, "switch", &deswitch);
+  scope = addCmd(scope, "switch", &switch_);
   scope = addCmd(scope, "clear",  &clearStack);
   scope = addCmd(scope, "\"",     &strLiteral);
   scope = addCmd(scope, "prompt", &nop);
