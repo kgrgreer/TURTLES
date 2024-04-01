@@ -1,4 +1,4 @@
-var stack = [], heap = [], heap2 = [], hp, __arrayStart__ = '__arrayStart__', __switchStart__ = '__switchStart__', outerCode;
+var stack = [], heap = [], heap2 = [], hp, __arrayStart__ = '__arrayStart__', outerCode;
 function fn(f) { return code => code.push(f); }
 function bfn(f) { return fn(() => { var b = stack.pop(), a = stack.pop(); stack.push(f(a, b)); }); }
 var scope = {
