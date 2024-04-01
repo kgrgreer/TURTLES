@@ -23,7 +23,7 @@ exports.CMDS = [
   [ 'for_',   'for',      af('s,e,b', 'for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }')   ],
   [ 'while_', 'while',    af('c,b',   'while ( true ) { callI(c); if ( ! pop(stack) ) break; callI(b); }') ],
   [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callI(b);') ],
-  [ 'now',    'now',      `struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));` ],
+  [ 'now',    'now',      'struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));' ],
   [ 'print',  '.',        af('a', `
     printf("\\n\\033[1;30m"); // Print in bold black
     printf("%ld", a);
@@ -38,16 +38,16 @@ exports.CMDS = [
   [ 'arrayEnd',   ']', `
     long start = stack->ptr-1;
     for ( ; start && stack->arr[start] != &arrayStart ; start-- );
-    int len = stack->ptr-start-1;
-    long* a = (long*) malloc((len+1) * sizeof(long));
+    int   len = stack->ptr-start-1;
+    long* a   = (long*) malloc((len+1) * sizeof(long));
     a[0] = len;
     for ( int i = len-1 ; i >= 0 ; i-- ) a[i+1] = (long) pop(stack);
     pop(stack); // remove arrayStart
     push(stack, a);
   ` ],
   [ 'arrayPrint', '.[]', af('arr', `
-    long* a = (long*) arr;
-    int len = (int) a[0];
+    long* a   = (long*) arr;
+    int   len = (int) a[0];
     printf("[ ");
     for ( int i = 1 ; i <= len ; i++ ) {
       if ( i > 1 ) printf(", ");
@@ -137,7 +137,7 @@ exports.INSTRUCTIONS = [
     `
   ],
   [ 'createClosure',    'void* fn',  'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ],
-  [ 'define',           'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant, pop(stack)));' ],
+  [ 'define',           'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant,     pop(stack)));' ],
   [ 'defineAuto',       'char* sym', 'scope = addSym(scope, sym, push2(heap, emitAutoConstant, pop(stack)));' ],
   [ 'forwardReference', 'char* sym', `
     long ptr = findSym(scope, sym);
