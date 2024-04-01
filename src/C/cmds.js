@@ -88,7 +88,21 @@ exports.CMDS = [
       }
       push(stack, (void*) -1);
     `) ],
-    [ 'len',      'len',      sf('s', 'strlen((char*) s)') ]
+    [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
+    [ 'switch_',  'switch',   af('v', `
+      char   buf[256];
+
+      while ( true ) {
+        if ( ! readSym(buf, sizeof(buf)) ) {
+          printf("Syntax Error: Unclosed switch, missing |\\n");
+          return;
+        }
+
+        if ( strcmp(buf, "end") == 0 ) break;
+      }
+
+      push(stack, (void*) (long) (42));
+    `) ]
 //  [ '', '', f('', ``) ],
 
 /*

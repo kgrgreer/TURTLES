@@ -93,3 +93,20 @@ cc cc cc cc cc
     now start - .
   } ()
 } ::bench
+
+'Switch section
+3 switch
+  1 'a
+  2 'b
+  3 'c
+    'x
+end .
+
+/*
+3 switch
+  1 { | " one"   }
+  2 { | " two"   }
+  3 { | " three" }
+  { | " unknown" }
+end () .
+*/
