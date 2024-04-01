@@ -1,0 +1,5 @@
+Java    .11s, 0.3s including java startup
+C       1.3s
+T0      1.8s, 2.2 including C startup
+JS      2.3s
+Python  173s
