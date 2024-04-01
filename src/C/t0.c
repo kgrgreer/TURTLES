@@ -434,6 +434,7 @@ void defun() {
 
 
 void switch_() {
+  // Appears here instead of cmds.js because it is a command, not a function.
   char buf[256]; // Used to hold next read symbols
   long i = 0;
   long ptr = code->ptr;

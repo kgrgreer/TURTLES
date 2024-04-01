@@ -89,44 +89,7 @@ exports.CMDS = [
       push(stack, (void*) -1);
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
-    [ 'xxxswitch_',  'xxxswitch',   af('v', `
-      char buf[256];
-      int  count = 0;
-
-      while ( true ) {
-        if ( ! readSym(buf, sizeof(buf)) ) {
-          printf("Syntax Error: Unclosed switch, missing |\\n");
-          return;
-        }
-
-        if ( strcmp(buf, "end") == 0 ) break;
-
-        count++;
-      }
-
-      push2(code, switchI, (void*) (long) count);
-//      push(stack, (void*) (long) (count));
-    `) ]
 //  [ '', '', f('', ``) ],
-
-/*
-switch: function(code) {
-  var options = [], l;
-  while ( ( l = scope.readSym() ) != 'end' ) scope.evalSym(l, options);
-  for ( var i = 0 ; i < options.length-1 ; i += 2 ) { options[i](); options[i] = stack.pop(); }
-  code.push(function() {
-    var value = stack.pop();
-    for ( var i = 0 ; i < options.length ; i += 2 ) {
-      if ( value === options[i] ) {
-        options[i+1]();
-        return;
-      }
-    }
-    return options[options.length-1]();
-  });
-},
-*/
-
 ];
 
 const EMIT_VAR = 'push2(code, (void*) (long) (fd-frame), (void*) offset)';
