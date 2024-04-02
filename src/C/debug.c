@@ -42,7 +42,7 @@ void dump_(long ptr) {
     Fn fn = (Fn) heap->arr[ptr];
     char* desc = findKey(scope, fn);
     if ( strcmp(desc, "UNKNOWN") == 0 ) {
-      if ( uc++ == 20 ) return;
+      if ( uc++ == 4 ) return;
       printf("%ld : %ld\n", ptr, (long) fn);
     } else {
       uc = 0;

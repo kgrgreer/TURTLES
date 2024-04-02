@@ -435,24 +435,28 @@ void defun() {
 
 void switch_() {
   // Appears here instead of cmds.js because it is a command, not a function.
+  // TODO: this leaves unused constant instructions before each constant value
+  // which wastes memory. Add code to remove the constants and compact the
+  // generated code
   char buf[256]; // Used to hold next read symbols
-  long i = 0;
   long ptr = code->ptr;
+
   // The 0 is a placeholder and will be replaced at the end
   push2(code, switchI, (long*) 0l);
-  for ( ; true ; i++ ) {
+
+  for ( long i = 0 ; true ; i++ ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
       printf("Syntax Error: Unclosed switch, missing end\n");
       return;
     }
 
-    if ( strcmp(buf, "end") == 0 ) break;
+    if ( strcmp(buf, "end") == 0 ) {
+      code->arr[ptr+1] = (void*) (i/2);
+      return;
+    }
 
     evalSym(buf);
-    code->arr[code->ptr-2] = code->arr[code->ptr-1];
-    code->ptr--;
   }
-  code->arr[ptr+1] = (void*) (i/2);
 }
 
 

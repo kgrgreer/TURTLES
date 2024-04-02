@@ -141,20 +141,19 @@ exports.INSTRUCTIONS = [
   `],
   [ 'switchI', 'int count', `
     char* c = (char*) pop(stack);
-    long i = 0;
-    for ( ; i < count ; i++ ) {
+    for ( long i = 0 ; i < count ; i++ ) {
+      nextI(); // skip over 'constant' instruction
       char* value = (char*) nextI();
-      printf("*** comparing %s %s\\n", c, value);
       if ( strcmp(c, value) == 0 ) {
-        push(stack, nextI());
+        ((Fn) nextI())();
         // Advance over unused constants in the switch statement
-        ip += ( count - i - 1 ) * 2 + 1;
+        ip += ( count - i - 1 ) * 4 + 2;
         return;
       }
 
       // skip over unused value
-      ip++;
+      ip += 2;
     }
-    push(stack, nextI());
+    ((Fn) nextI())();
   `, true ]
 ];
