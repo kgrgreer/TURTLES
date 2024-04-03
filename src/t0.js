@@ -200,7 +200,8 @@ var scope = {
   '-':       bfn((a,b) => a - b),
   '/':       bfn((a,b) => a / b),
   '^':       bfn((a,b) => Math.pow(a,b)),
-  ';':       (code) => { code.push(function() {
+  // ???: Where is this used?
+  ';':       code => { code.push(function() {
     var value = stack.pop(), sym = stack.pop();
     scope[sym] = (code) => code.push(() => stack.push(value))}) },
   '%':       fn(() => stack.push(stack.pop() / 100)),
