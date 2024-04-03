@@ -322,7 +322,15 @@ void unknownSymbol() {
     char* s = strdup(sym+1);
     push2(code, constant, s);
   } else {
-    push2(code, forwardReference, strdup(sym));
+    int len = strlen(sym);
+
+    if ( sym[len-1] == ':' ) {
+      sym[len-1] = '\0';
+      char* s = strdup(sym);
+      push2(code, constant, s);
+    } else {
+      push2(code, forwardReference, strdup(sym));
+    }
   }
 }
 
