@@ -215,6 +215,8 @@ void callClosure0();
 void localVarSetup();
 
 
+// createClosure0 and callClosure0 are more efficient verions for functions
+// that don't take any arguments.
 void createClosure0() {
   void* fn = nextI();
   push(stack, (void*) push3(heap, callClosure0, (void*) fp, fn));
@@ -486,6 +488,26 @@ void strLiteral() {
 }
 
 
+void str3Literal() {
+  char buf[4096];
+  getchar(); // remove whitespace after """
+  int i = 0, quoteCount = 0;
+
+  while ( ( buf[i++] = getchar() ) ) {
+    if ( buf[i-1] == '"' ) {
+      if ( ++quoteCount == 3 ) {
+        buf[i-3] = '\0';
+        push2(code, constant, (void*) strdup(buf));
+        return;
+      }
+    } else {
+      quoteCount = 0;
+    }
+  }
+  // error
+}
+
+
 // Clear (empty) the stack and the screen
 void clearStack() { stack->ptr = 0; printf("\033c"); }
 
@@ -512,6 +534,7 @@ void initScope() {
   scope = addCmd(scope, "switch", &switch_);
   scope = addCmd(scope, "clear",  &clearStack);
   scope = addCmd(scope, "\"",     &strLiteral);
+  scope = addCmd(scope, "\"\"\"", &str3Literal);
   scope = addCmd(scope, "prompt", &nop);
 
   scope = addCmds(scope);
