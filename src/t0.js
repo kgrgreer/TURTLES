@@ -47,7 +47,6 @@ var scope = {
       code.push(function() { var value = stack.pop(); scope[sym] = (code) => code.push(() => stack.push(value))});
     } else if ( line.endsWith(':') ) {
       var sym = line.substring(0, line.length-1);
-      // console.log('***************************************************************', sym);
       code.push(() => stack.push(sym));
     } else if ( line.charAt(0) >= '0' && line.charAt(0) <= '9' || ( line.charAt(0) == '-' && line.length > 1 ) ) {
       code.push(() => stack.push(scope.parseFloat_(line)));
