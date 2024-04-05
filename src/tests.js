@@ -2,7 +2,7 @@
 scope.eval$(`
 // Build a Tester class to perform tests and record statistics
 { |
-  0 0 { passed failed |
+  0 0 { passed failed | // use 'let' syntax
     { m |
       m switch
         'score { f this |

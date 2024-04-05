@@ -71,6 +71,7 @@
 
   Todo:
     - support for emitting code comments in DEBUG mode or tagging non-code items like closures
+    - Add : :: :! words for setting values with String keys
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -189,18 +190,23 @@ bool isSpace(char c) {
 }
 
 
+int readChar() {
+  return getchar();
+}
+
+
 bool readSym(char* buf, int bufSize) {
   int c;
   int size = 0;
 
   /* Skip leading whitespace. */
-  while ( isSpace(c = getchar()) );
+  while ( isSpace(c = readChar()) );
 
   if ( c == EOF ) return false;
 
   buf[size++] = c;
 
-  while ( (c = getchar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
     buf[size++] = c;
   }
   buf[size] = '\0';
@@ -298,6 +304,12 @@ char* strAdd(char* s1, char* s2) {
 }
 
 
+void defineImmediate() {
+  char* name = (char*) nextI();
+  scope = addSym(scope, name, (long) pop(stack));
+}
+
+
 /*
  * Function used by evalSym() if an exact match isn't found.
  * Used to handle higher-level constructs like numbers, strings and functions.
@@ -310,6 +322,10 @@ void unknownSymbol() {
       // function definition appears as ::name, an auto variable
       char* s = strdup(sym+2);
       push2(code, defineAuto, s);
+    } else if ( sym[1] == '!' ) {
+      // function definition appears as :!name, an immediate variable
+      char* s = strdup(sym+2);
+      push2(code, defineImmediate, s);
     } else {
       // function definition appears as :name, a regular variable
       char* s = strdup(sym+1);
@@ -470,25 +486,23 @@ void switch_() {
 }
 
 
-
-
 // Ignore C++ style // comments
-void cppComment() { while ( getchar() != '\n' ); }
+void cppComment() { while ( readChar() != '\n' ); }
 
 
 // Ignore C style /* */ comments
 void cComment() {
-  for ( char c, prev ; ( c = getchar() ) ; prev = c )
+  for ( char c, prev ; ( c = readChar() ) ; prev = c )
     if ( prev == '*' && c == '/' ) return;
 }
 
 
 void strLiteral() {
   char buf[4096];
-  getchar(); // remove whitespace after "
+  readChar(); // remove whitespace after "
   int i = 0;
 
-  while ( ( buf[i++] = getchar() ) != '"' );
+  while ( ( buf[i++] = readChar() ) != '"' );
 
   buf[i-1] = '\0';
 
@@ -498,10 +512,10 @@ void strLiteral() {
 
 void str3Literal() {
   char buf[4096];
-  getchar(); // remove whitespace after """
+  readChar(); // remove whitespace after """
   int i = 0, quoteCount = 0;
 
-  while ( ( buf[i++] = getchar() ) ) {
+  while ( ( buf[i++] = readChar() ) ) {
     if ( buf[i-1] == '"' ) {
       if ( ++quoteCount == 3 ) {
         buf[i-3] = '\0';
@@ -514,6 +528,31 @@ void str3Literal() {
   }
   // error
 }
+
+
+void eval() {
+
+}
+
+
+void immediate() { // i{
+  long outerCode = code->ptr;
+  char buf[4096];
+  readChar(); // remove whitespace after """
+  int i = 0, quoteCount = 0;
+
+  while ( true ) {
+    if ( ( buf[i++] = readChar() ) != '}' ) continue;
+    if ( ( buf[i++] = readChar() ) != 'i' ) continue;
+    break;
+  }
+  buf[i-3] = '\0';
+
+  printf("immediate: %s\n", buf);
+  // eval$(buf);
+}
+
+// 'i[':      code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
 
 
 // Clear (empty) the stack and the screen
@@ -543,6 +582,7 @@ void initScope() {
   scope = addCmd(scope, "clear",  &clearStack);
   scope = addCmd(scope, "\"",     &strLiteral);
   scope = addCmd(scope, "\"\"\"", &str3Literal);
+  scope = addCmd(scope, "i{",     &immediate);
   scope = addCmd(scope, "prompt", &nop);
 
   scope = addCmds(scope);

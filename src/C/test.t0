@@ -1,11 +1,18 @@
+{ c b | { | c () ! } b while } ::until
+
+{ | { | key 10 != } { | } while } :!//
+// Now we have C++-style comments
+
+{ let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
+/*
+ *  Now we have C-style comments
+ */
+
+{ | /* comments inside a function */ " comment ignored" .$ } () .
+
 { s | s .$ " -------------------------------" .$ } ::section
 
-// a comment
 1 1 + . // another comment
-/*
-  a multiline
-  comment
-*/
 2 2 + .
 5 132 + .
 3.1415926 .

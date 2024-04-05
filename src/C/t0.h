@@ -42,3 +42,5 @@ long frameOffset(long depth, long offset);
 void execute(long ptr);
 
 void evalSym(char* sym);
+
+int readChar();

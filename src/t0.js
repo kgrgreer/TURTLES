@@ -178,6 +178,7 @@ var scope = {
   '<-':      fn(() => { throw ''; }),
   'string?': fn(() => { stack.push(typeof stack.pop() === 'string'); }),
   'array?':  fn(() => { stack.push(Array.isArray(stack.pop())); }),
+  // TODO: rename to i{ }i  ??? What is outerCode used for?
   'i[':      code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
   '"':       code => { var s = '', c; while ( (c = scope.readChar()) != '"' ) s += c; code.push(() => stack.push(s)); },
   '"""':     code => { var s = ''; while ( ! scope.match('"""') ) s += scope.readChar(); code.push(() => stack.push(s)); scope.readChar(); scope.readChar(); scope.readChar(); },
