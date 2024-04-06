@@ -72,6 +72,8 @@
   Todo:
     - support for emitting code comments in DEBUG mode or tagging non-code items like closures
     - Add : :: :! words for setting values with String keys
+    - Implement eval()
+    - Finish i{ for immediate mode
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -211,8 +213,8 @@ bool readSym(char* buf, int bufSize) {
   }
   buf[size] = '\0';
 
-   // This is so the character isn't lost if the read command wants to consume input
-   ungetc(c, stdin);
+  // This is so the character isn't lost if the command wants to consume input
+  ungetc(c, stdin);
 
   return true;
 }
