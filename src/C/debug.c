@@ -73,10 +73,11 @@ void debugPrompt() {
 
 
 Scope* addDebugCmds(Scope* scope) {
-  scope = addCmd(scope, "prompt",     &debugPrompt);
-  scope = addFn(scope,  "guru",       &guru);
-  scope = addFn(scope,  "dump",       &dump);
-  scope = addFn(scope,  "dumpFrames", &dumpFrames);
+  scope = addFn(scope, "debugPrompt", &debugPrompt);
+  scope = addFn(scope, "prompt",      &debugPrompt);
+  scope = addFn(scope, "guru",        &guru);
+  scope = addFn(scope, "dump",        &dump);
+  scope = addFn(scope, "dumpFrames",  &dumpFrames);
 
   return scope;
 }

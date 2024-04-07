@@ -211,13 +211,15 @@ bool readSym(char* buf, int bufSize) {
   long key = findSym(scope, "key");
 
   /* Skip leading whitespace. */
-  while ( isSpace(c = (int) (long) evalPtr1(key)) );
+//  while ( isSpace(c = (int) (long) evalPtr1(key)) );
+  while ( isSpace(c = readChar()) );
 
   if ( c == EOF ) return false;
 
   buf[size++] = c;
 
-  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+//  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
     buf[size++] = c;
   }
   buf[size] = '\0';
@@ -623,7 +625,7 @@ int main() {
   initScope();
 
   while ( true ) {
-    evalSym("prompt");
+    execSym("prompt");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
