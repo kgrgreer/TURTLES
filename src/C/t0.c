@@ -197,18 +197,27 @@ int readChar() {
 }
 
 
+void* evalPtr1(long ptr) {
+  callI(ptr);
+  push(code, ret);        // add a return statement
+  execute(code->ptr = 0); // execute any compiled code
+  return pop(stack);
+}
+
+
 bool readSym(char* buf, int bufSize) {
   int c;
   int size = 0;
+  long key = findSym(scope, "key");
 
   /* Skip leading whitespace. */
-  while ( isSpace(c = readChar()) );
+  while ( isSpace(c = (int) (long) evalPtr1(key)) );
 
   if ( c == EOF ) return false;
 
   buf[size++] = c;
 
-  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
     buf[size++] = c;
   }
   buf[size] = '\0';
@@ -365,6 +374,7 @@ void evalSym(char* sym) {
 
   callI(ptr);
 }
+
 
 void execSym(char* sym) {
   evalSym(sym);           // run symbol, which may compile to 'code'
@@ -535,11 +545,6 @@ void str3Literal() {
     }
   }
   // error
-}
-
-
-void eval() {
-
 }
 
 
