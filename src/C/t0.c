@@ -366,6 +366,12 @@ void evalSym(char* sym) {
   callI(ptr);
 }
 
+void execSym(char* sym) {
+  evalSym(sym);           // run symbol, which may compile to 'code'
+  push(code, ret);        // add a return statement
+  execute(code->ptr = 0); // execute any compiled code
+}
+
 
 // Ex. { a b let 0 :i 1 :j | ... } is like 0 1 { a b i j | ... }
 void defun() {
@@ -616,9 +622,7 @@ int main() {
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
-    evalSym(buf);           // run symbol, which may compile to 'code'
-    push(code, ret);        // add a return statement
-    execute(code->ptr = 0); // execute any compiled code
+    execSym(buf); // evalSym then execute any generated code
   }
 
   printf("\n");

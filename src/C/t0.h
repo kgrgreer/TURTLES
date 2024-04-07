@@ -43,4 +43,6 @@ void execute(long ptr);
 
 void evalSym(char* sym);
 
+void execSym(char* sym);
+
 int readChar();
