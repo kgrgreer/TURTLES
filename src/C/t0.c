@@ -208,11 +208,9 @@ void dump_(long ptr);
 
 void* evalPtr1(long ptr) {
   long prev = code->ptr;
-  code->ptr = 100;   // ???: Why is this needed?
-
   callI(ptr);
   push(code, ret);   // add a return statement
-  execute(100);      // execute any compiled code
+  execute(prev);     // execute any compiled code
   code->ptr = prev;
   return pop(stack);
 }
@@ -221,18 +219,18 @@ void* evalPtr1(long ptr) {
 bool readSym(char* buf, int bufSize) {
   int  c;
   int  size = 0;
-//  long key  = findSym(scope, "key");
+  long key  = findSym(scope, "key");
 
   /* Skip leading whitespace. */
-//  while ( isSpace(c = (int) (long) evalPtr1(key)) );
-  while ( isSpace(c = readChar()) );
+  while ( isSpace(c = (int) (long) evalPtr1(key)) );
+//  while ( isSpace(c = readChar()) );
 
   if ( c == EOF ) return false;
 
   buf[size++] = c;
 
-//  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
-  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+//  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
     buf[size++] = c;
   }
   buf[size] = '\0';
