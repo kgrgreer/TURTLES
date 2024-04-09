@@ -400,6 +400,7 @@ void execSym(char* sym) {
 
 
 // Ex. { a b let 0 :i 1 :j | ... } is like 0 1 { a b i j | ... }
+// | ... is optional
 void defun() {
   char   buf[256];
   char*  vars[32];
@@ -408,6 +409,7 @@ void defun() {
   Space* oldCode = code;
   Space  code2; // A temp code buffer to allow for reentrant function parsing
   void*  arr[1024];
+  bool   skipBody = false;
 
   code2.ptr = 0;
   code2.arr = arr;
@@ -421,6 +423,8 @@ void defun() {
 
     if ( strcmp(buf, "|") == 0 ) break;
 
+    if ( strcmp(buf, "}") == 0 ) { skipBody = true; break; }
+
     if ( strcmp(buf, "let") == 0 ) {
       while ( true ) { // for each :<name>
         while ( true ) { // for each word before :<name>
@@ -432,6 +436,8 @@ void defun() {
           if ( buf[0] == ':' ) break;
 
           if ( strcmp(buf, "|") == 0 ) goto outer;
+          // It wouldn't make sense to have a 'let' but no body
+          // if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
 
           evalSym(buf); // TODO: is done too soon because code2 hasn't been setup yet
         }
@@ -440,6 +446,7 @@ void defun() {
         vars[i++] = strdup(buf+1); // TODO free()
 
         if ( strcmp(buf, "|") == 0 ) goto outer;
+        if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
       }
     }
 
@@ -463,15 +470,17 @@ void defun() {
 
   if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
-  while ( true ) {
-    if ( ! readSym(buf, sizeof(buf)) ) {
-      printf("Syntax Error: Unclosed function, missing }\n");
-      return;
+  if ( ! skipBody ) {
+    while ( true ) {
+      if ( ! readSym(buf, sizeof(buf)) ) {
+        printf("Syntax Error: Unclosed function, missing }\n");
+        return;
+      }
+
+      if ( strcmp(buf, "}") == 0 ) break;
+
+      evalSym(buf);
     }
-
-    if ( strcmp(buf, "}") == 0 ) break;
-
-    evalSym(buf);
   }
 
   push(code, ret);
