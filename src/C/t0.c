@@ -203,8 +203,6 @@ int readChar() {
   return getchar();
 }
 
-void guru();
-void dump_(long ptr);
 
 void* evalPtr1(long ptr) {
   long prev = code->ptr;
