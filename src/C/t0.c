@@ -12,6 +12,8 @@
 #define DEBUG       1
 #define PERFORMANCE 1
 
+#define MAX_FN_SIZE 100
+
 /*
   Symbols:
     - a sequence of non whitespace characters
@@ -219,18 +221,18 @@ void* evalPtr1(long ptr) {
 bool readSym(char* buf, int bufSize) {
   int  c;
   int  size = 0;
-  long key  = findSym(scope, "key");
+//  long key  = findSym(scope, "key");
 
   /* Skip leading whitespace. */
-  while ( isSpace(c = (int) (long) evalPtr1(key)) );
-//  while ( isSpace(c = readChar()) );
+//  while ( isSpace(c = (int) (long) evalPtr1(key)) );
+  while ( isSpace(c = readChar()) );
 
   if ( c == EOF ) return false;
 
   buf[size++] = c;
 
-  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
-//  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+//  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
     buf[size++] = c;
   }
   buf[size] = '\0';
@@ -239,6 +241,7 @@ bool readSym(char* buf, int bufSize) {
   // This is needed so that //\n works. But is that really required?
   ungetc(c, stdin);
 
+printf("SYM: %s\n", buf);
   return true;
 }
 
@@ -406,14 +409,10 @@ void defun() {
   char*  vars[32];
   int    i = 0; // number of vars / arguments
   Scope* s = scope;
-  Space* oldCode = code;
-  Space  code2; // A temp code buffer to allow for reentrant function parsing
-  void*  arr[1024];
+  long   oldCode = code->ptr;
   bool   skipBody = false;
 
-  code2.ptr = 0;
-  code2.arr = arr;
-  code      = &code2;
+  code->ptr += MAX_FN_SIZE;
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
@@ -450,7 +449,7 @@ void defun() {
       }
     }
 
-    // Add var name to 'vars'
+    // Add var's name to 'vars'
     vars[i++] = strdup(buf);
   }
 
@@ -490,13 +489,13 @@ void defun() {
 
   long ptr = heap->ptr; // location where function will be copied to
 
-  for ( int i = 0 ; i < code2.ptr ; i++ ) push(heap, arr[i]);
+  for ( int i = oldCode + MAX_FN_SIZE ; i < code->ptr ; i++ ) push(heap, code->arr[i]);
 
-  code = oldCode;
+  code->ptr = oldCode;
 
   push2(code, i > 0 ? createClosure : createClosure0, (void*) ptr);
 
-  scope = s; // revert to old scope, TODO: free dead scope
+  scope = s; // revert to old scope
 
   if ( i > 0 ) fd--;
 }
@@ -637,7 +636,7 @@ void initSpace() {
   code  = createSpace(0);
 
   code->arr = heap->arr; // Code stack shares memory with heap, just has its own ptr
-  heap->ptr = 1000;      // Make space for REPL scratch space
+  heap->ptr = 10000;     // Make space for REPL scratch space and for functions
 }
 
 
