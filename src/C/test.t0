@@ -8,7 +8,7 @@
  *  Now we have C-style comments
  */
 
-{ | /* comments inside a function */ " comment ignored" .$ } () .
+{ | /* comments inside a function */ " comment ignored" .$ } ()
 
 { s | s .$ " -------------------------------" .$ } ::section
 
@@ -25,6 +25,9 @@
 five .
 five five + .
 
+{ } :nil
+nil :nop
+
 " Logical Operators" section
 1 1 = :true
 1 0 = :false
@@ -38,7 +41,8 @@ true  false | .
 true  true  | .
 
 " Forth-like stack operators" section
-{ _ | } ::drop
+{ _ } ::drop
+{ a b } ::drop2
 { a | a a } ::dup
 { a b | b a } ::swap
 
