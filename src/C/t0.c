@@ -599,12 +599,6 @@ void clearStack() { stack->ptr = 0; printf("\033c"); }
 
 void nop() { }
 
-/*
-{ let 0 :c |
-  { | :c } :switch
-  { f | } :end
-}
-*/
 
 void initScope() {
   scope = addCmd(scope, "???",    &unknownSymbol);
