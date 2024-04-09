@@ -74,6 +74,7 @@
     - Add : :: :! words for setting values with String keys
     - Implement eval()
     - Finish i{ for immediate mode
+    - Replace Stack.ptr with actual pointer instead of counter?
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -84,6 +85,7 @@
 Space* createSpace(long size) {
   Space* s = (Space*) malloc(sizeof(Space));
   s->arr = malloc(size * sizeof(void*));
+  s->ptr = 0;
   return s;
 }
 
@@ -109,7 +111,10 @@ long push3(Space* s, void* v1, void* v2, void* v3) {
 
 void* pop(Space* s) {
 #ifdef DEBUG
-  if ( s->ptr <= 0 ) printf("POP from empty stack.\n");
+  if ( s->ptr <= 0 ) {
+    printf("POP from empty stack.\n");
+    exit(1);
+  }
 #endif
   return s->arr[--s->ptr];
 }
@@ -196,35 +201,42 @@ int readChar() {
   return getchar();
 }
 
+void guru();
+void dump_(long ptr);
 
 void* evalPtr1(long ptr) {
+  long prev = code->ptr;
+  code->ptr = 100;   // ???: Why is this needed?
+
   callI(ptr);
-  push(code, ret);        // add a return statement
-  execute(code->ptr = 0); // execute any compiled code
+  push(code, ret);   // add a return statement
+  execute(100);      // execute any compiled code
+  code->ptr = prev;
   return pop(stack);
 }
 
 
 bool readSym(char* buf, int bufSize) {
-  int c;
-  int size = 0;
-  long key = findSym(scope, "key");
+  int  c;
+  int  size = 0;
+  long key  = findSym(scope, "key");
 
   /* Skip leading whitespace. */
-//  while ( isSpace(c = (int) (long) evalPtr1(key)) );
-  while ( isSpace(c = readChar()) );
+  while ( isSpace(c = (int) (long) evalPtr1(key)) );
+//  while ( isSpace(c = readChar()) );
 
   if ( c == EOF ) return false;
 
   buf[size++] = c;
 
-//  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
-  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+//  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
     buf[size++] = c;
   }
   buf[size] = '\0';
 
   // This is so the character isn't lost if the command wants to consume input
+  // This is needed so that //\n works. But is that really required?
   ungetc(c, stdin);
 
   return true;
@@ -344,7 +356,7 @@ void unknownSymbol() {
       char* s = strdup(sym+1);
       push2(code, define, s);
     }
-  } else if ( sym[0] >= '0' && sym[0] <= '9' || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {
+  } else if ( ( sym[0] >= '0' && sym[0] <= '9' ) || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {
     // Parse Integers
     push2(code, constant, (void*) atol(sym));
   } else if ( sym[0] == '\'' ) {
@@ -379,9 +391,11 @@ void evalSym(char* sym) {
 
 
 void execSym(char* sym) {
-  evalSym(sym);           // run symbol, which may compile to 'code'
-  push(code, ret);        // add a return statement
-  execute(code->ptr = 0); // execute any compiled code
+  long prev = code->ptr;
+  evalSym(sym);       // run symbol, which may compile to 'code'
+  push(code, ret);    // add a return statement
+  execute(prev);      // execute any compiled code
+  code->ptr = prev;
 }
 
 
@@ -551,10 +565,10 @@ void str3Literal() {
 
 
 void immediate() { // i{
-  long outerCode = code->ptr;
+//   long outerCode = code->ptr;
   char buf[4096];
   readChar(); // remove whitespace after """
-  int i = 0, quoteCount = 0;
+  int i = 0;
 
   while ( true ) {
     if ( ( buf[i++] = readChar() ) != '}' ) continue;

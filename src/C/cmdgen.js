@@ -51,7 +51,7 @@ INSTRUCTIONS.forEach(i => {
 
   var argDef = args.map(arg => {
     var [type, name] = arg.split(' ');
-    return `  ${type} ${name} = (${type}) nextI();`;
+    return `  ${type} ${name} = (${type}) (long) nextI();`;
   }).join('\n');
 
 fnDefs += `void ${name}() {
@@ -64,11 +64,11 @@ ${code};
   if ( emit ) {
     const argCode1 = args.map(arg => {
       var [type, name] = arg.split(' ');
-      return `  ${type} ${name} = (${type}) nextI();`;
+      return `  ${type} ${name} = (${type}) (long) nextI();`;
     }).join('\n');
     const argCode2 = typeof emit === 'string' ? emit + ';' : args.map(arg => {
       var [type, name] = arg.split(' ');
-      return `  push(code, (void*) ${name});`;
+      return `  push(code, (void*) (long) ${name});`;
     }).join('\n');
 
     const signature = `void emit${name[0].toUpperCase() + name.substring(1)}()`;

@@ -9,7 +9,7 @@ void printStack() {
 
 
 void printFrames(long fp) {
-  for ( long f = fp ; ; fp = (long) heap->arr[fp] ) {
+  for ( ; ; fp = (long) heap->arr[fp] ) {
     printf("%ld", (long) fp);
     if ( ! fp ) break;
     printf(" -> ");
@@ -24,6 +24,8 @@ void guru() {
   printf("       Guru Meditation\n");
   printf("-------------------------------\n");
   printf("ip:     %ld\n", ip);
+  printf("heap:   %ld\n", heap->ptr);
+  printf("code:   %ld\n", code->ptr);
   printf("frames: "); printFrames(fp); printf("\n");
   printf("stack:  [ "); printStack(); printf("]\n");
 //  printf("depth: %d\n", fd);
