@@ -430,17 +430,21 @@ void defun() {
 
           if ( buf[0] == ':' ) break;
 
+          // couldn't happen, :name would have to appear first
           if ( strcmp(buf, "|") == 0 ) goto outer;
           // It wouldn't make sense to have a 'let' but no body
-          // if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
+          if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
 
-          evalSym(buf); // TODO: is done too soon because code2 hasn't been setup yet
+          fd++;
+          evalSym(buf); // TODO: is too soon, since code->ptr hasn't been updated yet
+          fd--;
         }
 
         // Add var name after the : to 'vars'
         vars[i++] = strdup(buf+1); // TODO free()
 
         if ( strcmp(buf, "|") == 0 ) goto outer;
+        // It wouldn't make sense to have a 'let' but no body
         if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
       }
     }
@@ -626,23 +630,29 @@ void initSpace() {
   code  = createSpace(0);
 
   code->arr = heap->arr; // Code stack shares memory with heap, just has its own ptr
-  heap->ptr = 10000;     // Make space for REPL scratch space and for functions
+  heap->ptr = 100000;    // Make space for REPL scratch space and for functions
 }
 
 
-int main() {
+void eval(bool showPrompt) {
   char buf[256]; // Used to hold next read symbols
 
-  initSpace();
-  initScope();
-
   while ( true ) {
-    execSym("prompt");
+    if ( showPrompt ) execSym("prompt");
 
     if ( ! readSym(buf, sizeof(buf)) ) break;
 
     execSym(buf); // evalSym then execute any generated code
   }
+}
+
+void eval__() { eval(false); }
+
+int main() {
+  initSpace();
+  initScope();
+
+  eval(true);
 
   printf("\n");
 

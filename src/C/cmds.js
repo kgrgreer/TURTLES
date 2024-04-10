@@ -90,6 +90,7 @@ exports.CMDS = [
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
     [ 'key',      'key',      sf('', 'readChar()') ],
+    [ 'eval_',    'eval_',    'eval__();' ]
 //  [ '', '', f('', ``) ],
 ];
 
@@ -106,6 +107,8 @@ exports.INSTRUCTIONS = [
   [ 'callClosure',      'long pfp,long fn', `
     long ofp = fp;
 
+    // Frame Pointer is start of where local variables will be allocated
+    // First value in the frame is pointer to the previous frame
     fp = push(heap, (void*) pfp); // previous FP
     long ohp = heap->ptr;
     // printf("calling closure at: %ld, fp: %ld, fn: %ld, from: %ld\\n", closure, pfp, fn, ip);
@@ -120,7 +123,13 @@ exports.INSTRUCTIONS = [
   ],
   [ 'createClosure',    'void* fn',  'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ],
   [ 'define',           'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant,     pop(stack)));' ],
-  [ 'defineAuto',       'char* sym', 'scope = addSym(scope, sym, push2(heap, emitAutoConstant, pop(stack)));' ],
+  [ 'defineAuto',       'char* sym', `
+    void* fn = pop(stack);
+    scope = addSym(scope, sym, push2(heap, emitAutoConstant,  fn));
+
+    sym[-1] = '&';
+    scope = addSym(scope, &sym[-1], push2(heap, emitConstant, fn));
+  ` ],
   [ 'forwardReference', 'char* sym', `
     long ptr = findSym(scope, sym);
     if ( ptr == -1 ) {

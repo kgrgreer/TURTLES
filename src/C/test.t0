@@ -54,6 +54,9 @@ true  true  | .
 1000 { counter | { | counter++ counter } } () ::cc
 cc cc cc cc cc
 
+{ let 1000 :counter | { | counter counter++ } } () ::cc
+cc cc cc cc cc
+
 " Short-circuited logical operators" section
 1 { | 2 . 1 } &&
 0 { | 2 . 1 } &&
@@ -121,3 +124,16 @@ end .
   { | " unknown" }
 end () .
 */
+
+{ s let key :oldKey 0 :i |
+  s len { l |
+    s .$
+    i .
+    l .
+    { let s i charAt :c | i++ c } :key
+  } ()
+} ::eval
+
+
+
+" 1 1 + ." eval
