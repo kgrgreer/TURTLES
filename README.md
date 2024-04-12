@@ -5,6 +5,8 @@ An experimental language creation system.
 
 ![Turtles](turtles.png)
 
+[A Short Presentation on TURTLES](https://docs.google.com/presentation/d/1-irLTlLX8lQCXIby8AH4SC7q8lq6VhL9OTqDS79akxY/edit#slide=id.p)
+
 T0
 
 T0 is the lowest-level language in TURTLES, and is meant to act like a VM for higher-level languages. Like Java's JVM and the Forth programming language, it is stack based.
