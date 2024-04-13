@@ -77,6 +77,8 @@
     - Implement eval()
     - Finish i{ for immediate mode
     - Replace Stack.ptr with actual pointer instead of counter?
+    - Is this an issue? { | } vs { : }
+    - Would it be possible to bootstrap with a simple defun() then upgrade in T0?
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
