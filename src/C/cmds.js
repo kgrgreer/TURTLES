@@ -89,7 +89,7 @@ exports.CMDS = [
       push(stack, (void*) -1);
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
-    [ 'key',      'key',      sf('', 'readChar()') ],
+    [ 'key',      'key',      sf('', 'getchar()') ],
     [ 'eval_',    'eval_',    'eval__();' ]
 //  [ '', '', f('', ``) ],
 ];

@@ -125,15 +125,19 @@ end .
 end () .
 */
 
-{ s let key :oldKey 0 :i |
-  s len { l |
-    s .$
-    i .
-    l .
-    { let s i charAt :c | i++ c } :key
+{ x | x x } ::dup
+{ | key dup . } ::_key_
+
+{ s let &_key_ :oldKey 0 :i |
+  { let s len :l |
+    { |
+      i l <
+        { | /* " key: " .$ i . */ s i charAt i++ dup charCode .$ }
+        { | oldKey ::_key_ -1 }
+      ifelse
+    } ::_key_
   } ()
+  eval_
 } ::eval
 
-
-
-" 1 1 + ." eval
+" 1 1 + 8 * . " eval

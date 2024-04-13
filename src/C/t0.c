@@ -17,6 +17,7 @@
 /*
   Symbols:
     - a sequence of non whitespace characters
+    - read by readSym() which reads characters with 'key' function, from scope
     - program input is symbols divided by whitespace characters
     - are evaluated by evalSym() which tries to look them up in
       the "scope" symbol table, and if it doesn't find an exact
@@ -34,11 +35,12 @@
         where, in this case, "constant" is a function and "value" is a value that it remembers/uses
 
   Closures:
-    - a heap pointer to the frame-pointer under which the function was defined (ie. its closure)
-    - a pointer to the code to execute
+    - a callClosure Instruction, with two arguments:
+      - a heap pointer to the frame-pointer under which the function was defined (ie. its closure)
+      - then a pointer to the code to execute
 
   Code:
-    - a heap pointer to zero or more Closures
+    - a heap pointer to zero or more Instructions
     - ends with a "ret", so can be many statements
 
   Activation Record
@@ -61,10 +63,11 @@
     set ip to ret
 
   Symbol Table
-    - maps String keys to heap pointers to Closures
+    - maps String keys to heap pointers to Instructions
     - Instructions are executed when a symbol is looked up
-    - addCmd() adds a Closure directly (interpreted)
-    - addFn() adds a Closure which will emit the supplied function as code when run (compiled)
+    - addCmd() adds an Instruction directly (interpreted / immediate)
+    - addFn() adds an Instruction which will emit the supplied function as code when run (compiled)
+    - addSym() adds a pointer to an Instruction directly, called by addCmd() and addFn()
 
   Issues:
     - malloc() is used in some places where the heap should be used instead so
@@ -79,6 +82,7 @@
     - Replace Stack.ptr with actual pointer instead of counter?
     - Is this an issue? { | } vs { : }
     - Would it be possible to bootstrap with a simple defun() then upgrade in T0?
+    - Do we need two stacks: the call-stack and the argument stack?
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -140,11 +144,11 @@ void* nextI() { return heap->arr[ip++]; } // next instruction or instruction arg
 // Not 'ret' terminated.
 // Restores ip.
 void callI(long ptr) {
-  long ret = ip;
+  long pip = ip;
   ip = ptr;
     Fn fn = (Fn) nextI();
     (fn)();
-  ip = ret;
+  ip = pip;
 }
 
 
@@ -158,7 +162,7 @@ Scope* createScope(char* key /* copied */, long ptr) {
 }
 
 
-/* Immutable version of addSym. Creates a new tree with added binding. */
+/* Creates a new tree with added binding. Doesn't modify existing tree. */
 Scope* addSym(Scope* root, char* key, long ptr) {
   if ( root == NULL ) return createScope(key, ptr);
 
@@ -180,7 +184,7 @@ Scope* addSym(Scope* root, char* key, long ptr) {
   return ret;
 }
 
-void emitFn() { push(code, nextI()); }
+void emitFn() { push(code, nextI()); } // Used by addFn()
 
 Scope* addFn(Scope* root, char* key, Fn fn)  { return addSym(root, key, push2(heap, emitFn, fn)); }
 
@@ -200,37 +204,33 @@ bool isSpace(char c) {
   return c == ' ' || c == '\t' || c == '\n';
 }
 
-
 int readChar() {
-  return getchar();
-}
+  long ptr = findSym(scope, "_key_");
 
+  if ( ptr == -1 ) return getchar();
 
-void* evalPtr1(long ptr) {
   long prev = code->ptr;
   callI(ptr);
   push(code, ret);   // add a return statement
   execute(prev);     // execute any compiled code
   code->ptr = prev;
-  return pop(stack);
+
+  return (int) (long) pop(stack);
 }
 
 
 bool readSym(char* buf, int bufSize) {
-  int  c;
-  int  size = 0;
-  long key  = findSym(scope, "key");
+  int c;
+  int size = 0;
 
   /* Skip leading whitespace. */
-  while ( isSpace(c = (int) (long) evalPtr1(key)) );
-//  while ( isSpace(c = readChar()) );
+  while ( isSpace(c = readChar()) );
 
   if ( c == EOF ) return false;
 
   buf[size++] = c;
 
-  while ( (c = (int) (long) evalPtr1(key)) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
-//  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
+  while ( (c = readChar()) != EOF && ! isSpace(c) && size < bufSize - 1 ) {
     buf[size++] = c;
   }
   buf[size] = '\0';
@@ -648,7 +648,9 @@ void eval(bool showPrompt) {
   }
 }
 
+
 void eval__() { eval(false); }
+
 
 int main() {
   initSpace();
