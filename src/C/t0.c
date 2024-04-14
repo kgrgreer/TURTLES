@@ -14,6 +14,8 @@
 
 #define MAX_FN_SIZE 100
 
+FILE* tin;
+
 /*
   Symbols:
     - a sequence of non whitespace characters
@@ -207,7 +209,7 @@ bool isSpace(char c) {
 int readChar() {
   long ptr = findSym(scope, "_key_");
 
-  if ( ptr == -1 ) return getchar();
+  if ( ptr == -1 ) return getc(tin);
 
   long prev = code->ptr;
   callI(ptr);
@@ -653,9 +655,15 @@ void eval__() { eval(false); }
 
 
 int main() {
+  tin = stdin;
+
   initSpace();
   initScope();
 
+  tin = fopen("prefix.t0", "r");
+  eval(false);
+
+  tin = stdin;
   eval(true);
 
   printf("\n");
