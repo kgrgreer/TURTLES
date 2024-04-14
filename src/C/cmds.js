@@ -89,10 +89,10 @@ exports.CMDS = [
       push(stack, (void*) -1);
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
-    [ 'key',      'key',      sf('', 'getchar()') ],
+    [ 'key',      'key',      sf('', 'getc(tin)') ],
     [ 'eval_',    'eval_',    'eval__();' ],
 
-    [ 'fopen__',  'fopen',    sf('s', 'fopen((char*) s, "r")') ],
+    [ 'fopen__',  'fopen',    sf('s',  'fopen((char*) s, "r")') ],
     [ 'fgetc__',  'fgetc',    sf('fd', 'fgetc((FILE*) fd)') ],
     [ 'fclose__', 'fclose',   sf('fd', 'fclose((FILE*) fd)') ],
 

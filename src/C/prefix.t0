@@ -1,8 +1,26 @@
 " [START PREFIX]" .$
 
+{ _ } ::drop
+{ a b } ::drop2
+{ a | a a } ::dup
+{ a b | b a } ::swap
+
+{ | { | key 10 != } { | } while } :!//
+
+// Now we have C++-style comments
+
+{ let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
+/*
+ *  Now we have C-style comments
+ */
+
+
+{ c b | { | c () ! } b while } ::until
+
 1 1 = :true         // define true
 1 2 = :false        // define false
-{ | } :nil          // define 'nil', like doing nil = new Object() in Java/JS
+{ } :nil            // define 'nil', like doing nil = new Object() in Java/JS
+nil :nop
 { n | 0 n - } ::neg // negate
 
 9 charCode :tab  10 charCode :nl  13 charCode :cr
@@ -19,7 +37,28 @@
 // { a p | [ a { e | e p () { | e } if } forEach ] } ::filter
 // { a | a " " { c | c + } reduce } ::join
 
-// A helper function for displaying section titles
-// { t | " " .$ t .$ } ::section
+/*
+{ block |
+  now { start |
+    block ()
+    now start - .
+  } ()
+} ::bench
+*/
+
+{ | key } ::_key_
+
+{ s let &_key_ :oldKey 0 :i |
+  { let s len :l |
+    { |
+      i l <
+        { | /* " key: " .$ i . */ s i charAt i++ dup charCode .$ }
+        { | oldKey ::_key_ -1 }
+      ifelse
+    } ::_key_
+  } ()
+  eval_
+} ::eval
+
 
 " [END PREFIX]" .$

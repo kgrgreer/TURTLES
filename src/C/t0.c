@@ -239,7 +239,7 @@ bool readSym(char* buf, int bufSize) {
 
   // This is so the character isn't lost if the command wants to consume input
   // This is needed so that //\n works. But is that really required?
-  ungetc(c, stdin);
+  ungetc(c, tin);
 
 printf("SYM: %s\n", buf);
   return true;
@@ -533,14 +533,13 @@ void switch_() {
 
 
 // Ignore C++ style // comments
-void cppComment() { while ( readChar() != '\n' ); }
-
+// void cppComment() { while ( readChar() != '\n' ); }
 
 // Ignore C style /* */ comments
-void cComment() {
-  for ( char c, prev ; ( c = readChar() ) ; prev = c )
-    if ( prev == '*' && c == '/' ) return;
-}
+// void cComment() {
+//   for ( char c, prev ; ( c = readChar() ) ; prev = c )
+//     if ( prev == '*' && c == '/' ) return;
+// }
 
 
 void strLiteral() {
@@ -610,8 +609,8 @@ void nop() { }
 
 void initScope() {
   scope = addCmd(scope, "???",    &unknownSymbol);
-  scope = addCmd(scope, "/*",     &cComment);
-  scope = addCmd(scope, "//",     &cppComment);
+//  scope = addCmd(scope, "/*",     &cComment);
+//  scope = addCmd(scope, "//",     &cppComment);
   scope = addCmd(scope, "{",      &defun);
   scope = addCmd(scope, "switch", &switch_);
   scope = addCmd(scope, "clear",  &clearStack);

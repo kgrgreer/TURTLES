@@ -1,13 +1,3 @@
-{ c b | { | c () ! } b while } ::until
-
-{ | { | key 10 != } { | } while } :!//
-// Now we have C++-style comments
-
-{ let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
-/*
- *  Now we have C-style comments
- */
-
 { | /* comments inside a function */ " comment ignored" .$ } ()
 
 { s | s .$ " -------------------------------" .$ } ::section
@@ -24,9 +14,6 @@
 5 :five
 five .
 five five + .
-
-{ } :nil
-nil :nop
 
 " Logical Operators" section
 1 1 = :true
@@ -99,15 +86,6 @@ cc cc cc cc cc
   count .
 } ()
 
-{ n | 0 n - } :neg
-
-{ block |
-  now { start |
-    block ()
-    now start - .
-  } ()
-} ::bench
-
 'Switch section
 '3 switch
   '1 'a
@@ -124,20 +102,5 @@ end .
   { | " unknown" }
 end () .
 */
-
-{ x | x x } ::dup
-{ | key dup . } ::_key_
-
-{ s let &_key_ :oldKey 0 :i |
-  { let s len :l |
-    { |
-      i l <
-        { | /* " key: " .$ i . */ s i charAt i++ dup charCode .$ }
-        { | oldKey ::_key_ -1 }
-      ifelse
-    } ::_key_
-  } ()
-  eval_
-} ::eval
 
 " 1 1 + 8 * . " eval
