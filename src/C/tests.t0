@@ -1,0 +1,47 @@
+// Build a Tester class to perform tests and record statistics
+{ let 0 :passed 0 :failed |
+  { m |
+    'method: .$ m .$
+    m switch
+      'ping 42
+      'score { f this |
+        f { | passed++ passed " PASSED" } { | failed++ failed " FAILED" } ifelse
+      }
+      'test { script answer this |
+        " Expect: " .$ script .$ "  -> " .$ answer . "  " .$
+        script eval answer = this 'score this () () .$
+      }
+      'report { this |
+        " " .$
+        " Tests Run: " .$ passed failed + .
+        "    PASSED: " .$ passed .
+        "    FAILED: " .$ failed .
+        " " .$
+      }
+      { this | " unknown method: " .$ m .$ }
+    end
+  }
+} ::Tester
+
+// Create an instance of Tester
+Tester :t
+
+{ s | s .$ " -------------------------------" .$ } ::section
+
+
+'Arithmetic section
+
+" 1 1 + " 2 t 'test t () ()
+t 'report t () ()
+/*
+" 0 1 +" 1 t .test
+" 2 1 -" 1 t .test
+" 0 6 -" -6 t .test
+" 4 2 *" 8 t .test
+" 4 2 /" 2 t .test
+" 10 3 mod" 1 t .test
+" 2 8 ^" 256 t .test
+" 15 %" 0.15 t .test
+" 15 10 10 ^ *" 150000000000 t .test // scientific notation, distance from earth to sun in meters
+" 5 neg" -5 t .test // it's inconsistent that some operators require () and others don't
+*/
