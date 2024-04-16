@@ -31,7 +31,7 @@
 // Create an instance of Tester
 Tester :t
 
-{ s | .nl .nl s .$ "  -------------------------------" .$  .nl } ::section
+{ s | .nl s .$ "  -------------------------------" .$  .nl } ::section
 
 nop ::prompt
 
@@ -53,12 +53,10 @@ nop ::prompt
 " false { | true }  && "  false test
 " true  { | false } && "  false test
 " true  { | true }  && "  true  test
-
 " false { | false } || "  false test
 " false { | true }  || "  true  test
 " true  { | false } || "  true  test
 " true  { | true }  || "  true  test
-
 " true false | true false & | " true test
 
 
@@ -105,5 +103,10 @@ nop ::prompt
 " 1 2 3 drop2 " 1 test
 " 1 dup drop  " 1 test
 " 2 10 swap / " 5 test
+
+'Return section
+" { | 1 <- 2 3 4 5 } ()                    "  1 test
+// TODO: fix
+" { :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () " 10 test // labelled return
 
 t .report
