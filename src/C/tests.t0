@@ -49,6 +49,17 @@ nop ::prompt
 " false true  | " true  test
 " true  false | " true  test
 " true  true  | " true  test
+" false { | false } && "  false test
+" false { | true }  && "  false test
+" true  { | false } && "  false test
+" true  { | true }  && "  true  test
+
+" false { | false } || "  false test
+" false { | true }  || "  true  test
+" true  { | false } || "  true  test
+" true  { | true }  || "  true  test
+
+" true false | true false & | " true test
 
 
 'Comparators section
