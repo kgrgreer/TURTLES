@@ -13,6 +13,7 @@ exports.CMDS = [
   [ 'gt',     '>',        sf('a,b',   'a>b')  ],
   [ 'lte',    '<=',       sf('a,b',   'a<=b') ],
   [ 'gte',    '>=',       sf('a,b',   'a>=b') ],
+  [ 'pow_',   '^',        sf('a,b',   'pow(a,b)') ],
   [ 'not',    '!',        sf('a',     '!a')   ],
   [ 'and',    '&',        sf('a,b',   'a&&b') ],
   [ 'or',     '|',        sf('a,b',   'a||b') ],
