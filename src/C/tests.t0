@@ -1,3 +1,9 @@
+" \\033[0m"   ::ANSI.REVERT
+
+" \033[1;31m" ::ANSI.RED
+" \033[0;32m" ::ANSI.GREEN
+
+
 // Build a Tester class to perform tests and record statistics
 { let 0 :passed 0 :failed |
   { m |
@@ -7,7 +13,7 @@
         f { | passed++ passed " PASSED" } { | failed++ failed " FAILED" } ifelse
       }
       'test { script answer this |
-        " Expect: " .$ script .$ "  -> " .$ answer . "  " .$ .nl
+        .nl " Expect: " .$ script .$ "  -> " .$ answer . "  " .$ .nl
         script eval answer = this .score .$ .nl
       }
       'report { this |
@@ -25,22 +31,22 @@
 // Create an instance of Tester
 Tester :t
 
-{ s | .nl s .$ "  -------------------------------" .$  .nl } ::section
+{ s | .nl .nl s .$ "  -------------------------------" .$  .nl } ::section
 
 nop ::prompt
 
 'Arithmetic section
 
 " 1 1 + " 2 t .test
-" 0 1 +" 1 t .test
-" 2 1 -" 1 t .test
-" 0 6 -" -6 t .test
-" 4 2 *" 8 t .test
-" 4 2 /" 2 t .test
+" 0 1 + " 1 t .test
+" 2 1 - " 1 t .test
+" 0 6 - " -6 t .test
+" 4 2 * " 8 t .test
+" 4 2 / " 2 t .test
 // " 10 3 mod" 1 t .test
 // " 2 8 ^" 256 t .test
-" 15 %" 0.15 t .test
+" 15 % " 0.15 t .test
 // " 15 10 10 ^ *" 150000000000 t .test // scientific notation, distance from earth to sun in meters
-" 5 neg" -5 t .test
+" 5 neg " -5 t .test
 
 t .report

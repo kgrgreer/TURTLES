@@ -85,6 +85,7 @@ FILE* tin;
     - Is this an issue? { | } vs { : }
     - Would it be possible to bootstrap with a simple defun() then upgrade in T0?
     - Do we need two stacks: the call-stack and the argument stack?
+    - ? Replace . with >>?
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
