@@ -25,12 +25,12 @@ exports.CMDS = [
   [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callI(b);') ],
   [ 'now',    'now',      'struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));' ],
   [ 'print',  '.',        af('a', `
-    printf("\\n\\033[1;30m"); // Print in bold black
+    printf("\\033[1;30m"); // Print in bold black
     printf("%ld", a);
     printf("\\033[0m");      // Revert colour code`)
   ],
   [ 'printStr', '.$',     af('a', `
-    printf("\\n\\033[1;30m"); // Print in bold black
+    printf("\\033[1;30m"); // Print in bold black
     printf("%s", (char *) a);
     printf("\\033[0m");      // Revert colour code`)
   ],
@@ -104,9 +104,10 @@ const EMIT_VAR = 'push2(code, (void*) (long) (fd-frame), (void*) offset)';
 
 exports.INSTRUCTIONS = [
 //  name,               args,                    code,                      emit (String | Boolean)
+  [ 'methodCall',       'char* name',            'push2(stack, name, stack->arr[stack->ptr-1]); call(); call();' ],
   [ 'constant',         'void* v',               'push(stack, v)',          true ],
   [ 'autoConstant',     'void* v',               'push(stack, v); call()',  true ],
-  [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', EMIT_VAR],
+  [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', EMIT_VAR ],
   [ 'varSet',           'int frame,long offset', 'heap->arr[frameOffset(frame, offset)] = pop(stack)', EMIT_VAR ],
   [ 'varIncr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]++',            EMIT_VAR ],
   [ 'varDecr',          'int frame,long offset', 'heap->arr[frameOffset(frame, offset)]--',            EMIT_VAR ],
@@ -128,7 +129,7 @@ exports.INSTRUCTIONS = [
     `
   ],
   [ 'createClosure',    'void* fn',  'push(stack, (void*) push3(heap, callClosure, (void*) fp, fn))' ],
-  [ 'define',           'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant,     pop(stack)));' ],
+  [ 'define',           'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant, pop(stack)));' ],
   [ 'defineAuto',       'char* sym', `
     void* fn = pop(stack);
     scope = addSym(scope, sym, push2(heap, emitAutoConstant,  fn));

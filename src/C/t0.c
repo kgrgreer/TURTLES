@@ -241,7 +241,7 @@ bool readSym(char* buf, int bufSize) {
   // This is needed so that //\n works. But is that really required?
   ungetc(c, tin);
 
-printf("SYM: %s\n", buf);
+// printf("SYM: %s\n", buf);
   return true;
 }
 
@@ -363,8 +363,9 @@ void unknownSymbol() {
     // Parse Integers
     push2(code, constant, (void*) atol(sym));
   } else if ( sym[0] == '\'' ) {
-    char* s = strdup(sym+1);
-    push2(code, constant, s);
+    push2(code, constant, strdup(sym+1));
+  } else if ( sym[0] == '.' ) {
+    push2(code, methodCall, strdup(sym+1));
   } else {
     int len = strlen(sym);
 

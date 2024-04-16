@@ -1,5 +1,7 @@
 " [START PREFIX]" .$
 
+{ c b | { | c () ! } b while } ::until
+
 { _ } ::drop
 { a b } ::drop2
 { a | a a } ::dup
@@ -14,8 +16,10 @@
  *  Now we have C-style comments
  */
 
-
-{ c b | { | c () ! } b while } ::until
+ { let 0 :prev 0 :c | { | prev 42 =  c 41 =  & } { | c :prev key :c } until } :!(*
+ (*
+  *  Now we have Beta-style comments, let's just use to comment out code
+  *)
 
 1 1 = :true         // define true
 1 2 = :false        // define false
@@ -23,7 +27,9 @@
 nil :nop
 { n | 0 n - } ::neg // negate
 
-9 charCode :tab  10 charCode :nl  13 charCode :cr
+9  charCode :tab  { | tab .$ } ::.tab
+10 charCode :nl   { | nl  .$ } ::.nl
+13 charCode :cr
 
 { start end block | { | start end <= } { | start block () start++ } while } ::for
 
@@ -52,7 +58,7 @@ nil :nop
   { let s len :l |
     { |
       i l <
-        { | /* " key: " .$ i . */ s i charAt i++ dup charCode .$ }
+        { | s i charAt i++ }
         { | oldKey ::_key_ -1 }
       ifelse
     } ::_key_
