@@ -13,7 +13,7 @@
         f { | passed++ passed " PASSED" } { | failed++ failed " FAILED" } ifelse
       }
       'test { script answer this |
-        .nl " Expect: " .$ script .$ "  -> " .$ answer . "  " .$ .nl
+        " Expect: " .$ script .$ "  -> " .$ answer . "  " .$
         script eval answer = this .score .$ .nl
       }
       'report { this |
@@ -35,24 +35,43 @@ Tester :t
 
 nop ::prompt
 
+{ | t .test } ::test
+
+'Logic section
+" true  ! " false test
+" false ! " true  test
+" false false & " false test
+" false true  & " false test
+" true  false & " false test
+" true  true  & " true  test
+" false false | " false test
+" false true  | " true  test
+" true  false | " true  test
+" true  true  | " true  test
+
+
 'Arithmetic section
 
 // TODO: bug space needed before end quotes
-" 1 1 + " 2 t .test
-" 0 1 + " 1 t .test
-" 2 1 - " 1 t .test
-" 0 6 - " -6 t .test
-" 4 2 * " 8 t .test
-" 4 2 / " 2 t .test
-" 10 3 mod " 1 t .test
-" 2 8 ^ " 256 t .test
-" 15 % " 0.15 t .test
-" 15 10 10 ^ * " 150000000000 t .test // scientific notation, distance from earth to sun in meters
-" 5 neg " -5 t .test
-" 1 fact " 1 t .test
-" 2 fact " 2 t .test
-" 10 fact " 3628800 t .test
-" 10 2 P " 90 t .test
-" 10 2 C " 45 t .test
+" 1 1 +        " 2 test
+" 0 1 +        " 1 test
+" 2 1 -        " 1 test
+" 0 6 -        " -6 test
+" 4 2 *        " 8 test
+" 4 2 /        " 2 test
+" 10 3 mod     " 1 test
+" 2 8 ^        " 256 test
+" 15 %         " 0.15 test
+" 15 10 10 ^ * " 150000000000 test // scientific notation, distance from earth to sun in meters
+" 5 neg        " -5 test
+
+
+'Combinatorics section
+
+" 1 fact  " 1 test
+" 2 fact  " 2 test
+" 10 fact " 3628800 test
+" 10 2 P  " 90 test
+" 10 2 C  " 45 test
 
 t .report
