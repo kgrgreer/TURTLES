@@ -49,5 +49,10 @@ nop ::prompt
 " 15 % " 0.15 t .test
 // " 15 10 10 ^ *" 150000000000 t .test // scientific notation, distance from earth to sun in meters
 " 5 neg " -5 t .test
+" 1 fact " 1 t .test
+" 2 fact " 2 t .test
+" 10 fact " 3628800 t .test
+" 10 2 P " 90 t .test
+" 10 2 C " 45 t .test
 
 t .report
