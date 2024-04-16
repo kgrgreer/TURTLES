@@ -37,6 +37,7 @@ nop ::prompt
 
 'Arithmetic section
 
+// TODO: bug space needed before end quotes
 " 1 1 + " 2 t .test
 " 0 1 + " 1 t .test
 " 2 1 - " 1 t .test
