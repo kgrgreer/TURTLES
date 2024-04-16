@@ -1,13 +1,12 @@
-{ c b | { | c () ! } b while } ::until
-
-{ _ } ::drop
-{ a b } ::drop2
-{ a | a a } ::dup
-{ a b | b a } ::swap
-
 { | { | key 10 != } { | } while } :!//
-
 // Now we have C++-style comments
+
+// //////////////////////////////////////////////////////////////////////////
+// Prefix.t0
+// T0 Language Features written in T0
+// //////////////////////////////////////////////////////////////////////////
+
+{ c b | { | c () ! } b while } ::until
 
 { let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
 /*
@@ -25,23 +24,27 @@
 nil :nop
 { n | 0 n - } ::neg // negate
 
-9  charCode :tab  { | tab .$ } ::.tab
-10 charCode :nl   { | nl  .$ } ::.nl
+// Standard Forth-like Stack Functions
+// { _ } ::drop // coded natively
+{ _ __ } ::drop2
+{ a | a a } ::dup
+{ a b | b a } ::swap
+
+9  charCode :tab { | tab .$ } ::.tab
+10 charCode :nl  { | nl  .$ } ::.nl
 13 charCode :cr
 
 { start end block | { | start end <= } { | start block () start++ } while } ::for
 
-// Standard Forth-like Functions
-{ v | v v } ::dup  { _ | } ::drop  { a b | b a } ::swap
-
 // Standard High-Order Functions
-{ a f | 0 a len 1 - { i | a i @ f () } for } ::forEach
+{ a f | 0 a # 1 - { i | a i @ f () } for } ::forEach // ??? rename select?
 { a f | [ a f forEach ] } ::map
 { a v f | v a f forEach } ::reduce
-// { a p | [ a { e | e p () { | e } if } forEach ] } ::filter
-// { a | a " " { c | c + } reduce } ::join
+{ a p | [ a { e | e p () { | e } if } forEach ] } ::filter
+// { a | a " " { | + } reduce } ::join // TODO: need $+ or concat
 
 /*
+TODO: move to own file
 { block |
   now { start |
     block ()
@@ -65,12 +68,8 @@ nil :nop
 } ::eval
 
 
-{ n |
-  n 1 <=
-    { | 1 }
-    { | n 1 - fact n * }
-  ifelse
-} ::fact
+// TODO: Move to Own File
+{ n | n 1 <= { | 1 } { | n 1 - fact n * } ifelse } ::fact
 
 // P(n,r) = n!/(n - r)!
 { n r | n fact n r - fact / } ::P

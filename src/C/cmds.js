@@ -1,3 +1,6 @@
+// TODO: cond statement
+// TODO: give af and sf better names
+
 exports.CMDS = [
   [ 'call',   '()',       af('i',     'callI(i);') ],
   [ 'ret',    '<-',       '' ],
@@ -36,6 +39,7 @@ exports.CMDS = [
     printf("%s", (char *) a);
     printf("\\033[0m");      // Revert colour code`)
   ],
+  [ 'eqStr', '=$',     sf('a,b', '0 == strcmp((char*) a, (char*) b)') ],
   [ 'arrayStart', '[', 'push(stack, &arrayStart);' ],
   [ 'arrayEnd',   ']', `
     long start = stack->ptr-1;
@@ -102,8 +106,10 @@ exports.CMDS = [
 //  [ '', '', f('', ``) ],
 ];
 
+// Used below for var Get/Set/Incr/Decr
 const EMIT_VAR = 'push2(code, (void*) (long) (fd-frame), (void*) offset)';
 
+// ???: Should all instruction names end with a common suffix like 'I'?
 exports.INSTRUCTIONS = [
 //  name,               args,                    code,                      emit (String | Boolean)
   [ 'methodCall',       'char* name',            'push2(stack, name, stack->arr[stack->ptr-1]); call(); call();' ],

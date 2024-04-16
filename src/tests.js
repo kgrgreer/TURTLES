@@ -315,7 +315,7 @@ foo () print
 
 
 " Function Programming" section
-[ 1 10 { | } for ]  { c | c 2 mod 0 = } filter  " " { c | "  " c + + } reduce print
+[ 1 10 { } for ]  /* { c | c 2 mod 0 = } filter */  0 { | + } reduce .
 
 
 'Contexts section
