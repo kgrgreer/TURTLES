@@ -28,7 +28,7 @@ void guru() {
   printf("code:   %ld\n", code->ptr);
   printf("frames: "); printFrames(fp); printf("\n");
   printf("stack:  [ "); printStack(); printf("]\n");
-//  printf("depth: %d\n", fd);
+  printf("depth:  %d\n", fd);
   printf("------------------------------\n");
   printf("\033[0m");
 }
@@ -68,7 +68,7 @@ void dumpFrames() {
 
 
 void debugPrompt() {
-  printf("\033[0;32m"); // Print in blue
+  printf("\033[0;32m"); // Print in green
   printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");
   printf("\033[0m");    // Revert colour code
 }
