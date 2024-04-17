@@ -48,3 +48,5 @@ void execSym(char* sym);
 int readChar();
 
 void eval__();
+
+void returnTo(long ptr);

@@ -3,7 +3,7 @@
 
 exports.CMDS = [
   [ 'call',   '()',       af('i',     'callI(i);') ],
-  [ 'ret',    '<-',       '' ],
+  [ 'ret',    '<-',       'returnTo(-1);' ],
   [ 'plus',   '+',        sf('a,b',   'a+b')  ],
   [ 'minus',  '-',        sf('a,b',   'a-b')  ],
   [ 'mul',    '*',        sf('a,b',   'a*b')  ],
@@ -27,7 +27,7 @@ exports.CMDS = [
   [ 'oror',   '||',       'void* aFn = pop(stack); if (   pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
   [ 'for_',   'for',      af('s,e,b', 'for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }')   ],
   [ 'while_', 'while',    af('c,b',   'while ( true ) { callI(c); if ( ! pop(stack) ) break; callI(b); }') ],
-  [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i <= t ; i++ ) callI(b);') ],
+  [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i < t ; i++ ) callI(b);') ],
   [ 'now',    'now',      'struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));' ],
   [ 'print',  '.',        af('a', `
     printf("\\033[1;30m"); // Print in bold black

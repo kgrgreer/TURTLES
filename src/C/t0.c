@@ -280,18 +280,24 @@ char* findKey(Scope* root, Fn fn) {
   return "UNKNOWN";
 }
 
+long returnPtr;
 
 /** Execute code starting at ip until ret. **/
 void execute(long ptr) {
   long rip = ip;
   for ( ip = ptr ; ; ) {
-    Fn fn = (Fn) nextI();
-    if ( fn == ret ) break;
-    fn();
+    ((Fn) nextI())();
+    if ( returnPtr ) {
+      if ( returnPtr == -1 || returnPtr == ptr ) returnPtr = 0;
+      break;
+    }
   }
   ip = rip;
 }
 
+void returnTo(long ptr) {
+  returnPtr = ptr;
+}
 
 void callClosure0() {
   long ofp = fp;
@@ -366,6 +372,7 @@ void unknownSymbol() {
   } else if ( sym[0] == '\'' ) {
     push2(code, constant, strdup(sym+1));
   } else if ( sym[0] == '.' ) {
+    // TODO: save in scope to avoid recreating?
     push2(code, methodCall, strdup(sym+1));
   } else {
     int len = strlen(sym);
@@ -404,8 +411,9 @@ void execSym(char* sym) {
 }
 
 
-// Ex. { a b let 0 :i 1 :j | ... } is like 0 1 { a b i j | ... }
-// | ... is optional
+// Ex. { :name a b let 0 :i 1 :j | ... <- ... name<- } is like 0 1 { a b i j | ... }
+// | ... is optional if there's no body
+// :name is optional
 void defun() {
   char   buf[256];
   char*  vars[32];
@@ -420,6 +428,13 @@ void defun() {
     if ( ! readSym(buf, sizeof(buf)) ) {
       printf("Syntax Error: Unclosed function, missing |\n");
       return;
+    }
+
+    // Named function so that name<- is defined
+    if ( i == 0 && buf[0] == ':' ) {
+      char* name = strdup(buf+1);
+printf("****** NAMED FUNCTION %s\n", name);
+      continue;
     }
 
     if ( strcmp(buf, "|") == 0 ) break;

@@ -68,6 +68,9 @@ TODO: move to own file
 } ::eval
 
 
+{ a b | [ a { } forEach b { } forEach ] } ::+[]
+{ a | [ a { } forEach ] } ::clone[]
+
 // TODO: Move to Own File
 { n | n 1 <= { | 1 } { | n 1 - fact n * } ifelse } ::fact
 

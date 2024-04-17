@@ -121,14 +121,45 @@ Tester :t // Create an instance of Tester
 "   false { | 1 } { | 2 } ifelse " 2 test
 
 
+'Arrays section
+// Array Literal
+[ 1 2 3 ] :a
+[ 4 5 6 ] :b
+a .[] b .[] .nl
+
+// Numbers 1 to 10
+[ 1 10 { } for ] .[] .nl
+// or
+10 { } []WithFn .[] .nl
+
+// 1 repeated 10 times
+[ 1 10 { _ | 1 } for ] .[] .nl
+// or
+[ { | 1 } 10 repeat ] .[] .nl
+// or
+10 { _ | 1 } []WithFn .[] .nl
+// or
+10 1 []WithValue .[] .nl
+
+// Clone a
+[ a { } forEach ] .[] .nl
+// or
+a clone[] .[] .nl
+
+// Concatenate a and b
+[ a { } forEach b { } forEach ] .[] .nl
+// or
+a b +[] .[] .nl
+
+
 'Return section
-" { | 1 <- 2 3 4 5 } ()                    "  1 test
+" { | 1 2 <- 3 4 5 } ()                    "  2 test
 // TODO: fix
 " { :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () " 10 test // labelled return
 
 
 " Function Programming" section
-[ 1 10 { | } for ] :a
+[ 1 10 { } for ] :a
 a .[] .nl
 a { c | c 2 mod 0 = } filter .[] .nl
 " a 0 { | + } reduce " 55 test
