@@ -415,12 +415,14 @@ void execSym(char* sym) {
 // | ... is optional if there's no body
 // :name is optional
 void defun() {
+  long   start = heap->ptr;
   char   buf[256];
-  char*  vars[32];
-  int    i = 0; // number of vars / arguments
+  char*  vars[64];  // names of local variables
+  int    i = 0;     // number of vars / arguments
   Scope* s = scope;
-  long   oldCode = code->ptr;
+  long   oldCode  = code->ptr;
   bool   skipBody = false;
+  char*  fnName   = 0;
 
   code->ptr += MAX_FN_SIZE;
 
@@ -431,9 +433,12 @@ void defun() {
     }
 
     // Named function so that name<- is defined
+    // The difficulty with named returns is that we don't know the actual
+    // return address until after the function is compiled so we need to
+    // keep references to all uses so we can update them at the end when we
+    // know.
     if ( i == 0 && buf[0] == ':' ) {
-      char* name = strdup(buf+1);
-printf("****** NAMED FUNCTION %s\n", name);
+      fnName = strdup(buf+1);
       continue;
     }
 
@@ -488,6 +493,13 @@ printf("****** NAMED FUNCTION %s\n", name);
     scope = addSym(scope, strAdd(varName, "--"), push3(heap, emitVarDecr, (void*) (long) fd, k));
   }
 
+  if ( fnName ) {
+    char* sym = strAdd(fnName, "<-");
+    // Correct address will replace 666 at end when it is known
+    long ptr = push2(heap, emitLongRet, fnName);
+    scope = addSym(scope, sym, ptr);
+  }
+
   if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
   if ( ! skipBody ) {
@@ -508,13 +520,23 @@ printf("****** NAMED FUNCTION %s\n", name);
   push(code, 0); // zero needed so dump() knows when the function is over
 #endif
 
-  long ptr = heap->ptr; // location where function will be copied to
+  // Address of function body
+  long retAddr = heap->ptr;
 
   for ( int i = oldCode + MAX_FN_SIZE ; i < code->ptr ; i++ ) push(heap, code->arr[i]);
 
+  if ( fnName ) {
+    // Scan all generated code looking for longRet's that need rewriting
+    for ( long i = start ; i < heap->ptr ; i++ ) {
+      if ( heap->arr[i] == longRet && heap->arr[i+1] == fnName ) {
+        heap->arr[i+1] = (void*) retAddr;
+      }
+    }
+  }
+
   code->ptr = oldCode;
 
-  push2(code, i > 0 ? createClosure : createClosure0, (void*) ptr);
+  push2(code, i > 0 ? createClosure : createClosure0, (void*) retAddr);
 
   scope = s; // revert to old scope
 

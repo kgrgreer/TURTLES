@@ -113,6 +113,7 @@ const EMIT_VAR = 'push2(code, (void*) (long) (fd-frame), (void*) offset)';
 exports.INSTRUCTIONS = [
 //  name,               args,                    code,                      emit (String | Boolean)
   [ 'methodCall',       'char* name',            'push2(stack, name, stack->arr[stack->ptr-1]); call(); call();' ],
+  [ 'longRet',          'long offset',           'returnTo(offset)',        true ],
   [ 'constant',         'void* v',               'push(stack, v)',          true ],
   [ 'autoConstant',     'void* v',               'push(stack, v); call()',  true ],
   [ 'varGet',           'int frame,long offset', 'push(stack, heap->arr[frameOffset(frame, offset)])', EMIT_VAR ],
