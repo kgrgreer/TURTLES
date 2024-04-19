@@ -154,11 +154,9 @@ a b +[] .[] .nl
 *)
 
 'Return section
-" {    | 1 2  <- 3 4 5 } ()                "  2 test
-{ | { :name | 1 2 name<- 3 4 5 } ()                }  2 testf
-" { :name | 1 2 name<- 3 4 5 } ()                "  2 test
-// TODO: fix
-// " { :o | 1 { | 10 o<- 11 } () 2 3 4 5 } () " 10 test // labelled return
+" {       | 1 2     <- 3 } ()      " 2 test
+" { :name | 1 2 name<- 3 } ()      " 2 test
+" { :o | 1 { | 2 o<- 3 } () 4 } () " 2 test
 
 
 " Function Programming" section
