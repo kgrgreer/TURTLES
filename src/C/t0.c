@@ -696,15 +696,20 @@ void eval(bool showPrompt) {
 void eval__() { eval(false); }
 
 
-int main() {
-  tin = stdin;
+void require(char* filename) {
+  FILE* old = tin;
+  tin = fopen(filename, "r");
+  eval(false);
+  fclose(tin);
+  tin = old;
+}
 
+
+int main() {
   initSpace();
   initScope();
 
-  tin = fopen("prefix.t0", "r");
-  eval(false);
-  fclose(tin);
+  require("./prefix.t0");
 
   tin = stdin;
   eval(true);
