@@ -72,7 +72,7 @@ TODO: move to own file
 // Array Functions
 { a b | [ a {} do b {} do ] } ::+[]
 { a | [ a {} do ] } ::clone[]
-{ a start end | start end { i | a i @ } for } ::range
+{ a start end | start end { i | a i @ } for } ::slice
 
 // TODO: Move to Own File
 { n | n 1 <= { | 1 } { | n 1 - fact n * } ifelse } ::fact
