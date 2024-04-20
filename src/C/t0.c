@@ -77,15 +77,15 @@ FILE* tin;
     - | could be replaced with |0 |1 |2 ...
 
   Todo:
-    - support for emitting code comments in DEBUG mode or tagging non-code items like closures
-    - Add : :: :! words for setting values with String keys
-    - Implement eval()
-    - Finish i{ for immediate mode
-    - Replace Stack.ptr with actual pointer instead of counter?
-    - Is this an issue? { | } vs { : }
-    - Would it be possible to bootstrap with a simple defun() then upgrade in T0?
-    - Do we need two stacks: the call-stack and the argument stack?
-    - ? Replace . with >>?
+   [ ] Implement include/requires
+    -  support for emitting code comments in DEBUG mode or tagging non-code items like closures
+    -  Add : :: :! words for setting values with String keys
+    -  Finish i{ for immediate mode
+    -  Replace Stack.ptr with actual pointer instead of counter?
+    -  Is this an issue? { | } vs { : }
+    -  Would it be possible to bootstrap with a simple defun() then upgrade in T0?
+    -  Do we need two stacks: the call-stack and the argument stack?
+    -  ? Replace . with >> for 'print'?
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -356,14 +356,17 @@ void unknownSymbol() {
     if ( sym[1] == ':' ) {
       // function definition appears as ::name, an auto variable
       char* s = strdup(sym+2);
+      printf("DEFINE AUTO: %s\n", s);
       push2(code, defineAuto, s);
     } else if ( sym[1] == '!' ) {
       // function definition appears as :!name, an immediate variable
       char* s = strdup(sym+2);
+      printf("DEFINE Immediate: %s\n", s);
       push2(code, defineImmediate, s);
     } else {
       // function definition appears as :name, a regular variable
       char* s = strdup(sym+1);
+      printf("DEFINE: %s\n", s);
       push2(code, define, s);
     }
   } else if ( ( sym[0] >= '0' && sym[0] <= '9' ) || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {
@@ -381,6 +384,7 @@ void unknownSymbol() {
       sym[len-1] = '\0';
       char* s = strdup(sym);
       push2(code, constant, s);
+printf("UNKNOWN SYMBOL: %s\n", s);
     } else {
       push2(code, forwardReference, strdup(sym));
     }
@@ -700,6 +704,7 @@ int main() {
 
   tin = fopen("prefix.t0", "r");
   eval(false);
+  fclose(tin);
 
   tin = stdin;
   eval(true);
