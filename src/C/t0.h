@@ -52,3 +52,5 @@ void eval__();
 void returnTo(long ptr);
 
 char* strAdd(char* s1, char* s2);
+
+void require(char* filename);

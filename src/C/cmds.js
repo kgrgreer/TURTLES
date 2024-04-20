@@ -102,6 +102,7 @@ exports.CMDS = [
     [ 'fopen__',  'fopen',    sf('s',  'fopen((char*) s, "r")') ],
     [ 'fgetc__',  'fgetc',    sf('fd', 'fgetc((FILE*) fd)') ],
     [ 'fclose__', 'fclose',   sf('fd', 'fclose((FILE*) fd)') ],
+    [ 'require__', 'require', af('f', 'require((char*) f);') ],
 
     [ 'exit__',   'exit',     'exit(0);' ],
 //  [ '', '', f('', ``) ],
