@@ -329,7 +329,7 @@ void localVarSetup() {
 
 
 char* strAdd(char* s1, char* s2) {
-  int l1 = strlen(s1);
+  int   l1 = strlen(s1);
   char* s3 = (char*) malloc(l1 + sizeof(s2));
 
   strcpy(s3, s1);

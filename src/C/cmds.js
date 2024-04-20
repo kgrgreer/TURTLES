@@ -32,14 +32,15 @@ exports.CMDS = [
   [ 'print',  '.',        af('a', `
     printf("\\033[1;30m"); // Print in bold black
     printf("%ld", a);
-    printf("\\033[0m");      // Revert colour code`)
+    printf("\\033[0m");    // Revert colour code`)
   ],
   [ 'printStr', '.$',     af('a', `
     printf("\\033[1;30m"); // Print in bold black
     printf("%s", (char *) a);
-    printf("\\033[0m");      // Revert colour code`)
+    printf("\\033[0m");    // Revert colour code`)
   ],
-  [ 'eqStr', '=$',     sf('a,b', '0 == strcmp((char*) a, (char*) b)') ],
+  [ 'eqStr',     '=$', sf('a,b', '0 == strcmp((char*) a, (char*) b)') ],
+  [ 'concatStr', '+$', sf('a,b', 'strAdd((char*) a, (char*) b)') ],
   [ 'arrayStart', '[', 'push(stack, &arrayStart);' ],
   [ 'arrayEnd',   ']', `
     long start = stack->ptr-1;
@@ -112,6 +113,7 @@ const EMIT_VAR = 'push2(code, (void*) (long) (fd-frame), (void*) offset)';
 // ???: Should all instruction names end with a common suffix like 'I'?
 exports.INSTRUCTIONS = [
 //  name,               args,                    code,                      emit (String | Boolean)
+  // TODO: add PIC to methodCall
   [ 'methodCall',       'char* name',            'push2(stack, name, stack->arr[stack->ptr-1]); call(); call();' ],
   [ 'longRet',          'long offset',           'returnTo(offset)',        true ],
   [ 'constant',         'void* v',               'push(stack, v)',          true ],
@@ -152,10 +154,10 @@ exports.INSTRUCTIONS = [
       printf("Unresolved reference: %s\\n", sym);
     } else {
       // TODO: this works for now because define and defineAuto are the same size
-      // as forwardReference (2 words) but that could change (Ex. if common constan
+      // as forwardReference (2 words) but that could change (Ex. if common constant
       // values get their own instructions and become length 1.
       // Length 1 commands can be easily fixed by adding a NOP instruction,
-      // but longer instructions will require either a jump.
+      // but longer instructions will require either a jump or ...
 
       // printf("Resolving reference: %s\\n", sym);
       long oldPtr = code->ptr;

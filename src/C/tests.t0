@@ -38,15 +38,22 @@ Tester :t // Create an instance of Tester
 
 { s | .nl s .$ "  -------------------------------" .$  .nl } ::section
 
-(*
-'Strings section
 
-// """ 'abc " abc" =$ """ true test // TODO: doesn't work
+'Strings section
+" abc" 'abc " =$ " true test
+""" abc""" 'abc " =$ " true test
+" abc" 'abc " =$ " true test
+" 'ABC len " 3 test
+" 'abc 'abc =$ " true test
+""" 'abc " abc" =$ """ true test // TODO: doesn't work
 { | 'abc " abc" =$ } true testf
+" 65 charCode 'A =$ " true test
+" 'CAT 0 charAt 67 = " true test
+" 'CAT 1 charAt 65 = " true test
+" 'CAT 2 charAt 84 = " true test
 
 
 'Logic section
-
 " true  ! " false test
 " false ! " true  test
 " false false & " false test
@@ -69,7 +76,6 @@ Tester :t // Create an instance of Tester
 
 
 'Comparators section
-
 " 1 1 =  " true  test
 " 1 2 =  " false test
 " 1 1 != " false test
@@ -81,7 +87,6 @@ Tester :t // Create an instance of Tester
 
 
 'Arithmetic section
-
 // TODO: bug space needed before end quotes
 " 1 1 +        " 2 test
 " 0 1 +        " 1 test
@@ -97,7 +102,6 @@ Tester :t // Create an instance of Tester
 
 
 'Combinatorics section
-
 " 1 fact  " 1 test
 " 2 fact  " 2 test
 " 10 fact " 3628800 test
@@ -107,7 +111,6 @@ Tester :t // Create an instance of Tester
 
 
 'Stack section
-
 " 1 2 drop    " 1 test
 " 1 2 3 drop2 " 1 test
 " 1 dup drop  " 1 test
@@ -128,9 +131,9 @@ Tester :t // Create an instance of Tester
 a .[] b .[] .nl
 
 // Numbers 1 to 10
-[ 1 10 { } for ] .[] .nl
+[ 1 10 {} for ] .[] .nl
 // or
-10 { } []WithFn .[] .nl
+10 {} []WithFn .[] .nl
 
 // 1 repeated 10 times
 [ 1 10 { _ | 1 } for ] .[] .nl
@@ -142,16 +145,25 @@ a .[] b .[] .nl
 10 1 []WithValue .[] .nl
 
 // Clone a
-[ a { } forEach ] .[] .nl
+[ a {} do ] .[] .nl
 // or
 a clone[] .[] .nl
 
 // Concatenate a and b
-[ a { } forEach b { } forEach ] .[] .nl
+[ a {} do b {} do ] .[] .nl
 // or
 a b +[] .[] .nl
 
-*)
+// Copy all elements of a except last
+[ a {} do drop ] .[] .nl
+
+// Copy a range
+[ 1 10 {} for ] :a [ a 2 5 range ] .[] .nl
+
+" [ 1 2 3 ] 0 @ " 1 test
+" [ 1 2 3 ] 1 @ " 2 test
+" [ 1 2 3 ] 2 @ " 3 test
+
 
 'Return section
 " {       | 1 2     <- 3 } ()      " 2 test
@@ -160,11 +172,12 @@ a b +[] .[] .nl
 
 
 " Function Programming" section
-[ 1 10 { } for ] :a
+[ 1 10 {} for ] :a
 a .[] .nl
 a { c | c 2 mod 0 = } filter .[] .nl
 " a 0 { | + } reduce " 55 test
 a { v | v v * } map .[] .nl
+" [ 'abc 'def 'xyz ] join 'abcdefxyz =$ " true test
 
 
 " Own Variables" section
@@ -187,7 +200,7 @@ a { v | v v * } map .[] .nl
       ':head { v this | v :h }
       'tail  { this | t }
       ':tail { v this | v :t }
-      { }
+      {}
     end
   }
 } ::cons
@@ -212,5 +225,7 @@ a { v | v v * } map .[] .nl
 " Auto Functions" section
 " { | 1 } ::auto auto " 1 test
 " &auto () " 1 test
+
+" Immediate Functions" section
 
 t .report

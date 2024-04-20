@@ -50,3 +50,5 @@ int readChar();
 void eval__();
 
 void returnTo(long ptr);
+
+char* strAdd(char* s1, char* s2);

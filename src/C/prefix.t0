@@ -22,6 +22,7 @@
 1 2 = :false        // define false
 { } :nil            // define 'nil', like doing nil = new Object() in Java/JS
 nil :nop
+nil :{}
 { n | 0 n - } ::neg // negate
 
 // Standard Forth-like Stack Functions
@@ -34,14 +35,14 @@ nil :nop
 10 charCode :nl  { | nl  .$ } ::.nl
 13 charCode :cr
 
-{ start end block | { | start end <= } { | start block () start++ } while } ::for
+// { start end block | { | start end <= } { | start block () start++ } while } ::for // coded natively
 
 // Standard High-Order Functions
-{ a f | 0 a # 1 - { i | a i @ f () } for } ::forEach // ??? rename select?
-{ a f | [ a f forEach ] } ::map
-{ a v f | v a f forEach } ::reduce
-{ a p | [ a { e | e p () { | e } if } forEach ] } ::filter
-// { a | a " " { | + } reduce } ::join // TODO: need $+ or concat
+{ a f | 0 a # 1 - { i | a i @ f () } for } ::do
+{ a f | [ a f do ] } ::map
+{ a v f | v a f do } ::reduce
+{ a p | [ a { e | e p () { | e } if } do ] } ::filter
+{ a | a " " { | +$ } reduce } ::join
 
 /*
 TODO: move to own file
@@ -68,8 +69,10 @@ TODO: move to own file
 } ::eval
 
 
-{ a b | [ a { } forEach b { } forEach ] } ::+[]
-{ a | [ a { } forEach ] } ::clone[]
+// Array Functions
+{ a b | [ a {} do b {} do ] } ::+[]
+{ a | [ a {} do ] } ::clone[]
+{ a start end | start end { i | a i @ } for } ::range
 
 // TODO: Move to Own File
 { n | n 1 <= { | 1 } { | n 1 - fact n * } ifelse } ::fact
