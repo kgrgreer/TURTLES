@@ -1,3 +1,14 @@
+'Tester.t0 require
+'parsers.t0 require
+
+nop ::prompt
+clear
+
+Tester :t // Create an instance of Tester
+{ | t .test }  ::test
+{ | t .testf } ::testf
+
+
 " Parser Tests" section
 
 " thisthenthat0123 " 0 false false PStream :ps

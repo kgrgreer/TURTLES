@@ -12,7 +12,6 @@ Tester :t // Create an instance of Tester
 { | t .test }  ::test
 { | t .testf } ::testf
 
-{ s | .nl s .$ "  -------------------------------" .$  .nl } ::section
 
 
 'Strings section
