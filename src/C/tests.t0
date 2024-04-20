@@ -152,7 +152,7 @@ a .[] .nl
 a { c | c 2 mod 0 = } filter .[] .nl
 " a 0 { | + } reduce " 55 test
 a { v | v v * } map .[] .nl
-" [ 'abc 'def 'xyz ] join 'abcdefxyz =$ " true test
+" [ 'abc 123 #>$ 'youandme ] join 'abc123youandme =$ " true test
 
 
 " Own Variables" section

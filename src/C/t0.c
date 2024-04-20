@@ -77,7 +77,6 @@ FILE* tin;
     - | could be replaced with |0 |1 |2 ...
 
   Todo:
-   [ ] #>$
     -  support for emitting code comments in DEBUG mode or tagging non-code items like closures
     -  Add : :: :! words for setting values with String keys
     -  Finish i{ for immediate mode
