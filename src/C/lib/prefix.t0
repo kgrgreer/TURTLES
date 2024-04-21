@@ -42,7 +42,7 @@ nil :{}
 { a f | [ a f do ] } ::map
 { a v f | v a f do } ::reduce
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
-{ a | a " " { | +$ } reduce } ::join
+{ a | a " " { | >$ +$ } reduce } ::join
 
 /*
 TODO: move to own file

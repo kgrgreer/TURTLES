@@ -37,7 +37,7 @@
       }
       'value  { this | value }
       ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
-      'toString { this | [ " PStream: " pos #>$ " , '" /* value */ nl ] join }
+      'toString { this | [ " PStream: " pos #>$ " , '" value >$ nl ] join }
       { this | " PStream Unknown Method '" m + '' + print }
     end
   }

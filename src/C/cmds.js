@@ -35,9 +35,20 @@ exports.CMDS = [
 //    ltoa((long) n, str, 10);
     push(stack, strdup(str));
   `) ],
+  [ 'toStr',     '>$', af('a', `
+    push(stack, (void*) a);
+    if ( a < 10000000 ) {
+      ntoStr();
+    }
+  `) ],
   [ 'print',  '.',        af('a', `
     printf("\\033[1;30m"); // Print in bold black
-    printf("%ld", a);
+//    printf("%ld", a);
+if ( a < 1000000000 ) {
+  printf("%ld", a);
+} else {
+  printf("%s", (char*) a);
+}
     printf("\\033[0m");    // Revert colour code`)
   ],
   [ 'printStr', '.$',     af('a', `
