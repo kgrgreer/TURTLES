@@ -1,0 +1,12 @@
+" \\033[0m"   ::ANSI.REVERT
+
+" \033[1;31m" ::ANSI.RED
+" \033[0;32m" ::ANSI.GREEN
+
+" " ::ANSI.BOLD
+/*
+*/
+
+(*
+
+ *)

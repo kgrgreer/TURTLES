@@ -708,7 +708,7 @@ int main() {
   initSpace();
   initScope();
 
-  require("./prefix.t0");
+  require("./lib/prefix.t0");
 
   tin = stdin;
   eval(true);

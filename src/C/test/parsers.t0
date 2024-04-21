@@ -1,5 +1,5 @@
-'Tester.t0 require
-'parsers.t0 require
+'lib/Tester.t0 require
+'lib/parsers.t0 require
 
 nop ::prompt
 clear
