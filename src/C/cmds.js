@@ -36,6 +36,7 @@ exports.CMDS = [
     push(stack, strdup(str));
   `) ],
   [ 'toStr',     '>$', af('a', `
+    // TODO: base on heap-> ptr instead of constant
     push(stack, (void*) a);
     if ( a < 10000000 ) {
       ntoStr();

@@ -37,7 +37,7 @@
       }
       'value  { this | value }
       ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
-      'toString { this | [ " PStream: " pos #>$ " , '" value >$ nl ] join }
+      'toString { this | [ " PStream: " pos " , '" value nl ] join }
       { this | " PStream Unknown Method '" m + '' + print }
     end
   }
@@ -62,8 +62,8 @@
 { parsers | parsers { p | p string? { | p lit } { | p } ifelse } map } ::prepare
 
 { parsers | parsers prepare :parsers { ps let 0 :i |
-  [ { | i parsers len < { | parsers i @ ps .parse :ps ps } && } { | i++ ps .value } while ]
-  parsers len i = { a | a ps .:value } { _ | false } ifelse
+  [ { | i parsers # < { | parsers i @ ps .parse :ps ps } && } { | i++ ps .value } while ]
+  parsers # i = { a | a ps .:value } { _ | false } ifelse
 } } ::seq
 
 { parsers i | parsers seq { a | a i @ } mapp } ::seq1

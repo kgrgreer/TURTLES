@@ -32,7 +32,7 @@ print
 
 " Seq Parser" section
 [ 'this lit 'then lit 'that lit ] seq ::seqparser
-ps seqparser .value .[] .nl
+ps seqparser .value join .$ .nl
 
 
 " Alt Parser" section
