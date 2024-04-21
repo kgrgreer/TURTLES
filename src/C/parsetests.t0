@@ -13,11 +13,12 @@ Tester :t // Create an instance of Tester
 
 " thisthenthat0123 " 0 false false PStream :ps
 
+ps .toString .$ .nl
+
 " Literal Parser" section
-ps 'this lit () .value print
-'that print
-ps 'that lit () print
-ps 'this lit () .toString print
+ps 'this lit () .value .$ .nl
+ps 'that lit () .$ .nl
+ps 'this lit () .toString .$ .nl
 
 /*
 " " 0 false false PStream :ps
@@ -30,39 +31,39 @@ print
 */
 
 " Seq Parser" section
-[ 'this 'then 'that ] seq ::seqparser
-ps seqparser print
+[ 'this lit 'then lit 'that lit ] seq ::seqparser
+ps seqparser .value .[] .nl
 
 
 " Alt Parser" section
-[ 'think 'this ] alt :altparser
-ps altparser () .toString print
+[ 'think lit 'this lit ] alt :altparser
+ps altparser () .toString .$
 
 
 " Range Parser" section
 '0 '9 range :rangeparser
-ps rangeparser () print
+ps rangeparser () .$
 'a 'z range :rangeparser
-ps rangeparser () .toString print
+ps rangeparser () .toString .$
 
 
 " Repeat Parser" section
 'a 'z range 1 repeat :repeatparser
-ps repeatparser () .toString print
+ps repeatparser () .toString .$
 
 
 " Optional Parser" section
-'this print
-ps 'this lit opt () .toString print
+'this .$
+ps 'this lit opt () .toString .$
 
 
-'that print
-ps [ 'that lit opt 'this ] seq () .toString print
+'that .$
+ps [ 'that lit opt 'this ] seq () .toString .$
 
 
 'thisthen print
-ps [ 'this lit opt 'then ] seq () .toString print
+ps [ 'this lit opt 'then lit ] seq () .toString .$
 
 
 " NotChars Parser" section
-ps " 0123456789" notChars 0 repeat () .toString print
+ps " 0123456789" notChars 0 repeat () .toString .$

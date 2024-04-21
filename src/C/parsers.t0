@@ -37,11 +37,13 @@
       }
       'value  { this | value }
       ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
-      'toString { this | " PStream: " pos " , '" value '' + + + + }
+      'toString { this | [ " PStream: " pos #>$ " , '" /* value */ nl ] join }
       { this | " PStream Unknown Method '" m + '' + print }
     end
   }
 } ::PStream
+
+{ _ | false } ::string?
 
 { p | { ps | p ps .parseToken } } ::tok
 
