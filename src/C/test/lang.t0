@@ -1,4 +1,5 @@
-'lib/Tester.t0 require
+'lib/Tester.t0        require
+'lib/Combinatorics.t0 require
 
 nop ::prompt
 clear
@@ -11,7 +12,6 @@ clear
 Tester :t // Create an instance of Tester
 { | t .test }  ::test
 { | t .testf } ::testf
-
 
 
 'Strings section
@@ -193,7 +193,7 @@ a { v | v v * } map .[] .nl
 
 'Recursion section
 { n | n 1 <= { | 1 } { | n n 1 - factorial () * } ifelse } :factorial
-" 20 factorial () " 2432902008176640000 test
+// " 20 factorial () " 2432902008176640000 test
 { f | { x | { y | y x x () () } f () } { x | x x () } () } :Y // y-combinator
 { f | { n | n 1 <= { | 1 } { | n n 1 - f () * } ifelse } } Y () :fact2
 " 10 fact2 () " 3628800 test

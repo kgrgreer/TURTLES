@@ -72,19 +72,23 @@ FILE* tin;
     - addSym() adds a pointer to an Instruction directly, called by addCmd() and addFn()
 
   Issues:
-    - malloc() is used in some places where the heap should be used instead so
+    - malloc() is used in some places where the stack or heap should be used instead so
       that memory can be GC'ed in the future
-    - | could be replaced with |0 |1 |2 ...
+    - comments inside switch
+    - nested quotes inside """
+    - 42 { x let x x + :y | y } ()
 
   Todo:
     -  support for emitting code comments in DEBUG mode or tagging non-code items like closures
     -  Add : :: :! words for setting values with String keys
     -  Finish i{ for immediate mode
     -  Replace Stack.ptr with actual pointer instead of counter?
-    -  Is this an issue? { | } vs { : }
     -  Would it be possible to bootstrap with a simple defun() then upgrade in T0?
     -  Do we need two stacks: the call-stack and the argument stack?
     -  ? Replace . with >> for 'print'?
+    -  Use ' for characters use " for front-quoted strings or #?
+    - | could be replaced with |0 |1 |2 ...
+    - extend ??? behaviour in prefix.t0
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -241,7 +245,7 @@ bool readSym(char* buf, int bufSize) {
   // This is needed so that //\n works. But is that really required?
   ungetc(c, tin);
 
-// printf("SYM: %s\n", buf);
+//  printf("SYM: %s\n", buf);
   return true;
 }
 
@@ -285,7 +289,9 @@ long returnPtr;
 void execute(long ptr) {
   long rip = ip;
   for ( ip = ptr ; ; ) {
-    ((Fn) nextI())();
+    Fn fn = ((Fn) nextI());
+//    char* desc = findKey(scope, fn); printf("RUNNING: %s\n", desc);
+    fn();
     if ( returnPtr ) {
       if ( returnPtr == -1 || returnPtr == ptr ) returnPtr = 0;
       break;

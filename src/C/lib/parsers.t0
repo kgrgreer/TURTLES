@@ -1,6 +1,7 @@
 // A Parser Stream - used as input for parsers
 { str pos value ignore let false :tail |
   { m |
+    'Method: .$ m .$ .nl
     m switch
       'parse  { parser this | this parser () }
       'parseToken { parser this |
@@ -21,7 +22,7 @@
       'ignoreOn { ignore this | str pos value ignore PStream .maybeIgnore }
       'pos    { this | pos }
       'head   { this |
-        // [ " pos: " pos " , head-> " str pos charAt ] join print
+        // [ " pos: " pos " , head-> " str pos charAt ] join .$ .nl
         str pos charAt }
       'tail   { this |
         tail !
@@ -36,9 +37,10 @@
         ifelse
       }
       'value  { this | value }
-      ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
-      'toString { this | [ " PStream: " pos " , '" value nl ] join }
-      { this | " PStream Unknown Method '" m + '' + print }
+      ':xxvalue { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
+      ':value { v2 this | str pos v2 ignore PStream }
+      'toString { this | [ " PStream pos: " pos " , value: '" value '' nl ] join }
+      { this | [ " PStream Unknown Method '" m '' nl ] join dup .$ }
     end
   }
 } ::PStream
@@ -69,7 +71,7 @@
 { parsers i | parsers seq { a | a i @ } mapp } ::seq1
 
 { parsers | parsers prepare :parsers { ps let 0 :i false :ret |
-  { | i parsers len < { | parsers i @ ps .parse :ret ret ! } && } { | i++ } while
+  { | i parsers # < { | parsers i @ ps .parse :ret ret ! } && } { | i++ } while
   ret
 } } ::alt
 
@@ -86,7 +88,8 @@
   { a | [ a 0 @  { e | e } do a 1 @ ] } mapp
 } ::delim
 
-{ parser | { ps let parser ps .parse :ret | ret { | ret } { | false ps .:value } ifelse } } ::opt
+{ parser | { ps let parser ps .parse :ret | '1 .$ .nl ret { | '2 .$ .nl ret '4 .$ .nl dup .toString .$ .nl '5 .$ .nl } { | '3 .$ .nl false ps .:value } ifelse } 'here .$ .nl } ::optxxx
+{ parser | { ps let 0 :ret | parser ps .parse :ret ret } } ::opt
 
 { parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 

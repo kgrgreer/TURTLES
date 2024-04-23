@@ -31,8 +31,8 @@ nil :{}
 { a | a a } ::dup
 { a b | b a } ::swap
 
-9  charCode :tab { | tab .$ } ::.tab
-10 charCode :nl  { | nl  .$ } ::.nl
+9  charCode :tab { | tab .$ } ::.tab  // or name \t
+10 charCode :nl  { | nl  .$ } ::.nl   // or name \n
 13 charCode :cr
 
 // { start end block | { | start end <= } { | start block () start++ } while } ::for // coded natively
@@ -44,15 +44,6 @@ nil :{}
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
 { a | a " " { | >$ +$ } reduce } ::join
 
-/*
-TODO: move to own file
-{ block |
-  now { start |
-    block ()
-    now start - .
-  } ()
-} ::bench
-*/
 
 { | key } ::_key_
 
@@ -73,12 +64,3 @@ TODO: move to own file
 { a b | [ a {} do b {} do ] } ::+[]
 { a | [ a {} do ] } ::clone[]
 { a start end | start end { i | a i @ } for } ::slice
-
-// TODO: Move to Own File
-{ n | n 1 <= { | 1 } { | n 1 - fact n * } ifelse } ::fact
-
-// P(n,r) = n!/(n - r)!
-{ n r | n fact n r - fact / } ::P
-
-// C(n,r) = n!/[r!(n - r)!]
-{ n r | n r P r fact / } ::C

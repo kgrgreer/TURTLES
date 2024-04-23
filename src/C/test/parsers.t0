@@ -37,27 +37,29 @@ ps seqparser .value join .$ .nl
 
 " Alt Parser" section
 [ 'think lit 'this lit ] alt :altparser
-ps altparser () .toString .$
+ps altparser () .toString .$ .nl
 
 
 " Range Parser" section
-'0 '9 range :rangeparser
+'0 $>c '9 $>c range :rangeparser
 ps rangeparser () .$
-'a 'z range :rangeparser
-ps rangeparser () .toString .$
+'a 0 charAt 'z 0 charAt range :rangeparser
+ps rangeparser () .value charCode .$ .nl
 
 
 " Repeat Parser" section
-'a 'z range 1 repeat :repeatparser
-ps repeatparser () .toString .$
+'a $>c 'z $>c range 1 repeat :repeatparser
+ps repeatparser () .value { x | x charCode } map join .$ .nl
 
 
 " Optional Parser" section
-'this .$
-ps 'this lit opt () .toString .$
+'parse-"this" .$ .nl
+ps 'this lit opt () .toString .$ .nl
 
+'done .$ .nl
+exit
 
-'that .$
+'parse-"that" .$
 ps [ 'that lit opt 'this ] seq () .toString .$
 
 

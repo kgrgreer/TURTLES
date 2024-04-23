@@ -42,6 +42,7 @@ exports.CMDS = [
       ntoStr();
     }
   `) ],
+  [ 'strToChar', '$>c',      sf('s', '((char*) s)[0]') ],
   [ 'print',  '.',        af('a', `
     printf("\\033[1;30m"); // Print in bold black
 //    printf("%ld", a);
