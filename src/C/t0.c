@@ -379,6 +379,8 @@ void unknownSymbol() {
     push2(code, constant, (void*) atol(sym));
   } else if ( sym[0] == '\'' ) {
     push2(code, constant, strdup(sym+1));
+  } else if ( sym[0] == '`' && strlen(sym) == 2 ) {
+    push2(code, constant, (void*) (long) sym[1]);
   } else if ( sym[0] == '.' ) {
     // TODO: save in scope to avoid recreating?
     push2(code, methodCall, strdup(sym+1));
