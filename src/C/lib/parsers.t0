@@ -49,6 +49,7 @@
 
 { p | { ps | p ps .parseToken } } ::tok
 
+// ???: add do$ ?, rename charAt c@?
 { str v | { ps let 0 :i |
   { | i str len <  { | ps .head str i charAt = } && } { | ps .tail :ps  i++ } while
   str len i = { | v ps .:value } { | false } ifelse
@@ -93,9 +94,10 @@
 
 { parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 
-{ str | { ps | str ps .head indexOf -1 = { | ps .tail } { | false } ifelse } } ::notChars
+{ str | { ps | str ps .head charCode $indexOf -1 = { | ps .tail } { | false } ifelse } } ::notChars
 
-{ str | { ps | str ps .head indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar
+// TODO: fix
+{ str | { ps | str ps .head $indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar
 
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
 

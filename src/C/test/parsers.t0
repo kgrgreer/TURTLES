@@ -23,17 +23,18 @@ ps 'this lit () .toString .$ .nl
 /*
 " " 0 false false PStream :ps
 ps "  " lit 1 repeat ()
-print
+.nl
 
 "  " 0 false false PStream :ps
-ps "  " lit () .toString
-print
-*/
+ps "  " lit () .toString .nl
+
+/*
 
 " Seq Parser" section
 [ 'this lit 'then lit 'that lit ] seq ::seqparser
 ps seqparser .value join .$ .nl
 
+*/
 
 " Alt Parser" section
 [ 'think lit 'this lit ] alt :altparser
@@ -41,14 +42,14 @@ ps altparser () .toString .$ .nl
 
 
 " Range Parser" section
-'0 $>c '9 $>c range :rangeparser
+`0 `9 range :rangeparser
 ps rangeparser () .$
 'a 0 charAt 'z 0 charAt range :rangeparser
 ps rangeparser () .value charCode .$ .nl
 
 
 " Repeat Parser" section
-'a $>c 'z $>c range 1 repeat :repeatparser
+`a `z range 1 repeat :repeatparser
 ps repeatparser () .value { x | x charCode } map join .$ .nl
 
 
@@ -56,16 +57,15 @@ ps repeatparser () .value { x | x charCode } map join .$ .nl
 'parse-"this" .$ .nl
 ps 'this lit opt () .toString .$ .nl
 
-'done .$ .nl
-exit
-
 'parse-"that" .$
-ps [ 'that lit opt 'this ] seq () .toString .$
-
+ps 'that lit () .$ .nl
+ps 'that lit opt () .$ .nl
 
 'thisthen print
-ps [ 'this lit opt 'then lit ] seq () .toString .$
+ps [ 'this lit opt 'then lit ] seq () .toString .$ .nl
 
 
 " NotChars Parser" section
-ps " 0123456789" notChars 0 repeat () .toString .$
+ps " 0123456789" notChars () .toString .$ .nl
+// TODO: returns an array of chars, make join convert numbers to strings
+ps " 0123456789" notChars star () .value guru // .toString .$ .nl

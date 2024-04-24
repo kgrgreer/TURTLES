@@ -104,8 +104,8 @@ if ( a < 1000000000 ) {
     [ 'charCode', 'charCode', af('c', 'char* s = (char*) malloc(2); s[0] = c; s[1] = 0; push(stack, s);') ],
     [ 'indexOf',  'indexOf',  af('a,v', `
       printf("indexOf %ld\\n", v);
-      long* b  = (long*) a;
-      long len = b[0];
+      long* b   = (long*) a;
+      long  len = b[0];
       for ( int i = 1 ; i <= len ; i++ ) {
         if ( b[i] == v ) { // TODO: better equals
           push(stack, (void*) (long) (i-1));
@@ -113,6 +113,10 @@ if ( a < 1000000000 ) {
         }
       }
       push(stack, (void*) -1);
+    `) ],
+    [ 'strIndexOf',  '$indexOf',  af('s,v', `
+      char* p = strstr((char*) s, (char*) v);
+      push(stack, p == NULL ? (void*) -1l : (void*) p-s);
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
     [ 'key',      'key',      sf('', 'getc(tin)') ],

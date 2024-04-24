@@ -29,7 +29,10 @@ nil :{}
 // { _ } ::drop // coded natively
 { _ __ } ::drop2
 { a | a a } ::dup
+{ a b | a b a b } ::dup2
 { a b | b a } ::swap
+{ a b | a b a } ::over
+{ a b c | b c a } ::rot
 
 9  charCode :tab { | tab .$ } ::.tab  // or name \t
 10 charCode :nl  { | nl  .$ } ::.nl   // or name \n
