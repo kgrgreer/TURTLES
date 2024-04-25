@@ -28,13 +28,10 @@ Tester :t // Create an instance of Tester
 " AAAB " " 'A lit 0 repeat () .value join len " 3  testp
 " AAAB " " 'A lit 4 repeat ()                 " #F testp
 
-/*
-
 " Seq Parser" section
-[ 'this lit 'then lit 'that lit ] seq ::seqparser
-ps seqparser .value join .$ .nl
+" thisthenthat0123 " " [ 'this lit 'then lit ] seq () .value join 'thisthen =$ " true testp
 
-*/
+exit
 
 " Alt Parser" section
 [ 'think lit 'this lit ] alt :altparser

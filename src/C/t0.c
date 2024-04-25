@@ -89,6 +89,7 @@ FILE* tin;
     -  Use ' for characters use " for front-quoted strings or #?
     - | could be replaced with |0 |1 |2 ...
     - extend ??? behaviour in prefix.t0
+    - should . replace .$ and .# replace .?
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
