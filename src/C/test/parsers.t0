@@ -19,22 +19,14 @@ Tester :t // Create an instance of Tester
 
 " Literal Parser" section
 
-" thisthenthat0123 " " 'this lit () .value 'this =$ " #T testp
-" thisthenthat0123 " " 'that lit ()                 " #F testp
+" thisthenthat0123 " " 'this lit () .value " 'this testp
+" thisthenthat0123 " " 'that lit ()        " #F testp
 
 
 " Repeat Parser" section
 
-" AAAAAAABBBBBBBBB " " 'A lit 0 repeat () .value '' .$ .$ '' .$ .nl #T " #T testp
-
-exit
-/*
-" " 0 false false PStream :ps
-ps "  " lit 1 repeat ()
-.nl
-
-"  " 0 false false PStream :ps
-ps "  " lit () .toString .nl
+" AAAB " " 'A lit 0 repeat () .value join len " 3  testp
+" AAAB " " 'A lit 4 repeat ()                 " #F testp
 
 /*
 

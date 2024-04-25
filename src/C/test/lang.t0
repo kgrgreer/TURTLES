@@ -170,7 +170,7 @@ a { v | v v * } map .[] .nl
 'Looping section
 " { let 0 :i |
   { | i 10 < }
-  { | i++ }
+    { | i++ }
   while
   i
 } () " 10 test

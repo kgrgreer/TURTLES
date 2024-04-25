@@ -76,8 +76,8 @@
 } } ::alt
 
 { parser min | { ps let 0 :i false :ret |
-  [ { | ps :ret  parser ps .parse :ps ps } { | i++ ps .value } while ]
-  i min >=  { a | a ret .:value } { _ | false } ifelse
+  [ { | ps :ret  parser ps .parse :ps ps } { | i . .nl i++ ps .value } while ]
+  i min >=  { | ret .:value } { _ | #F } ifelse
 } } ::repeat
 
 { | 0 repeat } ::star
