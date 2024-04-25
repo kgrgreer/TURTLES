@@ -18,25 +18,24 @@ Tester :t // Create an instance of Tester
 
 
 " Literal Parser" section
-
 " thisthenthat0123 " " 'this lit () .value " 'this testp
 " thisthenthat0123 " " 'that lit ()        " #F testp
 
 
 " Repeat Parser" section
-
 " AAAB " " 'A lit 0 repeat () .value join len " 3  testp
 " AAAB " " 'A lit 4 repeat ()                 " #F testp
+
 
 " Seq Parser" section
 " thisthenthat0123 " " [ 'this lit 'then lit ] seq () .value join 'thisthen =$ " true testp
 
-exit
 
 " Alt Parser" section
-[ 'think lit 'this lit ] alt :altparser
-ps altparser () .toString .$ .nl
+" thisthenthat0123 " " [ 'think lit 'this lit ] alt () .value 'this =$ " true testp
 
+
+exit
 
 " Range Parser" section
 `0 `9 range :rangeparser
