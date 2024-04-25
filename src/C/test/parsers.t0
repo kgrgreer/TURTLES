@@ -12,26 +12,22 @@ Tester :t // Create an instance of Tester
   input 0 false false PStream { ps |
     " input: " .$ input .$ .nl
     ps parser expected test
+    .nl
   } ()
 } ::testp
 
-" Parser Tests" section
-
-
-" thisthenthat0123 " 0 false false PStream :ps
-
-ps .toString .$ .nl
 
 " Literal Parser" section
 
-" thisthenthat0123 "
-" ps 'this lit () .value 'this =$ "
-true
-testp
+" thisthenthat0123 " " 'this lit () .value 'this =$ " #T testp
+" thisthenthat0123 " " 'that lit ()                 " #F testp
 
-ps 'that lit () .$ .nl
-ps 'this lit () .toString .$ .nl
 
+" Repeat Parser" section
+
+" AAAAAAABBBBBBBBB " " 'A lit 0 repeat () .value '' .$ .$ '' .$ .nl #T " #T testp
+
+exit
 /*
 " " 0 false false PStream :ps
 ps "  " lit 1 repeat ()
