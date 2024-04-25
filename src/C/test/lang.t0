@@ -167,6 +167,17 @@ a { v | v v * } map .[] .nl
 " counter " 3 test
 
 
+'Looping section
+" { let 0 :i |
+  { | i 10 < }
+  { | i++ }
+  while
+  i
+} () " 10 test
+
+" { let 0 :i | 1 10 { | i++ } for i } () " 10 test
+
+
 'OO section
 // Create a Lisp-like CONS operator, but use head/tail instead of car/cdr
 // Is a simple class.
