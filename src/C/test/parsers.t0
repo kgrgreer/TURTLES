@@ -68,4 +68,4 @@ ps [ 'this lit opt 'then lit ] seq () .toString .$ .nl
 " NotChars Parser" section
 ps " 0123456789" notChars () .toString .$ .nl
 // TODO: returns an array of chars, make join convert numbers to strings
-ps " 0123456789" notChars star () .value guru // .toString .$ .nl
+ps " 0123456789" notChars star () .value join .$ .nl .nl // .toString .$ .nl

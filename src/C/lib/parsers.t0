@@ -94,7 +94,7 @@
 
 { parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 
-{ str | { ps | str ps .head charCode $indexOf -1 = { | ps .tail } { | false } ifelse } } ::notChars
+{ str | { ps | str ps .head charCode $indexOf -1 = { | ps .tail .value charCode  ps .tail .:value } { | false } ifelse } } ::notChars
 
 // TODO: fix
 { str | { ps | str ps .head $indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar

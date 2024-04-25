@@ -67,3 +67,6 @@ nil :{}
 { a b | [ a {} do b {} do ] } ::+[]
 { a | [ a {} do ] } ::clone[]
 { a start end | start end { i | a i @ } for } ::slice
+
+
+{ | charCode } ::c>$
