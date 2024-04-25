@@ -1,7 +1,6 @@
 // A Parser Stream - used as input for parsers
 { str pos value ignore let false :tail |
   { m |
-    'Method: .$ m .$ .nl
     m switch
       'parse  { parser this | this parser () }
       'parseToken { parser this |

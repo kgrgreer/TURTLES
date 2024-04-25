@@ -361,17 +361,17 @@ void unknownSymbol() {
     if ( sym[1] == ':' ) {
       // function definition appears as ::name, an auto variable
       char* s = strdup(sym+2);
-      printf("DEFINE AUTO: %s\n", s);
+      // printf("DEFINE AUTO: %s\n", s);
       push2(code, defineAuto, s);
     } else if ( sym[1] == '!' ) {
       // function definition appears as :!name, an immediate variable
       char* s = strdup(sym+2);
-      printf("DEFINE Immediate: %s\n", s);
+      // printf("DEFINE Immediate: %s\n", s);
       push2(code, defineImmediate, s);
     } else {
       // function definition appears as :name, a regular variable
       char* s = strdup(sym+1);
-      printf("DEFINE: %s\n", s);
+      // printf("DEFINE: %s\n", s);
       push2(code, define, s);
     }
   } else if ( ( sym[0] >= '0' && sym[0] <= '9' ) || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {

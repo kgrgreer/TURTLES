@@ -8,15 +8,27 @@ Tester :t // Create an instance of Tester
 { | t .test }  ::test
 { | t .testf } ::testf
 
+{ input parser expected |
+  input 0 false false PStream { ps |
+    " input: " .$ input .$ .nl
+    ps parser expected test
+  } ()
+} ::testp
 
 " Parser Tests" section
+
 
 " thisthenthat0123 " 0 false false PStream :ps
 
 ps .toString .$ .nl
 
 " Literal Parser" section
-ps 'this lit () .value .$ .nl
+
+" thisthenthat0123 "
+" ps 'this lit () .value 'this =$ "
+true
+testp
+
 ps 'that lit () .$ .nl
 ps 'this lit () .toString .$ .nl
 
@@ -69,3 +81,6 @@ ps [ 'this lit opt 'then lit ] seq () .toString .$ .nl
 ps " 0123456789" notChars () .toString .$ .nl
 // TODO: returns an array of chars, make join convert numbers to strings
 ps " 0123456789" notChars star () .value join .$ .nl .nl // .toString .$ .nl
+
+
+t .report
