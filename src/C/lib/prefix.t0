@@ -70,3 +70,5 @@ nil :{}
 
 
 { | charCode } ::c>$
+true  :#T
+false :#F
