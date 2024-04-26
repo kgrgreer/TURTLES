@@ -36,22 +36,22 @@ Tester :t // Create an instance of Tester
 " thisthenthat0123 " " [ 'think 'this ] alt () .value 'this =$ " true testp
 
 
-" Range Parser" section
 (*
+" Range Parser" section
 `0 `9 range :rangeparser
 ps rangeparser () .$
 'a 0 charAt 'z 0 charAt range :rangeparser
 ps rangeparser () .value charCode .$ .nl
 *)
 
-" Repeat Parser" section
 (*
+" Repeat Parser" section
 `a `z range 1 repeat :repeatparser
 ps repeatparser () .value { x | x charCode } map join .$ .nl
 *)
 
-" Optional Parser" section
 (*
+" Optional Parser" section
 'parse-"this" .$ .nl
 ps 'this lit opt () .toString .$ .nl
 
@@ -64,10 +64,7 @@ ps [ 'this opt 'then ] seq () .toString .$ .nl
 *)
 
 " NotChars Parser" section
-" thisthenthat0123 " " '0123456789 notChars () .value 't =$ " #T testp
-(*
-// TODO: returns an array of chars, make join convert numbers to strings
-ps " 0123456789" notChars star () .value join .$ .nl .nl // .toString .$ .nl
-*)
+" thisthenthat0123 "  " '0123456789 notChars () .value 't =$ " #T testp
+" thisthenthat0123 "  " '0123456789 notChars star () .value join 'thisthenthat =$ " #T testp
 
 t .report
