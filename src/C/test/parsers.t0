@@ -29,10 +29,11 @@ Tester :t // Create an instance of Tester
 
 " Seq Parser" section
 " thisthenthat0123 " " [ 'this lit 'then lit ] seq () .value join 'thisthen =$ " true testp
+" thisthenthat0123 " " [ 'this     'then     ] seq () .value join 'thisthen =$ " true testp
 
 
 " Alt Parser" section
-" thisthenthat0123 " " [ 'think lit 'this lit ] alt () .value 'this =$ " true testp
+" thisthenthat0123 " " [ 'think 'this ] alt () .value 'this =$ " true testp
 
 
 " Range Parser" section
@@ -59,7 +60,7 @@ ps 'that lit () .$ .nl
 ps 'that lit opt () .$ .nl
 
 'thisthen print
-ps [ 'this lit opt 'then lit ] seq () .toString .$ .nl
+ps [ 'this opt 'then ] seq () .toString .$ .nl
 *)
 
 " NotChars Parser" section

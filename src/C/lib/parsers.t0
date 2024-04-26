@@ -44,8 +44,6 @@
   }
 } ::PStream
 
-{ _ | false } ::string?
-
 { p | { ps | p ps .parseToken } } ::tok
 
 // ???: add do$ ?, rename charAt c@?
@@ -61,7 +59,7 @@
   start end ps .head inRange { | ps .tail } { | false } ifelse
 } } ::range
 
-{ parsers | parsers { p | p string? { | p lit } { | p } ifelse } map } ::prepare
+{ parsers | parsers { p | p fn? { | p } { | p lit } ifelse } map } ::prepare
 
 { parsers | parsers prepare :parsers { ps let 0 :i |
   [ { | i parsers # < { | parsers i @ ps .parse :ps ps } && } { | i++ ps .value } while ]
