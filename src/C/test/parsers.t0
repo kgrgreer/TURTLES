@@ -64,8 +64,8 @@ ps [ 'this opt 'then ] seq () .toString .$ .nl
 *)
 
 " NotChars Parser" section
+" thisthenthat0123 " " '0123456789 notChars () .value 't =$ " #T testp
 (*
-ps " 0123456789" notChars () .toString .$ .nl
 // TODO: returns an array of chars, make join convert numbers to strings
 ps " 0123456789" notChars star () .value join .$ .nl .nl // .toString .$ .nl
 *)
