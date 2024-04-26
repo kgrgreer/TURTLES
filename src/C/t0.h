@@ -5,6 +5,7 @@ typedef void (*Fn)();
 
 typedef struct space_ {
   long ptr;
+  long size;
   void* *arr;
 } Space;
 
@@ -54,3 +55,5 @@ void returnTo(long ptr);
 char* strAdd(char* s1, char* s2);
 
 void require(char* filename);
+
+void callClosure0();

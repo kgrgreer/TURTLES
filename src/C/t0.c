@@ -99,8 +99,9 @@ FILE* tin;
 
 Space* createSpace(long size) {
   Space* s = (Space*) malloc(sizeof(Space));
-  s->arr = malloc(size * sizeof(void*));
-  s->ptr = 0;
+  s->size = size;
+  s->arr  = malloc(size * sizeof(void*));
+  s->ptr  = 0;
   return s;
 }
 
@@ -250,7 +251,6 @@ bool readSym(char* buf, int bufSize) {
   return true;
 }
 
-void callClosure0();
 void localVarSetup();
 
 
