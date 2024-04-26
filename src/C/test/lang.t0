@@ -15,50 +15,50 @@ Tester :t // Create an instance of Tester
 
 
 'Strings section
-" abc" 'abc " =$ " true test
-""" abc""" 'abc " =$ " true test
-" abc" 'abc " =$ " true test
+" abc" 'abc " =$ " #T test
+""" abc""" 'abc " =$ " #T test
+" abc" 'abc " =$ " #T test
 " 'ABC len " 3 test
-" 'abc 'abc =$ " true test
-""" 'abc " abc" =$ """ true test // TODO: doesn't work
-{ | 'abc " abc" =$ } true testf
-" 65 charCode 'A =$ " true test
-" 'CAT 0 charAt 67 = " true test
-" 'CAT 1 charAt 65 = " true test
-" 'CAT 2 charAt 84 = " true test
+" 'abc 'abc =$ " #T test
+""" 'abc " abc" =$ """ #T test // TODO: doesn't work
+{ | 'abc " abc" =$ } #T testf
+" 65 charCode 'A =$ " #T test
+" 'CAT 0 charAt 67 = " #T test
+" 'CAT 1 charAt 65 = " #T test
+" 'CAT 2 charAt 84 = " #T test
 
 
 'Logic section
-" true  ! " false test
-" false ! " true  test
-" false false & " false test
-" false true  & " false test
-" true  false & " false test
-" true  true  & " true  test
-" false false | " false test
-" false true  | " true  test
-" true  false | " true  test
-" true  true  | " true  test
-" false { | false } && "  false test
-" false { | true }  && "  false test
-" true  { | false } && "  false test
-" true  { | true }  && "  true  test
-" false { | false } || "  false test
-" false { | true }  || "  true  test
-" true  { | false } || "  true  test
-" true  { | true }  || "  true  test
-" true false | true false & | " true test
+" #T ! " #F test
+" #F ! " #T  test
+" #F #F & " #F test
+" #F #T & " #F test
+" #T #F & " #F test
+" #T #T & " #T test
+" #F #F | " #F test
+" #F #T | " #T test
+" #T #F | " #T test
+" #T #T | " #T test
+" #F { | #F } && " #F test
+" #F { | #T } && " #F test
+" #T { | #F } && " #F test
+" #T { | #T } && " #T test
+" #F { | #F } || " #F test
+" #F { | #T } || " #T test
+" #T { | #F } || " #T test
+" #T { | #T } || " #T test
+" #T #F | #T #F & | " #T test
 
 
 'Comparators section
-" 1 1 =  " true  test
-" 1 2 =  " false test
-" 1 1 != " false test
-" 1 2 != " true  test
-" 1 2 <  " true  test
-" 2 1 <  " false test
-" 2 2 <= " true  test
-" 2 3 <= " true  test
+" 1 1 =  " #T test
+" 1 2 =  " #F test
+" 1 1 != " #F test
+" 1 2 != " #T test
+" 1 2 <  " #T test
+" 2 1 <  " #F test
+" 2 2 <= " #T test
+" 2 3 <= " #T test
 
 
 'Arithmetic section
@@ -93,10 +93,10 @@ Tester :t // Create an instance of Tester
 
 
 'Conditionals section
-"   true  { | 1 } if             " 1 test
-" 2 false { | 1 } if             " 2 test
-"   true  { | 1 } { | 2 } ifelse " 1 test
-"   false { | 1 } { | 2 } ifelse " 2 test
+"   #T { | 1 } if             " 1 test
+" 2 #F { | 1 } if             " 2 test
+"   #T { | 1 } { | 2 } ifelse " 1 test
+"   #F { | 1 } { | 2 } ifelse " 2 test
 
 
 'Arrays section
@@ -152,9 +152,9 @@ a .[] .nl
 a { c | c 2 mod 0 = } filter .[] .nl
 " a 0 { | + } reduce " 55 test
 a { v | v v * } map .[] .nl
-" [ 'abc 123 #>$ 'youandme ] join 'abc123youandme =$ " true test
-" [ 'abc 123  >$ 'youandme ] join 'abc123youandme =$ " true test
-" [ 'abc 123     'youandme ] join 'abc123youandme =$ " true test
+" [ 'abc 123 #>$ 'youandme ] join 'abc123youandme =$ " #T test
+" [ 'abc 123  >$ 'youandme ] join 'abc123youandme =$ " #T test
+" [ 'abc 123     'youandme ] join 'abc123youandme =$ " #T test
 
 
 " Own Variables" section
@@ -194,12 +194,12 @@ a { v | v v * } map .[] .nl
 } ::cons
 
 'car 'cdr cons :c // construct a cons
-" c   'head c () () 'car =$ " true test // low-level method call
-" c   'tail c () () 'cdr =$ " true test
-"   c .head         'car =$ " true test // with .methodName support
-"   c .tail         'cdr =$ " true test
-" 1 c .:head  c .head 1 =   " true test
-" 2 c .:tail  c .tail 2 =   " true test
+" c   'head c () () 'car =$ " #T test // low-level method call
+" c   'tail c () () 'cdr =$ " #T test
+"   c .head         'car =$ " #T test // with .methodName support
+"   c .tail         'cdr =$ " #T test
+" 1 c .:head  c .head 1 =   " #T test
+" 2 c .:tail  c .tail 2 =   " #T test
 
 
 'Recursion section
@@ -214,6 +214,10 @@ a { v | v v * } map .[] .nl
 " { | 1 } ::auto auto " 1 test
 " &auto () " 1 test
 
+
 " Immediate Functions" section
+
+'Broken section
+" 1 { x let x x + :y | y } () " 2 test
 
 t .report
