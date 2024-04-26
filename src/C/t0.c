@@ -87,13 +87,17 @@ FILE* tin;
     -  Do we need two stacks: the call-stack and the argument stack?
     -  ? Replace . with >> for 'print'?
     -  Use ' for characters use " for front-quoted strings or #?
-    - | could be replaced with |0 |1 |2 ...
-    - extend ??? behaviour in prefix.t0
-    - should . replace .$ and .# replace .?
+    -  | could be replaced with |0 |1 |2 ...
+    -  extend ??? behaviour in prefix.t0
+    -  reverse order of local variables on stackframe
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
       that they could be unwound.
+    - should . replace .$ and .# replace .?
+    - Replace @ with [ ] and [ ]:, could validate only one arg on stack between [ and ]
+    - Add a prefix to strings which includes size and hash?
+    - Internalize strings?
 
 */
 
