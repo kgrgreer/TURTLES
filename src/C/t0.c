@@ -493,7 +493,9 @@ void defun() {
         }
 
         // Add var name after the : to 'vars'
-        vars[i++] = strdup(buf+1); // TODO free()
+        vars[i] = strdup(buf+1); // TODO free()
+        fd++; defineLocalVar(vars[i], i); fd--;
+        i++;
 
         if ( strcmp(buf, "|") == 0 ) goto outer;
         // It wouldn't make sense to have a 'let' but no body
@@ -502,15 +504,14 @@ void defun() {
     }
 
     // Add var's name to 'vars'
-    vars[i++] = strdup(buf);
+    vars[i] = strdup(buf);
+    fd++; defineLocalVar(vars[i], i); fd--;
+    i++;
   }
 
   outer:
 
   if ( i > 0 ) fd++;
-
-  // ???: does this need to be delayed or can we just execute directly above?
-  for ( long j = 0 ; j < i ; j++ ) defineLocalVar(vars[j], j);
 
   if ( fnName ) {
     char* sym = strAdd(fnName, "<-");
