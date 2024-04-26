@@ -429,6 +429,14 @@ void execSym(char* sym) {
 }
 
 
+void defineLocalVar(char* name, long i /* frame position */ ) {
+  scope = addSym(scope, name,               push3(heap, emitVarGet,  (void*) (long) fd, (void*) (long) i));
+  scope = addSym(scope, strAdd(":", name),  push3(heap, emitVarSet,  (void*) (long) fd, (void*) (long) i));
+  scope = addSym(scope, strAdd(name, "++"), push3(heap, emitVarIncr, (void*) (long) fd, (void*) (long) i));
+  scope = addSym(scope, strAdd(name, "--"), push3(heap, emitVarDecr, (void*) (long) fd, (void*) (long) i));
+}
+
+
 // Ex. { :name a b let 0 :i 1 :j | ... <- ... name<- } is like 0 1 { a b i j | ... }
 // | ... is optional if there's no body
 // :name is optional
@@ -502,14 +510,7 @@ void defun() {
   if ( i > 0 ) fd++;
 
   // ???: does this need to be delayed or can we just execute directly above?
-  for ( long j = 0 ; j < i ; j++ ) {
-    char* varName = vars[j];
-    void* k       = (void*) j; //(i-j-1);
-    scope = addSym(scope, varName,               push3(heap, emitVarGet,  (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(":", varName),  push3(heap, emitVarSet,  (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "++"), push3(heap, emitVarIncr, (void*) (long) fd, k));
-    scope = addSym(scope, strAdd(varName, "--"), push3(heap, emitVarDecr, (void*) (long) fd, k));
-  }
+  for ( long j = 0 ; j < i ; j++ ) defineLocalVar(vars[j], j);
 
   if ( fnName ) {
     char* sym = strAdd(fnName, "<-");
