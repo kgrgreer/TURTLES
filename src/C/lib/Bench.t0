@@ -1,0 +1,6 @@
+{ block |
+  now { start |
+    block ()
+    now start - .
+  } ()
+} ::bench

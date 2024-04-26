@@ -1,0 +1,7 @@
+{ n | n 1 <= { | 1 } { | n 1 - fact n * } ifelse } ::fact
+
+// P(n,r) = n!/(n - r)!
+{ n r | n fact n r - fact / } ::P
+
+// C(n,r) = n!/[r!(n - r)!]
+{ n r | n r P r fact / } ::C
