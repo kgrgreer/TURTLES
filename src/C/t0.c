@@ -259,7 +259,7 @@ void localVarSetup();
 
 
 // createClosure0 and callClosure0 are more efficient verions for functions
-// that don't take any arguments.
+// that don't take any arguments. ??? Maybe clearer to rename createClosureNoVars
 void createClosure0() {
   void* fn = nextI();
   push(stack, (void*) push3(heap, callClosure0, (void*) fp, fn));
@@ -333,8 +333,10 @@ void localVarSetup() {
   long numVars = (long) nextI();
 
   for ( long i = 0 ; i < numVars ; i++ ) {
-    push(heap, pop(stack));
+    heap->arr[heap->ptr+numVars-i-1] = pop(stack);
   }
+
+  heap->ptr += numVars;
 }
 
 
@@ -502,7 +504,7 @@ void defun() {
   // ???: does this need to be delayed or can we just execute directly above?
   for ( long j = 0 ; j < i ; j++ ) {
     char* varName = vars[j];
-    void* k       = (void*) (i-j-1);
+    void* k       = (void*) j; //(i-j-1);
     scope = addSym(scope, varName,               push3(heap, emitVarGet,  (void*) (long) fd, k));
     scope = addSym(scope, strAdd(":", varName),  push3(heap, emitVarSet,  (void*) (long) fd, k));
     scope = addSym(scope, strAdd(varName, "++"), push3(heap, emitVarIncr, (void*) (long) fd, k));
