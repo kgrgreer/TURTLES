@@ -430,10 +430,10 @@ void execSym(char* sym) {
 
 
 void defineLocalVar(char* name, long i /* frame position */ ) {
-  scope = addSym(scope, name,               push3(heap, emitVarGet,  (void*) (long) fd, (void*) (long) i));
-  scope = addSym(scope, strAdd(":", name),  push3(heap, emitVarSet,  (void*) (long) fd, (void*) (long) i));
-  scope = addSym(scope, strAdd(name, "++"), push3(heap, emitVarIncr, (void*) (long) fd, (void*) (long) i));
-  scope = addSym(scope, strAdd(name, "--"), push3(heap, emitVarDecr, (void*) (long) fd, (void*) (long) i));
+  scope = addSym(scope, name,               push3(heap, emitVarGet,  (void*) (long) fd+1, (void*) (long) i));
+  scope = addSym(scope, strAdd(":", name),  push3(heap, emitVarSet,  (void*) (long) fd+1, (void*) (long) i));
+  scope = addSym(scope, strAdd(name, "++"), push3(heap, emitVarIncr, (void*) (long) fd+1, (void*) (long) i));
+  scope = addSym(scope, strAdd(name, "--"), push3(heap, emitVarDecr, (void*) (long) fd+1, (void*) (long) i));
 }
 
 
@@ -494,7 +494,7 @@ void defun() {
 
         // Add var name after the : to 'vars'
         vars[i] = strdup(buf+1); // TODO free()
-        fd++; defineLocalVar(vars[i], i); fd--;
+        defineLocalVar(vars[i], i);
         i++;
 
         if ( strcmp(buf, "|") == 0 ) goto outer;
@@ -505,7 +505,7 @@ void defun() {
 
     // Add var's name to 'vars'
     vars[i] = strdup(buf);
-    fd++; defineLocalVar(vars[i], i); fd--;
+    defineLocalVar(vars[i], i);
     i++;
   }
 
