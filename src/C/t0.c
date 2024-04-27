@@ -430,10 +430,10 @@ void execSym(char* sym) {
 
 
 void defineLocalVar(char* name, long i /* frame position */ ) {
-  scope = addSym(scope, name,               push3(heap, emitVarGet,  (void*) (long) fd+1, (void*) (long) i));
-  scope = addSym(scope, strAdd(":", name),  push3(heap, emitVarSet,  (void*) (long) fd+1, (void*) (long) i));
-  scope = addSym(scope, strAdd(name, "++"), push3(heap, emitVarIncr, (void*) (long) fd+1, (void*) (long) i));
-  scope = addSym(scope, strAdd(name, "--"), push3(heap, emitVarDecr, (void*) (long) fd+1, (void*) (long) i));
+  scope = addSym(scope, name,               push3(heap, emitVarGet,  (void*) (long) fd, (void*) (long) i));
+  scope = addSym(scope, strAdd(":", name),  push3(heap, emitVarSet,  (void*) (long) fd, (void*) (long) i));
+  scope = addSym(scope, strAdd(name, "++"), push3(heap, emitVarIncr, (void*) (long) fd, (void*) (long) i));
+  scope = addSym(scope, strAdd(name, "--"), push3(heap, emitVarDecr, (void*) (long) fd, (void*) (long) i));
 }
 
 
@@ -451,6 +451,8 @@ void defun() {
   char*  fnName   = 0;
 
   code->ptr += MAX_FN_SIZE;
+
+  fd++;
 
   while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
@@ -487,9 +489,7 @@ void defun() {
           // It wouldn't make sense to have a 'let' but no body
           if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
 
-          fd++;
           evalSym(buf); // TODO: is too soon, since code->ptr hasn't been updated yet
-          fd--;
         }
 
         // Add var name after the : to 'vars'
@@ -511,7 +511,7 @@ void defun() {
 
   outer:
 
-  if ( i > 0 ) fd++;
+  if ( i == 0 ) fd--;
 
   if ( fnName ) {
     char* sym = strAdd(fnName, "<-");
