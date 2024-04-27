@@ -72,3 +72,6 @@ nil :{}
 { | charCode } ::c>$
 true  :#T
 false :#F
+
+
+{ n | n 0 < { | n neg } { | n } ifelse } ::abs
