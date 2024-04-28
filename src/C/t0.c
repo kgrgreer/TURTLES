@@ -76,7 +76,6 @@ FILE* tin;
       that memory can be GC'ed in the future
     - comments inside switch
     - nested quotes inside """
-    - 42 { x let x x + :y | y } ()
 
   Todo:
     -  support for emitting code comments in DEBUG mode or tagging non-code items like closures
@@ -444,7 +443,8 @@ void defineLocalVar(char* name, long i /* frame position */ ) {
 void defun() {
   long   start = heap->ptr;
   char   buf[256];
-  int    i = 0;     // number of vars / arguments
+  int    i = 0; // total number of vars
+  int    j = 0; // number of local vars
   Scope* s = scope;
   long   oldCode = code->ptr;
   char*  fnName  = 0;
@@ -469,18 +469,16 @@ void defun() {
       continue;
     }
 
-    if ( strcmp(buf, "|")   == 0 ) goto body;
-    if ( strcmp(buf, "}")   == 0 ) goto body;
-    if ( strcmp(buf, "let") == 0 ) goto let;
+    if ( strcmp(buf, "|") == 0 || strcmp(buf, "}") == 0 || strcmp(buf, "let") == 0 ) break;
 
     char* varName = strdup(buf); // TODO: free
     defineLocalVar(varName, i);
     i++;
   }
 
-  let:
+  if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
-  while ( true ) { // for each :<name>
+  if ( strcmp(buf, "let") == 0 ) while ( true ) { // for each :<name>
     while ( true ) { // for each word before :<name>
       if ( ! readSym(buf, sizeof(buf)) ) {
         printf("Syntax Error: Unclosed function, missing |\n");
@@ -500,6 +498,7 @@ void defun() {
     char* varName = strdup(buf+1); // TODO: free
     defineLocalVar(varName, i);
     i++;
+    j++;
 
     if ( strcmp(buf, "|") == 0 ) goto body;
     // It wouldn't make sense to have a 'let' but no body
@@ -508,16 +507,17 @@ void defun() {
 
   body:
 
+  if ( j > 0 ) push2(code, localVarSetup, (void*) (long) j);
+
   if ( i == 0 ) fd--;
 
+  // TODO: move above
   if ( fnName ) {
     char* sym = strAdd(fnName, "<-");
     // Correct address will replace 666 at end when it is known
     long ptr = push2(heap, emitLongRet, fnName);
     scope = addSym(scope, sym, ptr);
   }
-
-  if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
   if ( strcmp(buf, "}") != 0 ) while ( true ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
