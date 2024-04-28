@@ -447,7 +447,6 @@ void defun() {
   int    i = 0;     // number of vars / arguments
   Scope* s = scope;
   long   oldCode = code->ptr;
-  bool   hasBody = false;
   char*  fnName  = 0;
 
   code->ptr += MAX_FN_SIZE;
@@ -470,44 +469,44 @@ void defun() {
       continue;
     }
 
-    if ( strcmp(buf, "|") == 0 ) { hasBody = true; break; }
-
-    if ( strcmp(buf, "}") == 0 ) break;
-
-    if ( strcmp(buf, "let") == 0 ) {
-      while ( true ) { // for each :<name>
-        while ( true ) { // for each word before :<name>
-          if ( ! readSym(buf, sizeof(buf)) ) {
-            printf("Syntax Error: Unclosed function, missing |\n");
-            return;
-          }
-
-          if ( buf[0] == ':' ) break;
-
-          // couldn't happen, :name would have to appear first
-          if ( strcmp(buf, "|") == 0 ) { hasBody = true; goto outer; }
-          // It wouldn't make sense to have a 'let' but no body
-          if ( strcmp(buf, "}") == 0 ) goto outer;
-
-          evalSym(buf); // TODO: is too soon, since code->ptr hasn't been updated yet
-        }
-
-        char* varName = strdup(buf+1); // TODO: free
-        defineLocalVar(varName, i);
-        i++;
-
-        if ( strcmp(buf, "|") == 0 ) { hasBody = true; goto outer; }
-        // It wouldn't make sense to have a 'let' but no body
-        if ( strcmp(buf, "}") == 0 ) goto outer;
-      }
-    }
+    if ( strcmp(buf, "|")   == 0 ) goto body;
+    if ( strcmp(buf, "}")   == 0 ) goto body;
+    if ( strcmp(buf, "let") == 0 ) goto let;
 
     char* varName = strdup(buf); // TODO: free
     defineLocalVar(varName, i);
     i++;
   }
 
-  outer:
+  let:
+
+  while ( true ) { // for each :<name>
+    while ( true ) { // for each word before :<name>
+      if ( ! readSym(buf, sizeof(buf)) ) {
+        printf("Syntax Error: Unclosed function, missing |\n");
+        return;
+      }
+
+      if ( buf[0] == ':' ) break;
+
+      // couldn't happen, :name would have to appear first
+      if ( strcmp(buf, "|") == 0 ) goto body;
+      // It wouldn't make sense to have a 'let' but no body
+      if ( strcmp(buf, "}") == 0 ) goto body;
+
+      evalSym(buf); // TODO: is too soon, since code->ptr hasn't been updated yet
+    }
+
+    char* varName = strdup(buf+1); // TODO: free
+    defineLocalVar(varName, i);
+    i++;
+
+    if ( strcmp(buf, "|") == 0 ) goto body;
+    // It wouldn't make sense to have a 'let' but no body
+    if ( strcmp(buf, "}") == 0 ) goto body;
+  }
+
+  body:
 
   if ( i == 0 ) fd--;
 
@@ -520,17 +519,15 @@ void defun() {
 
   if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
-  if ( hasBody ) {
-    while ( true ) {
-      if ( ! readSym(buf, sizeof(buf)) ) {
-        printf("Syntax Error: Unclosed function, missing }\n");
-        return;
-      }
-
-      if ( strcmp(buf, "}") == 0 ) break;
-
-      evalSym(buf);
+  if ( strcmp(buf, "}") != 0 ) while ( true ) {
+    if ( ! readSym(buf, sizeof(buf)) ) {
+      printf("Syntax Error: Unclosed function, missing }\n");
+      return;
     }
+
+    if ( strcmp(buf, "}") == 0 ) break;
+
+    evalSym(buf);
   }
 
   push(code, ret);
