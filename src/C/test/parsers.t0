@@ -18,8 +18,13 @@ Tester :t // Create an instance of Tester
 
 
 " Literal Parser" section
-" thisthenthat0123 " " 'this lit () .value 'this =$ " true testp
+" thisthenthat0123 " " 'this lit () .value 'this =$ " #T testp
 " thisthenthat0123 " " 'that lit ()        " #F testp
+
+
+" Optional Parser" section
+" thisthenthat " " 'this lit ()     .value 'this =$ " #T testp
+" thisthenthat " " 'this lit opt () .value 'this =$ " #T testp
 
 
 " Repeat Parser" section
@@ -51,10 +56,6 @@ ps repeatparser () .value { x | x charCode } map join .$ .nl
 *)
 
 (*
-" Optional Parser" section
-'parse-"this" .$ .nl
-ps 'this lit opt () .toString .$ .nl
-
 'parse-"that" .$
 ps 'that lit () .$ .nl
 ps 'that lit opt () .$ .nl
