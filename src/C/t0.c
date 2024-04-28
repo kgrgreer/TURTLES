@@ -492,7 +492,6 @@ void defun() {
           evalSym(buf); // TODO: is too soon, since code->ptr hasn't been updated yet
         }
 
-        // Add var name after the : to 'vars'
         char* varName = strdup(buf+1); // TODO: free
         defineLocalVar(varName, i);
         i++;
@@ -503,7 +502,6 @@ void defun() {
       }
     }
 
-    // Add var's name to 'vars'
     char* varName = strdup(buf); // TODO: free
     defineLocalVar(varName, i);
     i++;
