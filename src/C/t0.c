@@ -444,7 +444,6 @@ void defineLocalVar(char* name, long i /* frame position */ ) {
 void defun() {
   long   start = heap->ptr;
   char   buf[256];
-  char*  vars[64];  // names of local variables
   int    i = 0;     // number of vars / arguments
   Scope* s = scope;
   long   oldCode = code->ptr;
@@ -494,8 +493,8 @@ void defun() {
         }
 
         // Add var name after the : to 'vars'
-        vars[i] = strdup(buf+1); // TODO free()
-        defineLocalVar(vars[i], i);
+        char* varName = strdup(buf+1); // TODO: free
+        defineLocalVar(varName, i);
         i++;
 
         if ( strcmp(buf, "|") == 0 ) { hasBody = true; goto outer; }
@@ -505,8 +504,8 @@ void defun() {
     }
 
     // Add var's name to 'vars'
-    vars[i] = strdup(buf);
-    defineLocalVar(vars[i], i);
+    char* varName = strdup(buf); // TODO: free
+    defineLocalVar(varName, i);
     i++;
   }
 
