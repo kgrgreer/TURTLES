@@ -6,4 +6,15 @@
 // C(n,r) = n!/(r!(n - r)!) = P(n,r)/r!
 { r | r P r fact / } ::C
 
-// TODO: random, permute
+// TODO: permute
+
+{ let 42 :last |
+  9223372036854775807 :IM
+  3877   :IA
+  29573  :IC
+
+  { max |
+    last IA * IC + IM mod :last
+    last max mod abs
+  }
+} () ::rand
