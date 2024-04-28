@@ -328,7 +328,8 @@ long frameOffset(long depth, long offset) {
 }
 
 
-// Copy argument values from stack to the heap, as part of the activation record, where they can be accessed as frameReferences
+// Copy argument values from stack to the heap, as part of the activation record,
+// where they can be accessed as frameReferences
 void localVarSetup() {
   long numVars = (long) nextI();
 
@@ -446,9 +447,9 @@ void defun() {
   char*  vars[64];  // names of local variables
   int    i = 0;     // number of vars / arguments
   Scope* s = scope;
-  long   oldCode  = code->ptr;
-  bool   skipBody = false;
-  char*  fnName   = 0;
+  long   oldCode = code->ptr;
+  bool   hasBody = false;
+  char*  fnName  = 0;
 
   code->ptr += MAX_FN_SIZE;
 
@@ -470,9 +471,9 @@ void defun() {
       continue;
     }
 
-    if ( strcmp(buf, "|") == 0 ) break;
+    if ( strcmp(buf, "|") == 0 ) { hasBody = true; break; }
 
-    if ( strcmp(buf, "}") == 0 ) { skipBody = true; break; }
+    if ( strcmp(buf, "}") == 0 ) break;
 
     if ( strcmp(buf, "let") == 0 ) {
       while ( true ) { // for each :<name>
@@ -485,9 +486,9 @@ void defun() {
           if ( buf[0] == ':' ) break;
 
           // couldn't happen, :name would have to appear first
-          if ( strcmp(buf, "|") == 0 ) goto outer;
+          if ( strcmp(buf, "|") == 0 ) { hasBody = true; goto outer; }
           // It wouldn't make sense to have a 'let' but no body
-          if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
+          if ( strcmp(buf, "}") == 0 ) goto outer;
 
           evalSym(buf); // TODO: is too soon, since code->ptr hasn't been updated yet
         }
@@ -497,9 +498,9 @@ void defun() {
         defineLocalVar(vars[i], i);
         i++;
 
-        if ( strcmp(buf, "|") == 0 ) goto outer;
+        if ( strcmp(buf, "|") == 0 ) { hasBody = true; goto outer; }
         // It wouldn't make sense to have a 'let' but no body
-        if ( strcmp(buf, "}") == 0 ) { skipBody = true; goto outer; }
+        if ( strcmp(buf, "}") == 0 ) goto outer;
       }
     }
 
@@ -522,7 +523,7 @@ void defun() {
 
   if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
 
-  if ( ! skipBody ) {
+  if ( hasBody ) {
     while ( true ) {
       if ( ! readSym(buf, sizeof(buf)) ) {
         printf("Syntax Error: Unclosed function, missing }\n");
