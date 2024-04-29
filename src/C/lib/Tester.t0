@@ -1,6 +1,3 @@
-// TODO:
-//   - test doesn't match strings
-
 { let 0 :passed 0 :failed |
   { m |
     m switch

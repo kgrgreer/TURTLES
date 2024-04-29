@@ -6,8 +6,8 @@
 
 
 " Literal Parser" section
-" thisthenthat0123 " " 'this lit () .value 'this =$ " #T testp
-" thisthenthat0123 " " 'that lit ()        " #F testp
+" thisthenthat0123" " 'this lit () .value 'this =$ " #T testp
+" thisthenthat0123" " 'that lit ()        " #F testp
 
 
 " Optional Parser" section

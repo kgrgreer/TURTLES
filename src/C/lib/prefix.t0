@@ -52,11 +52,13 @@ nil :{}
 
 { s let &_key_ :oldKey 0 :i |
   { let s len :l |
-    { |
+    { :outer |
+      i l = { | oldKey ::_key_ -1 outer<- } if
       i l <
-        { | s i charAt i++ }
-        { | oldKey ::_key_ -1 }
+        { | s i charAt }
+        { | 32 }
       ifelse
+      i++
     } ::_key_
   } ()
   eval_
