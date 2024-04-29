@@ -328,15 +328,22 @@ long frameOffset(long depth, long offset) {
 
 
 // Copy argument values from stack to the heap, as part of the activation record,
-// where they can be accessed as frameReferences
+// where they can be accessed as frameReferences. Also reserve space for local vars.
 void localVarSetup() {
-  long numVars = (long) nextI();
+  long numParams = (long) nextI();
+  long numVars   = (long) nextI();
+  long n         = numParams + numVars;
+  long i         = 0;
 
-  for ( long i = 0 ; i < numVars ; i++ ) {
-    heap->arr[heap->ptr+numVars-i-1] = pop(stack);
+  for ( ; i < numVars ; i++ ) {
+    heap->arr[heap->ptr+n-i-1] = 0l;
   }
 
-  heap->ptr += numVars;
+  for ( ; i < n ; i++ ) {
+    heap->arr[heap->ptr+n-i-1] = pop(stack);
+  }
+
+  heap->ptr += n;
 }
 
 
@@ -443,11 +450,11 @@ void defineLocalVar(char* name, long i /* frame position */ ) {
 void defun() {
   long   start = heap->ptr;
   char   buf[256];
-  int    i = 0; // total number of vars
-  int    j = 0; // number of local vars
+  int    i = 0; // total number of vars: parameters + local
   Scope* s = scope;
   long   oldCode = code->ptr;
   char*  fnName  = 0;
+  long   localVarSetupPos = -1;
 
   code->ptr += MAX_FN_SIZE;
 
@@ -476,38 +483,45 @@ void defun() {
     i++;
   }
 
-  if ( i > 0 ) push2(code, localVarSetup, (void*) (long) i);
+  int numParams = i;
 
-  if ( strcmp(buf, "let") == 0 ) while ( true ) { // for each :<name>
-    while ( true ) { // for each word before :<name>
-      if ( ! readSym(buf, sizeof(buf)) ) {
-        printf("Syntax Error: Unclosed function, missing |\n");
-        return;
-      }
+  if ( i > 0 || strcmp(buf, "let") == 0 ) {
+    // Second arg may need to be update after let
+    localVarSetupPos = push3(code, localVarSetup, (void*) (long) numParams, (void*) (long) 0);
+  }
 
-      if ( buf[0] == ':' ) break;
+  if ( strcmp(buf, "let") == 0 ) {
+    while ( true ) { // for each :<name>
+      while ( true ) { // for each word before :<name> // TODO: make next 5 lines a MACRO
+        if ( ! readSym(buf, sizeof(buf)) ) {
+          printf("Syntax Error: Unclosed function, missing |\n");
+          return;
+        }
 
-      // couldn't happen, :name would have to appear first
+        if ( buf[0] == ':' ) break;
+
+        // couldn't happen, :name would have to appear first
+        if ( strcmp(buf, "|") == 0 ) goto body;
+        // It wouldn't make sense to have a 'let' but no body
+        if ( strcmp(buf, "}") == 0 ) goto body;
+
+        evalSym(buf);
+      } // while word before :<name>
+
+      char* varName = strdup(buf+1); // TODO: free
+      defineLocalVar(varName, i);
+      i++;
+      evalSym(buf);
+
       if ( strcmp(buf, "|") == 0 ) goto body;
       // It wouldn't make sense to have a 'let' but no body
       if ( strcmp(buf, "}") == 0 ) goto body;
-
-      evalSym(buf); // TODO: is too soon, since code->ptr hasn't been updated yet
-    }
-
-    char* varName = strdup(buf+1); // TODO: free
-    defineLocalVar(varName, i);
-    i++;
-    j++;
-
-    if ( strcmp(buf, "|") == 0 ) goto body;
-    // It wouldn't make sense to have a 'let' but no body
-    if ( strcmp(buf, "}") == 0 ) goto body;
+    } // while :<name>
   }
 
   body:
 
-  if ( j > 0 ) push2(code, localVarSetup, (void*) (long) j);
+  if ( i > numParams ) heap->arr[localVarSetupPos+2] = (void*) (long) i-numParams;
 
   if ( i == 0 ) fd--;
 
