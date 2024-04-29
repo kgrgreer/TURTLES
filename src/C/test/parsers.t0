@@ -1,19 +1,7 @@
-'lib/Tester.t0 require
-'lib/parsers.t0 require
-
-nop ::prompt
-clear
-
-Tester :t // Create an instance of Tester
-{ | t .test }  ::test
-{ | t .testf } ::testf
-
-{ input parser expected |
-  input 0 false false PStream { ps |
-    " input: " .$ input .$ .nl
-    ps parser expected test
-    .nl
-  } ()
+{ input parser expected let input 0 false false PStream :ps |
+  " input: " .$ input .$ .nl
+  [ ps parser expected t .test ] drop
+  .nl
 } ::testp
 
 
@@ -64,8 +52,10 @@ ps 'that lit opt () .$ .nl
 ps [ 'this opt 'then ] seq () .toString .$ .nl
 *)
 
-" NotChars Parser" section
-" thisthenthat0123 "  " '0123456789 notChars () .value 't =$ " #T testp
-" thisthenthat0123 "  " '0123456789 notChars star () .value join 'thisthenthat =$ " #T testp
+" AnyChar Parser" section
+" thisthenthat0123 "  " 'this anyChar      () .value 't =$ " #T testp
+" thisthenthat0123 "  " 'this anyChar star () .value join 'thisth =$ " #T testp
 
-t .report
+" NotChars Parser" section
+" thisthenthat0123 "  " '0123456789 notChars      () .value 't =$ " #T testp
+" thisthenthat0123 "  " '0123456789 notChars star () .value join 'thisthenthat =$ " #T testp

@@ -2,7 +2,6 @@
 { str pos value ignore let false :tail |
   { m |
     m switch
-      'test { this | 42 }
       'parse  { parser this | this parser () }
       'parseToken { parser this |
         ignore
@@ -13,9 +12,7 @@
               { | result }
             ifelse
           }
-          { |
-            this parser ()
-          }
+          { | this parser () }
         ifelse
       }
       'ignoreOff { this | str pos value false PStream }
@@ -36,11 +33,11 @@
           { | this }
         ifelse
       }
-      'value  { this | value }
+      'value    { this | value }
       ':xxvalue { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
-      ':value { v2 this | str pos v2 ignore PStream }
+      ':value   { v2 this | str pos v2 ignore PStream }
       'toString { this | [ " PStream pos: " pos " , value: '" value '' nl ] join }
-      { this | [ " PStream Unknown Method '" m '' nl ] join dup .$ }
+                { this | [ " PStream Unknown Method '" m '' nl ] join dup .$ }
     end
   }
 } ::PStream
@@ -87,29 +84,13 @@
   { a | [ a 0 @  { e | e } do a 1 @ ] } mapp
 } ::delim
 
-{ parser | {
-  ps
-  let
-    parser ps .parse :ret
-    parser .test guru :t2
-  |
-    t2 . .nl
-    parser .test . .nl
-    parser ps .parse
-    /* ret { | ret } { | false ps .:value } ifelse */
-  }
-} ::optxxx
-
-{ parser | { ps | parser ps .parse } } ::optxx
-
-{ parser | { ps let parser .test :xxx | guru } } ::opt
+{ parser | { ps let parser ps .parse :ret | ret { | ret } { | false ps .:value } ifelse } } ::opt
 
 { parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 
 { str | { ps | str ps .head charCode $indexOf -1 = { | ps .tail .value charCode  ps .tail .:value } { | false } ifelse } } ::notChars
 
-// TODO: fix
-{ str | { ps | str ps .head $indexOf -1 > { | ps .tail } { | false } ifelse } } ::anyChar
+{ str | { ps | str ps .head charCode $indexOf -1 > { | ps .tail .value charCode  ps .tail .:value } { | false } ifelse } } ::anyChar
 
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
 

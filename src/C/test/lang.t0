@@ -1,18 +1,9 @@
-'lib/Tester.t0        require
-'lib/Combinatorics.t0 require
-
-nop ::prompt
-clear
-
 // Build a Tester class to perform tests and record statistics
 // TODO: move to own file
 // TODO: add colour support
 // TODO: add padding
 
-Tester :t // Create an instance of Tester
-{ | t .test }  ::test
-{ | t .testf } ::testf
-
+'lib/Combinatorics.t0 require
 
 'Strings section
 " abc" 'abc " =$ " #T test
@@ -29,8 +20,8 @@ Tester :t // Create an instance of Tester
 
 
 'Logic section
-" #T ! " #F test
-" #F ! " #T  test
+" #T !    " #F test
+" #F !    " #T  test
 " #F #F & " #F test
 " #F #T & " #F test
 " #T #F & " #F test
@@ -225,8 +216,9 @@ a { v | v v * } map .[] .nl
 
 
 " Immediate Functions" section
+// Note that callMe is called even though the function it is in is never called
+" 0 { | '<called> .$ 42 } :!callMe { | callMe } drop " 42 test
+
 
 'Broken section
 " 1 { x let x x + :y | y } () " 2 test
-
-t .report

@@ -76,11 +76,12 @@ FILE* tin;
       that memory can be GC'ed in the future
     - comments inside switch
     - nested quotes inside """
+    - space needed as last character in eval
 
   Todo:
     -  support for emitting code comments in DEBUG mode or tagging non-code items like closures
     -  Add : :: :! words for setting values with String keys
-    -  Finish i{ for immediate mode
+    -  Finish i{ for immediate mode, use to define scoped values
     -  Replace Stack.ptr with actual pointer instead of counter?
     -  Would it be possible to bootstrap with a simple defun() then upgrade in T0?
     -  Do we need two stacks: the call-stack and the argument stack?
@@ -88,7 +89,7 @@ FILE* tin;
     -  Use ' for characters use " for front-quoted strings or #?
     -  | could be replaced with |0 |1 |2 ...
     -  extend ??? behaviour in prefix.t0
-    -  reverse order of local variables on stackframe
+    -  Add colour support and use for tests
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -97,6 +98,7 @@ FILE* tin;
     - Replace @ with [ ] and [ ]:, could validate only one arg on stack between [ and ]
     - Add a prefix to strings which includes size and hash?
     - Internalize strings?
+    - Use ( ) for comments? Along with (* *) (** **) (*** ***) (**** ****)
 
 */
 
