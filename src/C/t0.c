@@ -330,18 +330,10 @@ long frameOffset(long depth, long offset) {
 // Copy argument values from stack to the heap, as part of the activation record,
 // where they can be accessed as frameReferences. Also reserve space for local vars.
 void localVarSetup() {
-  long numParams = (long) nextI();
-  long numVars   = (long) nextI();
+  long numParams = (long) nextI(), numVars = (long) nextI();
   long n         = numParams + numVars;
-  long i         = 0;
 
-  for ( ; i < numVars ; i++ ) {
-    heap->arr[heap->ptr+n-i-1] = 0l;
-  }
-
-  for ( ; i < n ; i++ ) {
-    heap->arr[heap->ptr+n-i-1] = pop(stack);
-  }
+  for ( long i = numVars ; i < n ; i++ ) heap->arr[heap->ptr+n-i-1] = pop(stack);
 
   heap->ptr += n;
 }
