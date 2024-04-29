@@ -98,7 +98,11 @@
     parser ps .parse
     /* ret { | ret } { | false ps .:value } ifelse */
   }
-} ::opt
+} ::optxxx
+
+{ parser | { ps | parser ps .parse } } ::optxx
+
+{ parser | { ps let parser .test :xxx | guru } } ::opt
 
 { parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 
