@@ -146,6 +146,15 @@ a b +[] .[] .nl
 " { :o | 1 { | 2 o<- 3 } () 4 } () " 2 test
 
 
+'Functions section
+" 1 { | } () " 1 test
+" 1 { }   () " 1 test
+" { | 2 } () " 2 test
+" 3 { a | a } () " 3 test
+" 4 { a let a a + :b | a b + } () " 12 test
+"   { let 42 :a | a } () " 42 test
+
+
 " Function Programming" section
 [ 1 10 {} for ] :a
 a .[] .nl
