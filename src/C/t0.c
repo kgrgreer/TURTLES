@@ -75,8 +75,6 @@ FILE* tin;
     - malloc() is used in some places where the stack or heap should be used instead so
       that memory can be GC'ed in the future
     - comments inside switch
-    - nested quotes inside """
-    - space needed as last character in eval
 
   Todo:
     -  support for emitting code comments in DEBUG mode or tagging non-code items like closures
@@ -247,10 +245,6 @@ bool readSym(char* buf, int bufSize) {
     buf[size++] = c;
   }
   buf[size] = '\0';
-
-  // This is so the character isn't lost if the command wants to consume input
-  // This is needed so that //\n works. But is that really required?
-  ungetc(c, tin);
 
 //  printf("SYM: %s\n", buf);
   return true;
@@ -606,7 +600,6 @@ void switch_() {
 
 void strLiteral() {
   char buf[4096];
-  readChar(); // remove whitespace after "
   int i = 0;
 
   while ( ( buf[i++] = readChar() ) != '"' );
@@ -619,7 +612,6 @@ void strLiteral() {
 
 void str3Literal() {
   char buf[4096];
-  readChar(); // remove whitespace after """
   int i = 0, quoteCount = 0;
 
   while ( ( buf[i++] = readChar() ) ) {
@@ -640,8 +632,7 @@ void str3Literal() {
 void immediate() { // i{
 //   long outerCode = code->ptr;
   char buf[4096];
-  readChar(); // remove whitespace after """
-  int i = 0;
+  int  i = 0;
 
   while ( true ) {
     if ( ( buf[i++] = readChar() ) != '}' ) continue;
@@ -660,6 +651,9 @@ void immediate() { // i{
 // Clear (empty) the stack and the screen
 void clearStack() { stack->ptr = 0; printf("\033c"); }
 
+void clearScreen() { printf("\033c"); }
+
+
 
 #ifdef DEBUG
 #include "debug.c"
@@ -675,7 +669,8 @@ void initScope() {
 //  scope = addCmd(scope, "//",     &cppComment);
   scope = addCmd(scope, "{",      &defun);
   scope = addCmd(scope, "switch", &switch_);
-  scope = addCmd(scope, "clear",  &clearStack);
+  scope = addCmd(scope, "clearStack", &clearStack);
+  scope = addCmd(scope, "cls",    &clearScreen);
   scope = addCmd(scope, "\"",     &strLiteral);
   scope = addCmd(scope, "\"\"\"", &str3Literal);
   scope = addCmd(scope, "i{",     &immediate);

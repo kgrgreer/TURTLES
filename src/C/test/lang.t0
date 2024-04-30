@@ -6,9 +6,9 @@
 'lib/Combinatorics.t0 require
 
 'Strings section
-" abc" 'abc " =$ " #T test
-""" abc""" 'abc " =$ " #T test
-" abc" 'abc " =$ " #T test
+" abc" 'abc " =$ " #T t .test
+""" abc""" 'abc " =$ " #T t .test
+" abc" 'abc " =$ " #T t .test
 " 'ABC len " 3 test
 " 'abc 'abc =$ " #T test
 """ 'abc " abc" =$ """ #T test // TODO: doesn't work

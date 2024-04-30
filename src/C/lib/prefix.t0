@@ -6,6 +6,8 @@
 // T0 Language Features written in T0
 // //////////////////////////////////////////////////////////////////////////
 
+{ | clearStacks cls } ::clear
+
 { c b | { | c () ! } b while } ::until
 
 { let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
