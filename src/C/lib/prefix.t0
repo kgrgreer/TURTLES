@@ -6,26 +6,28 @@
 // T0 Language Features written in T0
 // //////////////////////////////////////////////////////////////////////////
 
-{ | clearStacks cls } ::clear
-
-{ c b | { | c () ! } b while } ::until
-
 { let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
 /*
  *  Now we have C-style comments
  */
 
- { let 0 :prev 0 :c | { | prev 42 =  c 41 =  & } { | c :prev key :c } until } :!(*
- (*
-  *  Now we have Beta-style comments, let's just use to comment out code
-  *)
+{ c b | { | c () ! } b while } ::until
 
-1 1 = :true         // define true
-1 2 = :false        // define false
-{ } :nil            // define 'nil', like doing nil = new Object() in Java/JS
+{ let 0 :prev 0 :c | { | prev 42 =  c 41 =  & } { | c :prev key :c } until } :!(*
+(*
+ *  Now we have Beta-style comments, let's just use to comment out code
+ *)
+
+{ | clearStack cls } ::clear
+
+1 1 = :true   // define true
+1 2 = :false  // define false
+{ } :nil      // define 'nil', like doing nil = new Object() in Java/JS
 nil :nop
 nil :{}
+
 { n | 0 n - } ::neg // negate
+{ n | n 0 < { | n neg } { | n } ifelse } ::abs
 
 // Standard Forth-like Stack Functions
 // { _ } ::drop // coded natively
@@ -49,6 +51,7 @@ nil :{}
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
 { a | a " " { | >$ +$ } reduce } ::join
 
+{ v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
 { | key } ::_key_
 
@@ -76,6 +79,3 @@ nil :{}
 { | charCode } ::c>$
 true  :#T
 false :#F
-
-
-{ n | n 0 < { | n neg } { | n } ifelse } ::abs

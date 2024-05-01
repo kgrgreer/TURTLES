@@ -562,6 +562,8 @@ void defun() {
 
 
 void switch_() {
+  // TODO: compile switch on 'end' instead of at beginning
+
   // Appears here instead of cmds.js because it is a command, not a function.
   // TODO: this leaves unused constant instructions before each constant value
   // which wastes memory. Add code to remove the constants and compact the
@@ -572,19 +574,32 @@ void switch_() {
   // The 0 is a placeholder and will be replaced at the end
   push2(code, switchI, (long*) 0l);
 
-  for ( long i = 0 ; true ; i++ ) {
+  for ( long i = 0 ; true ; ) {
     if ( ! readSym(buf, sizeof(buf)) ) {
       printf("Syntax Error: Unclosed switch, missing end\n");
       return;
     }
+
+    printf("\nsymbol: %s, i: %ld, code: %ld\n", buf, i, code->ptr);
 
     if ( strcmp(buf, "end") == 0 ) {
       code->arr[ptr+1] = (void*) (i/2);
       return;
     }
 
+    long prev = code->ptr;
     evalSym(buf);
+    if ( code->arr[prev] == &constant || code->arr[prev] == &createClosure || code->arr[prev] == &createClosure0 ) {
+      printf("CONSTANT\n");
+      i++;
+    } else {
+      printf("NOT\n");
+      push(code, ret);
+      execute(prev);
+      code->ptr = prev;
+    }
   }
+  // TODO: copy values off of stack and make constants in
 }
 
 

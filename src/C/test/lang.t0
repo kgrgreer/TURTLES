@@ -1,9 +1,34 @@
-// Build a Tester class to perform tests and record statistics
-// TODO: move to own file
 // TODO: add colour support
 // TODO: add padding
+// TODO: fix bug requiring space at end of eval string
 
 'lib/Combinatorics.t0 require
+
+'Let section
+42 Let :a
+" a .get " 42 test
+" 66 a .set a .get " 66 test
+
+exit
+
+'Comment section
+"""
+1
+// 2
+""" 1 test
+exit
+
+"""
+1
+/* 2 */
+""" 1 test
+
+"""
+1
+(* 2 *)
+""" 1 test
+
+exit
 
 'Strings section
 " abc" 'abc " =$ " #T t .test
@@ -53,7 +78,6 @@
 
 
 'Arithmetic section
-// TODO: bug space needed before end quotes
 " 1 1 +        " 2 test
 " 0 1 +        " 1 test
 " 2 1 -        " 1 test
@@ -176,6 +200,23 @@ a { v | v v * } map .[] .nl
 } () " 10 test
 
 " { let 0 :i | 1 10 { | i++ } for i } () " 10 test
+
+'Switch section
+"""
+  'a switch
+    'a 1 // a comment
+    'b 2
+       3
+  end
+""" 1 test
+
+"""
+  'c switch
+    'a { | 1 } // a comment
+    'b { | 2 }
+       { | 3 }
+  end ()
+""" 3 test
 
 
 'OO section
