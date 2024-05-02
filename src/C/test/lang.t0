@@ -9,14 +9,11 @@
 " a .get " 42 test
 " 66 a .set a .get " 66 test
 
-exit
-
 'Comment section
 """
 1
 // 2
 """ 1 test
-exit
 
 """
 1
@@ -28,7 +25,12 @@ exit
 (* 2 *)
 """ 1 test
 
-exit
+'Math section
+" 5  abs " 5 test
+" -5 abs " 5 test
+" 1  neg " -1 test
+" -1 neg "  1 test
+
 
 'Strings section
 " abc" 'abc " =$ " #T t .test
@@ -200,6 +202,7 @@ a { v | v v * } map .[] .nl
 } () " 10 test
 
 " { let 0 :i | 1 10 { | i++ } for i } () " 10 test
+
 
 'Switch section
 """

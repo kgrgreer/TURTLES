@@ -1,28 +1,28 @@
+// Tester.t0
+// Simple Unit Tests
+
 { let 0 :passed 0 :failed |
-  { m |
-    m switch
-      'score { f this |
-        f { | passed++ passed " PASSED" } { | failed++ failed " FAILED" } ifelse
-      }
-      'test { script answer this |
-        " Expect: " .$ script .$ "  -> " .$ answer . "  " .$
-        script eval answer = this .score .$ .nl
-      }
-      'testf { f answer this |
-        " Expect: " .$ '<function> .$ "  -> " .$ answer . "  " .$
-        f () answer = this .score .$ .nl
-      }
-      'report { this |
-        .nl
-        " Tests Run: " .$ passed failed + . .nl
-        "    PASSED: " .$ passed . .nl
-        "    FAILED: " .$ failed . .nl
-        .nl
-      }
-      { this | " unknown method: " .$ m .$ }
-    end
-  }
+  { m | m switch
+    'score { f this |
+      f { | passed++ " PASSED" } { | failed++ " FAILED" } ifelse
+    }
+    'test { script answer this |
+      " Expect: " .$ script .$ "  -> " .$ answer . "  " .$
+      script eval answer = this .score .$ .nl
+    }
+    'testf { f answer this |
+      " Expect: " .$ '<function> .$ "  -> " .$ answer . "  " .$
+      f () answer = this .score .$ .nl
+    }
+    'report { this |
+      .nl
+      " Tests Run: " .$ passed failed + . .nl
+      "    PASSED: " .$ passed . .nl
+      "    FAILED: " .$ failed . .nl .nl
+    }
+    { this | " unknown method: " .$ m .$ }
+  end }
 } ::Tester
 
 
-{ s | .nl s .$ "  -------------------------------" .$  .nl } ::section
+{ title | .nl title .$ "  -------------------------------" .$ .nl } ::section

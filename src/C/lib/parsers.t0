@@ -1,4 +1,8 @@
+// parsers.t0
+// A Parse Combinator Library
+
 // A Parser Stream - used as input for parsers
+
 { str pos value ignore let false :tail |
   { m |
     m switch

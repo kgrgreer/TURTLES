@@ -1,3 +1,9 @@
+{ let { | key } :delegate |
+  { | delegate } ::getKey
+  { delegate' | delegate' :delegate delegate ::_key_ } ::setKey
+  { | delegate () } ::key
+} ()
+
 { | { | key 10 != } { | } while } :!//
 // Now we have C++-style comments
 
@@ -6,32 +12,28 @@
 // T0 Language Features written in T0
 // //////////////////////////////////////////////////////////////////////////
 
-{ let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
-/*
- *  Now we have C-style comments
- */
-
 { c b | { | c () ! } b while } ::until
 
+{ let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
+/* Now we have C-style comments */
+
 { let 0 :prev 0 :c | { | prev 42 =  c 41 =  & } { | c :prev key :c } until } :!(*
-(*
- *  Now we have Beta-style comments, let's just use to comment out code
- *)
+(* Now we have Beta-style comments, let's just use to comment out code *)
 
 { | clearStack cls } ::clear
 
-1 1 = :true   // define true
-1 2 = :false  // define false
-{ } :nil      // define 'nil', like doing nil = new Object() in Java/JS
-nil :nop
-nil :{}
+1 1 = :true
+1 2 = :false
+{ } :nil // define 'nil', like doing nil = new Object() in Java/JS
+nil :nop // TODO: remove
+nil :{}  // Identity Function
 
-{ n | 0 n - } ::neg // negate
-{ n | n 0 < { | n neg } { | n } ifelse } ::abs
+{ n | 0 n - } ::neg
+{ n | n n 0 < { | neg } if } ::abs
 
 // Standard Forth-like Stack Functions
 // { _ } ::drop // coded natively
-{ _ __ } ::drop2
+{ _ _ } ::drop2
 { a | a a } ::dup
 { a b | a b a b } ::dup2
 { a b | b a } ::swap
@@ -53,29 +55,23 @@ nil :{}
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
-{ | key } ::_key_
-
-{ s let &_key_ :oldKey 0 :i |
+{ s let getKey :oldKey 0 :i |
   { let s len :l |
     { :outer |
-      i l = { | oldKey ::_key_ -1 outer<- } if
-      i l <
-        { | s i charAt }
-        { | 32 }
-      ifelse
+      i l = { | oldKey setKey -1 outer<- } if
+      i l < { | s i charAt } { | 32 } ifelse
       i++
-    } ::_key_
+    } setKey
   } ()
   eval_
 } ::eval
 
-
 // Array Functions
-{ a b | [ a {} do b {} do ] } ::+[]
+{ a b | [ a {} do b {} do ] } ::+[] // concatenate two arrays
 { a | [ a {} do ] } ::clone[]
 { a start end | start end { i | a i @ } for } ::slice
 
-
+// Experimental Renames
 { | charCode } ::c>$
 true  :#T
 false :#F

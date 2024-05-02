@@ -88,6 +88,7 @@ FILE* tin;
     -  | could be replaced with |0 |1 |2 ...
     -  extend ??? behaviour in prefix.t0
     -  Add colour support and use for tests
+    -  Add cond statement
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -102,9 +103,9 @@ FILE* tin;
 
 Space* createSpace(long size) {
   Space* s = (Space*) malloc(sizeof(Space));
-  s->size = size;
-  s->arr  = malloc(size * sizeof(void*));
-  s->ptr  = 0;
+  s->size  = size;
+  s->arr   = malloc(size * sizeof(void*));
+  s->ptr   = 0;
   return s;
 }
 
@@ -216,7 +217,7 @@ bool isSpace(char c) {
 }
 
 int readChar() {
-  long ptr = findSym(scope, "_key_");
+  long ptr = findSym(scope, "_key_"); // TODO: use key != key
 
   if ( ptr == -1 ) return getc(tin);
 
@@ -562,8 +563,6 @@ void defun() {
 
 
 void switch_() {
-  // TODO: compile switch on 'end' instead of at beginning
-
   // Appears here instead of cmds.js because it is a command, not a function.
   // TODO: this leaves unused constant instructions before each constant value
   // which wastes memory. Add code to remove the constants and compact the
@@ -580,8 +579,6 @@ void switch_() {
       return;
     }
 
-    printf("\nsymbol: %s, i: %ld, code: %ld\n", buf, i, code->ptr);
-
     if ( strcmp(buf, "end") == 0 ) {
       code->arr[ptr+1] = (void*) (i/2);
       return;
@@ -590,10 +587,8 @@ void switch_() {
     long prev = code->ptr;
     evalSym(buf);
     if ( code->arr[prev] == &constant || code->arr[prev] == &createClosure || code->arr[prev] == &createClosure0 ) {
-      printf("CONSTANT\n");
       i++;
     } else {
-      printf("NOT\n");
       push(code, ret);
       execute(prev);
       code->ptr = prev;
@@ -667,7 +662,6 @@ void immediate() { // i{
 void clearStack() { stack->ptr = 0; printf("\033c"); }
 
 void clearScreen() { printf("\033c"); }
-
 
 
 #ifdef DEBUG
