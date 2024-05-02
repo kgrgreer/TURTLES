@@ -19,7 +19,7 @@
   }
 } () ::rand
 
-{ a i j let a i @ :tmp | a j @ a i :@ tmp a j :@ } ::[]swap
+{ a i j | a i @  a j @  a i :@  a j :@ } ::[]swap
 
 { a f let a # :l  0 :permute_ |
   { i |
