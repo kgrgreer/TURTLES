@@ -7,10 +7,11 @@
 { r | r P r fact / } ::C
 
 { let 42 :last |
-  // TODO: add constants in immediate mode
-  9223372036854775807 :IM
-  3877   :IA
-  29573  :IC
+  i{ // Scoped Constants
+    9223372036854775807 :IM
+    3877                :IA
+    29573               :IC
+  }i
 
   { max |
     last IA * IC + IM mod :last
@@ -18,28 +19,17 @@
   }
 } () ::rand
 
+{ a i j let a i @ :tmp | a j @ a i :@ tmp a j :@ } ::[]swap
 
-// TODO: move permute_ to be an inner function in permute
-{ a f i let a i @ :v a # :l |
-  i l 1 - =
-  { | a f () }
-  { |
-    i l 1 -
-      { j |
-        a j @ a i :@
-        v a j :@
-        a f i 1 + permute_ ()
-        a i @ a j :@
-        v a i :@
-      }
-    for
-  } ifelse
-} :permute_
-
-{ a f | a f 0 permute_ () } ::permute
-
-(*
-[ 1 2 3 4 ] { a | .nl a .[] } permute
-
-[ #F #T ] { a | .nl a .[] } permute
-*)
+{ a f let a # :l  0 :permute_ |
+  { i |
+    i  l 1 -  =
+    { | a f () }
+    { |
+      i  l 1 -
+        { j | a i j []swap  i 1 + permute_ ()  a i j []swap }
+      for
+    } ifelse
+  } :permute_
+  l { | 0 permute_ () } if
+} ::permute

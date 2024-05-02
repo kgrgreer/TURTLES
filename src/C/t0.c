@@ -651,8 +651,8 @@ void immediate() { // i{
   }
   buf[i-3] = '\0';
 
-  printf("immediate: %s\n", buf);
-  // eval$(buf);
+  push(stack, buf);
+  execSym("eval");
 }
 
 // 'i[':      code => { outerCode = code; var s = '', c; while ( (c = scope.readChar()) != ']' ) s += c; scope.eval$(s); },
@@ -682,7 +682,7 @@ void initScope() {
   scope = addCmd(scope, "cls",    &clearScreen);
   scope = addCmd(scope, "\"",     &strLiteral);
   scope = addCmd(scope, "\"\"\"", &str3Literal);
-  scope = addCmd(scope, "i{",     &immediate);
+  scope = addSym(scope, "i{",     push(heap, &immediate));
   scope = addCmd(scope, "prompt", &nop);
 
   scope = addCmds(scope);
