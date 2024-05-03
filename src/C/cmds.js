@@ -82,7 +82,7 @@ if ( a < 1000000000 ) {
   `) ],
     [ 'isFn',           'fn?',             sf('i',     'i > 0 && i < heap->size && ( heap->arr[i] == callClosure || heap->arr[i] == callClosure0 )') ],
     [ 'arrayAt',        '@',               sf('a,i',   '((long*)a)[i+1]') ],
-    [ 'arraySet',       ':@',              af('v,a,i', '((long*)a)[i+1] = v;') ],
+    [ 'arraySet',       ':@',              af('v,a,i', '((long*)a)[i+1] = v;') ], // ???: rename?
     [ 'arrayLen',       '#',               sf('a',     '((long*)a)[0]') ],
     [ 'arrayWithValue', '[]WithValue',     af('len,val', `
       long* a = (long*) malloc((len+1) * sizeof(long));

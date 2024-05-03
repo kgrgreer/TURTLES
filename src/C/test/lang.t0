@@ -292,5 +292,7 @@ MAX . .nl // 10
 MAX . .nl // 10
 
 
-'Broken section
-" 1 { x let x x + :y | y } () " 2 test
+'String section
+" '012345 0 3 substring '012 =$ " true test
+
+" #F " true test

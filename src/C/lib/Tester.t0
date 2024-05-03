@@ -4,7 +4,7 @@
 { let 0 :passed 0 :failed |
   { m | m switch
     'score { f this |
-      f { | passed++ " PASSED" } { | failed++ " FAILED" } ifelse
+      f { | passed++ [ ANSI.GREEN " PASSED" ANSI.RESET ] join } { | failed++ [ ANSI.BLINK ANSI.WHITE ANSI.RED_BG "  FAILED " ANSI.RESET ] join } ifelse
     }
     'test { script answer this |
       " Expect: " .$ script .$ "  -> " .$ answer . "  " .$
@@ -17,8 +17,8 @@
     'report { this |
       .nl
       " Tests Run: " .$ passed failed + . .nl
-      "    PASSED: " .$ passed . .nl
-      "    FAILED: " .$ failed . .nl .nl
+      "    PASSED: " .$ [ ANSI.GREEN passed #>$ ANSI.RESET ] join .$ .nl
+      "    FAILED: " .$ [ ANSI.RED   failed #>$ ANSI.RESET ] join .$ .nl .nl
     }
     { this | " unknown method: " .$ m .$ }
   end }

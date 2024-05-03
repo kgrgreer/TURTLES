@@ -20,6 +20,8 @@
 { let 0 :prev 0 :c | { | prev 42 =  c 41 =  & } { | c :prev key :c } until } :!(*
 (* Now we have Beta-style comments, let's just use to comment out code *)
 
+// Maybe {* *} would be better for code comments?
+
 { | clearStack cls } ::clear
 
 1 1 = :true
@@ -55,7 +57,7 @@ nil :{}  // Identity Function
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
-{ s let getKey :oldKey 0 :i |
+{ s let getKey :oldKey 0 :i s "  " +$ :s |
   { let s len :l |
     { :outer |
       i l = { | oldKey setKey -1 outer<- } if
@@ -70,6 +72,13 @@ nil :{}  // Identity Function
 { a b | [ a {} do b {} do ] } ::+[] // concatenate two arrays
 { a | [ a {} do ] } ::clone[]
 { a start end | start end { i | a i @ } for } ::slice
+
+{ str s e | [ s e 1 - { i | str i charAt charCode } for ] join } ::substring
+
+{ n p let [ { | "  " } p repeat n #>$ ] join :str |
+  { let str len :l | str l p - l substring } ()
+} ::##>$ // Left-Pad a number with spaces
+// TODO: make left-pad be a separate function
 
 // Experimental Renames
 { | charCode } ::c>$

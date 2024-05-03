@@ -1,12 +1,71 @@
-" \\033[0m"   ::ANSI.REVERT
+// See:
+//   https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+//   https://en.wikipedia.org/wiki/ANSI_escape_::
 
-" \033[1;31m" ::ANSI.RED
-" \033[0;32m" ::ANSI.GREEN
+27 c>$ :ANSI.ESC
+{ n | [ ANSI.ESC '[1; n #>$ 'm ] join } ::ANSI.CODE
 
-" " ::ANSI.BOLD
-/*
-*/
+{ |
+  i{ { s | ANSI.CODE ':ANSI. s +$ eval } ::; }i
 
-(*
+  0 'RESET ;
+  1 'BOLD ;
+  2 'FAINT ;
+  3 'ITALIC ;
+  4 'UNDERLINE ;
+  5 'BLINK ;
+  6 'FAST_BLINK ; // Doesn't work on MacOS
+  7 'REVERSE ;
+  9 'STRIKE ;     // Doesn't work on MacOS
 
- *)
+  30 'BLACK ;
+  90 'GRAY ;
+  91 'RED ;
+  92 'GREEN ;
+  93 'YELLOW ;
+  94 'BLUE ;
+  95 'MAGENTA ;
+  96 'CYAN ;
+  97 'WHITE ;
+
+  40 'BLACK_BG ;
+  100 'GRAY_BG ;
+  101 'RED_BG ;
+  102 'GREEN_BG ;
+  103 'YELLOW_BG ;
+  104 'BLUE_BG ;
+  105 'MAGENTA_BG ;
+  106 'CYAN_BG ;
+  107 'WHITE_BG ;
+} ()
+
+.nl
+[
+  'BOLD 'FAINT 'ITALIC 'UNDERLINE 'BLINK 'FAST_BLINK 'REVERSE 'STRIKE
+  'BLACK 'GRAY 'RED 'GREEN 'YELLOW 'BLUE 'MAGENTA 'CYAN 'WHITE
+] { n let 'ANSI. n +$ :n' | [ n' eval n ANSI.RESET ] join .$ .nl } do
+
+.nl
+0 10 { i |
+  0 7 { j let i 10 * j + :n |
+    [ ANSI.ESC '[ n #>$ " m " n 3 ##>$ ANSI.RESET ] join .$
+  } for
+  .nl
+} for
+
+.nl
+[ ANSI.BLINK ANSI.WHITE ANSI.RED_BG 'WARNING ANSI.RESET ] join .$ .nl
+
+
+.nl
+{ let [ 'BLACK 'GRAY 'RED 'GREEN 'YELLOW 'BLUE 'MAGENTA 'CYAN 'WHITE ] :CS |
+  CS { b |
+    CS { f |
+       [ 'ANSI. b '_BG +$ +$ eval 'ANSI. f +$ eval "  ABC " ANSI.RESET ] join .$
+    }
+    do
+    .nl
+  } do
+} ()
+
+exit
