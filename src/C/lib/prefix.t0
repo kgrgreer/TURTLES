@@ -68,6 +68,16 @@ nil :{}  // Identity Function
   eval_
 } ::eval
 
+{ s let getKey :oldKey 0 :i s "  " +$ :s |
+  { let s len :l |
+    { :outer |
+      i l = { | oldKey setKey 32 outer<- } if
+      i l < { | s i charAt } { | 32 } ifelse
+      i++
+    } setKey
+  } ()
+} ::emit
+
 // Array Functions
 { a b | [ a {} do b {} do ] } ::+[] // concatenate two arrays
 { a | [ a {} do ] } ::clone[]

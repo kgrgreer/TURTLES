@@ -10,7 +10,7 @@ Tester :t // Create an instance of Tester
 { f      answer | [ f      answer t .testf ] drop } ::testf
 
 'test/lang.t0    require
-// 'test/parsers.t0 require
-// 'demo/ansi.t0    require
+'test/parsers.t0 require
+'demo/ansi.t0    require
 
 t .report

@@ -305,5 +305,11 @@ MAX . .nl // 10
   end
 """ 222 test
 
+
+'Emit section
+"""
+  " 1 2 +" emit
+""" 3 test
+
 'Error section
 " #F " true test
