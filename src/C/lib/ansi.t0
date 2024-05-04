@@ -28,7 +28,7 @@
   96 : CYAN
   97 : WHITE
 
-  40 : BLACK_BG
+  40  : BLACK_BG
   100 : GRAY_BG
   101 : RED_BG
   102 : GREEN_BG

@@ -97,6 +97,7 @@ FILE* tin;
     - Internalize strings?
     - Use ( ) for comments? Along with (* *) (** **) (*** ***) (**** ****)
     - Do loops need break and continue?
+    - maybe make : and :! read ahead a symbol? or have versions which read name from stack
 
 */
 
