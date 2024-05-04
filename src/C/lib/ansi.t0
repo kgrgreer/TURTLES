@@ -14,9 +14,9 @@
   3 : ITALIC
   4 : UNDERLINE
   5 : BLINK
-  6 : FAST_BLINK // Doesn: t work on MacOS
+  6 : FAST_BLINK // Doesn't work on MacOS
   7 : REVERSE
-  9 : STRIKE     // Doesn: t work on MacOS
+  9 : STRIKE     // Doesn't work on MacOS
 
   30 : BLACK
   90 : GRAY
