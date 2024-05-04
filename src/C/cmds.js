@@ -43,19 +43,15 @@ exports.CMDS = [
   `) ],
   [ 'strToChar', '$>c',   sf('s', '((char*) s)[0]') ],
   [ 'print',  '.',        af('a', `
-    printf("\\033[1;30m"); // Print in bold black
 //    printf("%ld", a);
 if ( a < 1000000000 ) {
   printf("%ld", a);
 } else {
   printf("%s", (char*) a);
 }
-    printf("\\033[0m");    // Revert colour code`)
   ],
   [ 'printStr', '.$',     af('a', `
-    printf("\\033[1;30m"); // Print in bold black
     printf("%s", (char *) a);
-    printf("\\033[0m");    // Revert colour code`)
   ],
   [ 'eqStr',     '=$', sf('a,b', '0 == strcmp((char*) a, (char*) b)') ],
   [ 'concatStr', '+$', sf('a,b', 'strAdd((char*) a, (char*) b)') ],
@@ -191,6 +187,22 @@ exports.INSTRUCTIONS = [
       ip -= 2; // back-up again so we re-run the new definition
     }
   `],
+  [ 'condI', 'int count', `
+    for ( long i = 0 ; i < count ; i++ ) {
+      ((Fn) nextI())();
+      call();
+      long value = (long) pop(stack);
+      if ( value ) {
+        ((Fn) nextI())();
+        // Advance over unused constants in the switch statement
+        ip += ( count - i - 1 ) * 4;
+        return;
+      }
+
+      // skip over unused value
+      ip += 2;
+    }
+  `, true ],
   [ 'switchI', 'int count', `
     char* c = (char*) pop(stack);
     for ( long i = 0 ; i < count ; i++ ) {

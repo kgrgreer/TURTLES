@@ -87,7 +87,6 @@ FILE* tin;
     -  | could be replaced with |0 |1 |2 ...
     -  extend ??? behaviour in prefix.t0
     -  Add split
-    -  Add cond statement
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -598,6 +597,38 @@ void switch_() {
 }
 
 
+void cond() {
+  // Appears here instead of cmds.js because it is a command, not a function.
+  char buf[256]; // Used to hold next read symbols
+  long ptr = code->ptr;
+
+  // The 0 is a placeholder and will be replaced at the end
+  push2(code, condI, (long*) 0l);
+
+  for ( long i = 0 ; true ; ) {
+    if ( ! readSym(buf, sizeof(buf)) ) {
+      printf("Syntax Error: Unclosed cond, missing end\n");
+      return;
+    }
+
+    if ( strcmp(buf, "end") == 0 ) {
+      code->arr[ptr+1] = (void*) (i/2);
+      return;
+    }
+
+    long prev = code->ptr;
+    evalSym(buf);
+    if ( code->arr[prev] == &createClosure || code->arr[prev] == &createClosure0 ) {
+      i++;
+    } else {
+      push(code, ret);
+      execute(prev);
+      code->ptr = prev;
+    }
+  }
+}
+
+
 // Ignore C++ style // comments
 // void cppComment() { while ( readChar() != '\n' ); }
 
@@ -678,6 +709,7 @@ void initScope() {
 //  scope = addCmd(scope, "//",     &cppComment);
   scope = addCmd(scope, "{",      &defun);
   scope = addCmd(scope, "switch", &switch_);
+  scope = addCmd(scope, "cond",   &cond);
   scope = addCmd(scope, "clearStack", &clearStack);
   scope = addCmd(scope, "cls",    &clearScreen);
   scope = addCmd(scope, "\"",     &strLiteral);

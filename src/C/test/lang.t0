@@ -295,4 +295,15 @@ MAX . .nl // 10
 'String section
 " '012345 0 3 substring '012 =$ " true test
 
+
+'Cond section
+"""
+  #T
+  cond
+   { | #F } 111
+   { | #T } 222
+  end
+""" 222 test
+
+'Error section
 " #F " true test
