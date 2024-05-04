@@ -57,26 +57,19 @@ nil :{}  // Identity Function
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
-{ s let getKey :oldKey 0 :i s "  " +$ :s |
+{ s eof let getKey :oldKey 0 :i s "  " +$ :s |
   { let s len :l |
     { :outer |
-      i l = { | oldKey setKey -1 outer<- } if
+      i l = { | oldKey setKey eof outer<- } if
       i l < { | s i charAt } { | 32 } ifelse
       i++
     } setKey
   } ()
-  eval_
-} ::eval
+} ::emit_
 
-{ s let getKey :oldKey 0 :i s "  " +$ :s |
-  { let s len :l |
-    { :outer |
-      i l = { | oldKey setKey 32 outer<- } if
-      i l < { | s i charAt } { | 32 } ifelse
-      i++
-    } setKey
-  } ()
-} ::emit
+{ | -1 emit_ eval_ } ::eval
+
+{ | 32 emit_ } ::emit
 
 // Array Functions
 { a b | [ a {} do b {} do ] } ::+[] // concatenate two arrays
