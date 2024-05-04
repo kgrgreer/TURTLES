@@ -1,0 +1,29 @@
+
+.nl
+[
+  'BOLD 'FAINT 'ITALIC 'UNDERLINE 'BLINK 'FAST_BLINK 'REVERSE 'STRIKE
+  'BLACK 'GRAY 'RED 'GREEN 'YELLOW 'BLUE 'MAGENTA 'CYAN 'WHITE
+] { n let 'ANSI. n +$ :n' | [ n' eval n ANSI.RESET ] join .$ .nl } do
+
+.nl
+0 10 { i |
+  0 7 { j let i 10 * j + :n |
+    [ ANSI.ESC '[ n #>$ " m " n 3 ##>$ ANSI.RESET ] join .$
+  } for
+  .nl
+} for
+
+.nl
+[ ANSI.BLINK ANSI.WHITE ANSI.RED_BG 'WARNING ANSI.RESET ] join .$ .nl
+
+
+.nl
+{ let [ 'BLACK 'GRAY 'RED 'GREEN 'YELLOW 'BLUE 'MAGENTA 'CYAN 'WHITE ] :CS |
+  CS { b |
+    CS { f |
+       [ 'ANSI. b '_BG +$ +$ eval 'ANSI. f +$ eval "  ABC " ANSI.RESET ] join .$
+    }
+    do
+    .nl
+  } do
+} ()
