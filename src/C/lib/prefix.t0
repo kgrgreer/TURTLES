@@ -57,14 +57,15 @@ nil :{}  // Identity Function
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
-{ s eof let getKey :oldKey 0 :i s "  " +$ :s |
-  { let s len :l |
-    { :outer |
-      i l = { | oldKey setKey eof outer<- } if
-      i l < { | s i charAt } { | 32 } ifelse
-      i++
-    } setKey
-  } ()
+{ s eof let getKey :oldKey 0 :i s "  " +$ :s s len :l |
+  { |
+    cond
+      { | i l = } { | oldKey setKey eof }
+      { | i l < } { | s i charAt }
+      { | #T    } { | 32 }
+    end ()
+    i++
+  } setKey
 } ::emit_
 
 { | -1 emit_ eval_ } ::eval
