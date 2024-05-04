@@ -49,10 +49,10 @@ if ( a < 1000000000 ) {
 } else {
   printf("%s", (char*) a);
 }
-  ],
+  `)],
   [ 'printStr', '.$',     af('a', `
     printf("%s", (char *) a);
-  ],
+  `)],
   [ 'eqStr',     '=$', sf('a,b', '0 == strcmp((char*) a, (char*) b)') ],
   [ 'concatStr', '+$', sf('a,b', 'strAdd((char*) a, (char*) b)') ],
   [ 'arrayStart', '[', 'push(stack, &arrayStart);' ],
@@ -116,6 +116,12 @@ if ( a < 1000000000 ) {
     `) ],
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
     [ 'key',      'key',      sf('', 'getc(tin)') ],
+    [ 'sym',      'sym',      `
+      char buf[256];
+      readSym(buf, sizeof(buf));
+      printf("SYM: %s\\n", buf);
+      push(stack, strdup(buf));
+    ` ],
     [ 'eval_',    'eval_',    'eval__();' ],
 
     [ 'fopen__',  'fopen',    sf('s',  'fopen((char*) s, "r")') ],
