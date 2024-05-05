@@ -78,9 +78,7 @@ nil :{}  // Identity Function
 
 { str s e | [ s e 1 - { i | str i charAt charCode } for ] join } ::substring
 
-{ s p padChar let [ { | padChar } p repeat s ] join :str |
-  { let str len :l | str l p - l substring } ()
-} ::lpadWith
+{ s p padChar | [ { | padChar } p s len - repeat s ] join } ::lpadWith
 
 { | "  " lpadWith } ::lpad
 
