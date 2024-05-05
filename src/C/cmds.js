@@ -119,7 +119,6 @@ if ( a < 1000000000 ) {
     [ 'sym',      'sym',      `
       char buf[256];
       readSym(buf, sizeof(buf));
-      printf("SYM: %s\\n", buf);
       push(stack, strdup(buf));
     ` ],
     [ 'eval_',    'eval_',    'eval__();' ],
