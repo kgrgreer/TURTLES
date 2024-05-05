@@ -68,9 +68,8 @@ nil :{}  // Identity Function
   } setKey
 } ::emit_
 
-{ | -1 emit_ eval_ } ::eval
-
 { | 32 emit_ } ::emit
+{ | -1 emit_ eval_ } ::eval
 
 // Array Functions
 { a b | [ a {} do b {} do ] } ::+[] // concatenate two arrays
@@ -79,10 +78,9 @@ nil :{}  // Identity Function
 
 { str s e | [ s e 1 - { i | str i charAt charCode } for ] join } ::substring
 
-{ n p let [ { | "  " } p repeat n #>$ ] join :str |
+{ s p let [ { | "  " } p repeat s ] join :str |
   { let str len :l | str l p - l substring } ()
-} ::##>$ // Left-Pad a number with spaces
-// TODO: make left-pad be a separate function
+} ::lpad
 
 // Experimental Renames
 { | charCode } ::c>$

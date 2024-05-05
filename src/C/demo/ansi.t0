@@ -10,7 +10,7 @@
 .nl .nl
 0 10 { i |
   0 7 { j let i 10 * j + :n |
-    [ ANSI.ESC '[ n #>$ " m " n 3 ##>$ ANSI.RESET ] join .$
+    [ ANSI.ESC '[ n #>$ " m " n #>$ 3 lpad ANSI.RESET ] join .$
   } for
   .nl
 } for
