@@ -7,11 +7,11 @@
       f { | passed++ [ ANSI.GREEN " PASSED" ANSI.RESET ] join } { | failed++ [ ANSI.BLINK ANSI.WHITE ANSI.RED_BG "  FAILED " ANSI.RESET ] join } ifelse
     }
     'test { script answer this |
-      " Expect: " .$ script .$ "  -> " .$ answer . "  " .$
+      " Expect: " .$ script .$ "  -> " .$ answer . .'
       script eval answer = this .score .$ .nl
     }
     'testf { f answer this |
-      " Expect: " .$ '<function> .$ "  -> " .$ answer . "  " .$
+      " Expect: " .$ '<function> .$ "  -> " .$ answer . .'
       f () answer = this .score .$ .nl
     }
     'report { this |

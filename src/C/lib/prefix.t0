@@ -19,7 +19,6 @@
 
 { let 0 :prev 0 :c | { | prev 42 =  c 41 =  & } { | c :prev key :c } until } :!(*
 (* Now we have Beta-style comments, let's just use to comment out code *)
-
 // Maybe {* *} would be better for code comments?
 
 { | clearStack cls } ::clear
@@ -42,27 +41,31 @@ nil :{}  // Identity Function
 { a b | a b a } ::over
 { a b c | b c a } ::rot
 
-9  charCode :tab { | tab .$ } ::.tab  // or name \t
-10 charCode :nl  { | nl  .$ } ::.nl   // or name \n
+9  charCode :tab { | tab .$ } ::.tab  // or name \t?
+10 charCode :nl  { | nl  .$ } ::.nl   // or name \n?
+"  " :'  { | '   .$ } ::.'
 13 charCode :cr
 
 // { start end block | { | start end <= } { | start block () start++ } while } ::for // coded natively
 
 // Standard High-Order Functions
-{ a f | 0 a # 1 - { i | a i @ f () } for } ::do
+{ a f | 0  a # 1 - { i | a i @ f () } for } ::do
+{ a f | a # 1 -  0 { i | a i @ f () } for } ::doReverse
+{ a | [ a {} doReverse ] } ::reverse
 { a f | [ a f do ] } ::map
 { a v f | v a f do } ::reduce
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
-{ a | a " " { | >$ +$ } reduce } ::join
+{ a | a " " { | >$ +$ } reduce } ::join // join an array of strings into a single string
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
-{ s eof let getKey :oldKey 0 :i s "  " +$ :s s len :l |
+// Meta-programming Support
+{ s eof let getKey :oldKey 0 :i s ' +$ :s s len :l |
   { |
     cond
       { | i l = } { | oldKey setKey eof }
       { | i l < } { | s i charAt }
-      { | #T    } { | 32 }
+      { | true    } { | 32 }
     end ()
     i++
   } setKey
@@ -76,13 +79,12 @@ nil :{}  // Identity Function
 { a | [ a {} do ] } ::clone[]
 { a start end | start end { i | a i @ } for } ::slice
 
+// String Functions
 { str s e | [ s e 1 - { i | str i charAt charCode } for ] join } ::substring
-
 { s p padChar | [ { | padChar } p s len - repeat s ] join } ::lpadWith
-{ | "  " lpadWith } ::lpad
-
+{ | ' lpadWith } ::lpad
 { s p padChar | [ s { | padChar } p s len - repeat ] join } ::rpadWith
-{ | "  " rpadWith } ::rpad
+{ | ' rpadWith } ::rpad
 
 // Experimental Renames
 { | charCode } ::c>$

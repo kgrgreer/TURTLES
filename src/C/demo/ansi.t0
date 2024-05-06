@@ -19,7 +19,6 @@
 .nl .nl
 [ ANSI.BLINK ANSI.WHITE ANSI.RED_BG 'WARNING ANSI.RESET ] join .$ .nl
 
-
 .nl .nl
 { let [ 'BLACK 'GRAY 'RED 'GREEN 'YELLOW 'BLUE 'MAGENTA 'CYAN 'WHITE ] :CS |
   CS { b |

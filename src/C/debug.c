@@ -33,7 +33,7 @@ void guru() {
   printf("\033[0m");
 }
 
-
+// ???: Could this be written in t0?
 void dump_(long ptr) {
   printf("\n");
 
@@ -67,6 +67,7 @@ void dumpFrames() {
 }
 
 
+// TODO: rewrite in t0
 void debugPrompt() {
   printf("\033[0;32m"); // Print in green
   printf("\nheap: %ld, stack: [ ", heap->ptr); printStack(); printf("] > ");

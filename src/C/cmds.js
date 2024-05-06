@@ -25,7 +25,13 @@ exports.CMDS = [
   [ 'drop',   'drop',     'pop(stack);' ],
   [ 'andand', '&&',       'void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call(); }' ],
   [ 'oror',   '||',       'void* aFn = pop(stack); if (   pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
-  [ 'for_',   'for',      af('s,e,b', 'for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }')   ],
+  [ 'for_',   'for',      af('s,e,b', `
+    if ( s <= e ) {
+      for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }
+    } else {
+      for ( long i = s ; i >= e ; i-- ) { push(stack, (void*) i); callI(b); }
+    }
+  `) ],
   [ 'while_', 'while',    af('c,b',   'while ( true ) { callI(c); if ( ! pop(stack) ) break; callI(b); }') ],
   [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i < t ; i++ ) callI(b);') ],
   [ 'now',    'now',      'struct timeval tp; gettimeofday(&tp, NULL); push(stack, (void*) (tp.tv_sec * 1000 + tp.tv_usec / 1000));' ],
