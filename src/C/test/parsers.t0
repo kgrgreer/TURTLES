@@ -29,20 +29,14 @@
 " thisthenthat0123 " " [ 'think 'this ] alt () .value 'this =$ " true testp
 
 
-(*
 " Range Parser" section
-`0 `9 range :rangeparser
-ps rangeparser () .$
-'a 0 charAt 'z 0 charAt range :rangeparser
-ps rangeparser () .value charCode .$ .nl
-*)
+" 567 " " `0 `9 range () .value " `5 testp
+" abc " " `0 `9 range ()        " false testp
 
-(*
 " Repeat Parser" section
-`a `z range 1 repeat :repeatparser
-ps repeatparser () .value { x | x charCode } map join .$ .nl
-*)
+" 567 " " `0 `9 range star () .value [ swap { | charCode } do ] join '567 =$ " true testp
 
+" Opt(ional) Parser" section
 (*
 'parse-"that" .$
 ps 'that lit () .$ .nl
@@ -51,6 +45,8 @@ ps 'that lit opt () .$ .nl
 'thisthen print
 ps [ 'this opt 'then ] seq () .toString .$ .nl
 *)
+
+exit
 
 " AnyChar Parser" section
 " thisthenthat0123 "  " 'this anyChar      () .value 't =$ " #T testp

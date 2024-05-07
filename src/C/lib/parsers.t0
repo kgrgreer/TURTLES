@@ -3,6 +3,8 @@
 
 // A Parser Stream - used as input for parsers
 
+// TODO: Add .value$
+
 { str pos value ignore let false :tail |
   { m |
     m switch

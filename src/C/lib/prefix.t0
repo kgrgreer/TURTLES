@@ -41,10 +41,10 @@ nil :{}  // Identity Function
 { a b | a b a } ::over
 { a b c | b c a } ::rot
 
+13 charCode :cr
 9  charCode :tab { | tab .$ } ::.tab  // or name \t?
 10 charCode :nl  { | nl  .$ } ::.nl   // or name \n?
-"  " :'  { | '   .$ } ::.'
-13 charCode :cr
+"  " :`         { | `   .$ } ::.`
 
 // { start end block | { | start end <= } { | start block () start++ } while } ::for // coded natively
 
@@ -60,7 +60,7 @@ nil :{}  // Identity Function
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
 // Meta-programming Support
-{ s eof let getKey :oldKey 0 :i s ' +$ :s s len :l |
+{ s eof let getKey :oldKey 0 :i s ` +$ :s s len :l |
   { |
     cond
       { | i l = } { | oldKey setKey eof }
@@ -82,9 +82,9 @@ nil :{}  // Identity Function
 // String Functions
 { str s e | [ s e 1 - { i | str i charAt charCode } for ] join } ::substring
 { s p padChar | [ { | padChar } p s len - repeat s ] join } ::lpadWith
-{ | ' lpadWith } ::lpad
+{ | ` lpadWith } ::lpad
 { s p padChar | [ s { | padChar } p s len - repeat ] join } ::rpadWith
-{ | ' rpadWith } ::rpad
+{ | ` rpadWith } ::rpad
 
 // Experimental Renames
 { | charCode } ::c>$
