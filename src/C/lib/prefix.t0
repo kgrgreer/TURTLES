@@ -44,7 +44,7 @@ nil :{}  // Identity Function
 13 charCode :cr
 9  charCode :tab { | tab .$ } ::.tab  // or name \t?
 10 charCode :nl  { | nl  .$ } ::.nl   // or name \n?
-"  " :`         { | `   .$ } ::.`
+"  " :`          { | `   .$ } ::.`
 
 // { start end block | { | start end <= } { | start block () start++ } while } ::for // coded natively
 
@@ -56,6 +56,10 @@ nil :{}  // Identity Function
 { a v f | v a f do } ::reduce
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
 { a | a " " { | >$ +$ } reduce } ::join // join an array of strings into a single string
+{ a | a " " { | c>$ +$ } reduce } ::cjoin // join an array of chars int a string
+
+// TODO: joinWith
+// TODO: split
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 

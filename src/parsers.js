@@ -77,13 +77,13 @@ scope.eval$(`
 { parser min | { ps let 0 :i false :ret |
   [ { | ps :ret  parser ps .parse :ps ps } { | i++ ps .value } while ]
   i min >=  { a | a ret .:value } { _ | false } ifelse
-} } ::repeat
+} } ::repeatp
 
-{ | 0 repeat } ::star
-{ | 1 repeat } ::plus
+{ | 0 repeatp } ::star
+{ | 1 repeatp } ::plus
 
 { parser delim |
-  [ [ parser delim ] 0 seq1 0 repeat parser opt ] seq
+  [ [ parser delim ] 0 seq1 0 repeatp parser opt ] seq
   { a | [ a 0 @  { e | e } do a 1 @ ] } mapp
 } ::delim
 

@@ -1,4 +1,4 @@
-{ input parser expected let input 0 false false PStream :ps |
+{ input parser expected let input 0 #F #F PStream :ps |
   " input: " .$ input .$ .nl
   [ ps parser expected t .test ] drop
   .nl
@@ -7,7 +7,11 @@
 
 " Literal Parser" section
 " thisthenthat0123" " 'this lit () .value 'this =$ " #T testp
-" thisthenthat0123" " 'that lit ()        " #F testp
+" thisthenthat0123" " 'that lit ()                 " #F testp
+
+
+" Literal Map Parser" section
+// litMap
 
 
 " Optional Parser" section
@@ -16,42 +20,53 @@
 
 
 " Repeat Parser" section
-" AAAB " " 'A lit 0 repeat () .value join len " 3  testp
-" AAAB " " 'A lit 4 repeat ()                 " #F testp
+" AAAB " " 'A lit 0 repeatp () .value join len " 3  testp
+" AAAB " " 'A lit 4 repeatp ()                 " #F testp
 
 
 " Seq Parser" section
-" thisthenthat0123 " " [ 'this lit 'then lit ] seq () .value join 'thisthen =$ " true testp
-" thisthenthat0123 " " [ 'this     'then     ] seq () .value join 'thisthen =$ " true testp
+" thisthenthat0123 " " [ 'this lit 'then lit ] seq () .value join 'thisthen =$ " #T testp
+" thisthenthat0123 " " [ 'this     'then     ] seq () .value join 'thisthen =$ " #T testp
+" (this) " " [ '( 'this ') ] 1 seq1 () .value 'this =$ " #T testp
 
 
 " Alt Parser" section
-" thisthenthat0123 " " [ 'think 'this ] alt () .value 'this =$ " true testp
+" thisthenthat0123 " " [ 'think 'this ] alt () .value 'this =$ " #T testp
 
 
 " Range Parser" section
 " 567 " " `0 `9 range () .value " `5 testp
-" abc " " `0 `9 range ()        " false testp
+" abc " " `0 `9 range ()        " #F testp
+
 
 " Repeat Parser" section
-" 567 " " `0 `9 range star () .value [ swap { | charCode } do ] join '567 =$ " true testp
+" 567 " " `0 `9 range star () .value cjoin '567 =$ " #T testp
+
 
 " Opt(ional) Parser" section
-(*
-'parse-"that" .$
-ps 'that lit () .$ .nl
-ps 'that lit opt () .$ .nl
+'this " 'that lit () " #F testp
+'this " 'this lit () .value 'this =$ " #T testp
+'this " 'that lit opt () .value " #F testp
+'this " 'this lit opt () .value 'this =$ " #T testp
 
-'thisthen print
-ps [ 'this opt 'then ] seq () .toString .$ .nl
-*)
-
-exit
 
 " AnyChar Parser" section
 " thisthenthat0123 "  " 'this anyChar      () .value 't =$ " #T testp
 " thisthenthat0123 "  " 'this anyChar star () .value join 'thisth =$ " #T testp
 
+
 " NotChars Parser" section
 " thisthenthat0123 "  " '0123456789 notChars      () .value 't =$ " #T testp
 " thisthenthat0123 "  " '0123456789 notChars star () .value join 'thisthenthat =$ " #T testp
+
+
+" Delimiter Parser" section
+// delim
+
+" Not Parser" section
+// notp
+
+
+" Map Parser" section
+
+// mapp

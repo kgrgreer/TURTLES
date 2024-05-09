@@ -45,6 +45,11 @@
 " 'CAT 1 charAt 65 = " #T test
 " 'CAT 2 charAt 84 = " #T test
 
+'Characters section
+" 65 charCode 'A =$ " #T test
+" `A " 65 test
+""" ` "  " =$ """ #T test // TODO: change to '
+
 
 'Logic section
 " #T !    " #F test

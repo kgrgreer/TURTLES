@@ -6,7 +6,7 @@
 // C(n,r) = n!/(r!(n - r)!) = P(n,r)/r!
 { r | r P r fact / } ::C
 
-{ let 42 :last |
+{ let now :last |
   i{ // Scoped Constants
     9223372036854775807 :IM
     3877                :IA
@@ -19,9 +19,11 @@
   }
 } () ::rand
 
+{ a | a a # rand @ } ::@rand // pick a random element from an array
+
 { a i j | a i @  a j @  a i :@  a j :@ } ::[]swap
 
-{ a f let a # :l  0 :permute_ |
+{ a f  let a # :l  0 :permute_ |
   { i |
     i  l 1 -  =
     { | a f () }

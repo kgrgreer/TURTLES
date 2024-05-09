@@ -34,10 +34,8 @@ ${code}
 `;
 
   scopeDefs += `  scope = addFn(scope, "${op}", &${name});\n`;
-
-  declDefs += `void ${name}();\n`;
-
-  cmdToStr += `  if ( fn == &${name} ) return "${op}";\n`;
+  declDefs  += `void ${name}();\n`;
+  cmdToStr  += `  if ( fn == &${name} ) return "${op}";\n`;
 });
 
 
