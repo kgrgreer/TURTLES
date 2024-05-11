@@ -54,7 +54,7 @@
 { str v | { ps let 0 :i |
   { | i str len <  { | ps .head str i charAt = } && } { | ps .tail :ps  i++ } while
   str len i = { | v ps .:value } { | false } ifelse
-} /* tok */ } ::litMap
+} } ::litMap
 
 { str | str str litMap } ::lit
 

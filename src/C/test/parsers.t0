@@ -66,12 +66,14 @@
 " 1,2,3, " " [ `0 `9 range ', lit ] 0 seq1 plus () .value cjoin '123 =$ " #T testp
 " 1,2,3, " " `0 `9 range ', lit delim () .value cjoin '123 =$ " #T testp
 
-exit
 
+/*
+// doesn't work without some kind of wildcard parser
 " Not Parser" section
-// notp
+" this then that." " [ '. lit anyChar notp ] 1 seq1 () guru .value .$ #T " #T testp
+*/
 
 
 " Map Parser" section
-
-// mapp
+" one" " 'one lit { | switch 'one 1 'two 2 3 end } mapp () .value " 1 testp
+" two" " 'two lit { | switch 'one 1 'two 2 3 end } mapp () .value " 2 testp
