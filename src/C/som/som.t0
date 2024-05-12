@@ -4,9 +4,9 @@
 
 // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
 { let
-  call:     { m o | o m o () () } ;
-  program:  { o | o .classdef plus } ;
-  classdef: { o | [
+  call:                { m o | o m o () () } ;
+  program:             { o | o .classdef plus } ;
+  classdef:            { o | [
     o .identifier '= o .superclass '(
       o .instanceFields
       o .method star
