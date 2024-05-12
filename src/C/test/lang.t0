@@ -324,12 +324,14 @@ MAX . .nl // 10
 " Scope Lookup" section
 " 1 :x 'x ?? " 1 test
 " 2 :y { | 'y ?? } () " 2 test
-" { let 3 :z | 'z ?? } () " 3 test
+" { let 3 :z |     'z ?? } () " 3 test
 " { let 3 :z | { | 'z ?? } () } () " 3 test
+" { let 1 :x 2 :y 3 :z | { | 'z ?? } } () () " 3 test
+" 5 { let 1 :x 2 :y 3 :z | { _ | 'z ?? } } () () " 3 test
 
-// { let 1 :x 2 :y | { sym | sym ?? } } () :lookup
-// " 'x lookup () guru .$ " 1 test
-// " 'y lookup () " 2 test
+// { let 1 :x 2 :y | { | 'x ?? } } () :look // doesn't work if inner function takes args
+// " look () " 1 test
+// " 'y look () guru " 2 test
 
 exit
 
