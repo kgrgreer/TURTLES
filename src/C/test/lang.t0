@@ -1,7 +1,3 @@
-// TODO: add colour support
-// TODO: add padding
-// TODO: fix bug requiring space at end of eval string
-
 'lib/Combinatorics.t0 require
 
 'Let section
