@@ -232,13 +232,17 @@ exports.INSTRUCTIONS = [
     }
     ((Fn) nextI())();
   `, true ],
-  [ 'scopeLookupI', 'Scope* closure', `
+  [ 'scopeLookupI', 'Scope* cscope,int cfd', `
     char* key = (char*) pop(stack);
 
     Scope* oldScope = scope;
-    scope = closure;
+    int    oldFd    = fd;
+
+    scope = cscope;
+    fd    = cfd;
 //     printf("scopeLookup: %s\\n", key);
     execSym(key);
     scope = oldScope;
+    fd    = oldFd;
   `, false ]
 ];

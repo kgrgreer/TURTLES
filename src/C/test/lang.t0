@@ -329,11 +329,10 @@ MAX . .nl // 10
 " { let 1 :x 2 :y 3 :z | { | 'z ?? } } () () " 3 test
 " 5 { let 1 :x 2 :y 3 :z | { _ | 'z ?? } } () () " 3 test
 
-// { let 1 :x 2 :y | { | 'x ?? } } () :look // doesn't work if inner function takes args
-// " look () " 1 test
-// " 'y look () guru " 2 test
+{ let 1 :x 2 :y | { s | s ?? } } () :look // doesn't work if inner function takes args
+" 'x look () " 1 test
+" 'y look () " 2 test
 
-exit
 
 'Error section
 " #F " true test

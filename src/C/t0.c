@@ -599,7 +599,7 @@ void switch_() {
 
 
 void scopeLookup() {
-  push2(code, &scopeLookupI, scope);
+  push3(code, &scopeLookupI, scope, (void*) (long) fd);
 }
 
 
