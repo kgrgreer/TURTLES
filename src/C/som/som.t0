@@ -1,8 +1,6 @@
 // som.t0
 // SOM to T0 Compiler
 
-{ a w let true :first | a ! { | " " <- } if a { i | i } filter { i | first { | false :first i } { | w i + } ifelse } map join } ::joinWith // join, space separated, removing false values
-{ a | a "  " joinWith } ::joins // join, space separated, removing false values
 
 // "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
 { let

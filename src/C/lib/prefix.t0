@@ -57,8 +57,9 @@ nil :{}  // Identity Function
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
 { a | a " " { | >$ +$ } reduce } ::join // join an array of strings into a single string
 { a | a " " { | c>$ +$ } reduce } ::cjoin // join an array of chars int a string
+{ a w let true :first | (* a ! { | " " ret<- } if *) a {} filter { i | first { | false :first i } { | w i +$ } ifelse } map join } ::joinWith // join with a specified delimiter
+{ a | a "  " joinWith } ::joins // join, space separated, removing false values
 
-// TODO: joinWith
 // TODO: split
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let

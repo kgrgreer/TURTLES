@@ -195,6 +195,8 @@ a { v | v v * } map .[] .nl
 " [ 'abc 123 #>$ 'youandme ] join 'abc123youandme =$ " #T test
 " [ 'abc 123  >$ 'youandme ] join 'abc123youandme =$ " #T test
 " [ 'abc 123     'youandme ] join 'abc123youandme =$ " #T test
+" [ 'abc 'def 'xyz ] ', joinWith 'abc,def,xyz =$ " #T test
+""" [ 'abc 'def 'xyz ] joins " abc def xyz" =$ """ #T test
 
 
 " Own Variables" section
