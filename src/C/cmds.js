@@ -123,6 +123,7 @@ if ( a < 1000000000 ) {
     [ 'len',      'len',      sf('s', 'strlen((char*) s)') ],
     [ 'key',      'key',      sf('', 'getc(tin)') ],
     [ 'sym',      'sym',      `
+      // Read a symbol/word from input
       char buf[256];
       readSym(buf, sizeof(buf));
       push(stack, strdup(buf));
@@ -230,5 +231,14 @@ exports.INSTRUCTIONS = [
       ip += 2;
     }
     ((Fn) nextI())();
-  `, true ]
+  `, true ],
+  [ 'scopeLookupI', 'Scope* closure', `
+    char* key = (char*) pop(stack);
+
+    Scope* oldScope = scope;
+    scope = closure;
+//     printf("scopeLookup: %s\\n", key);
+    execSym(key);
+    scope = oldScope;
+  `, false ]
 ];

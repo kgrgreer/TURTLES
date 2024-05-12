@@ -598,6 +598,11 @@ void switch_() {
 }
 
 
+void scopeLookup() {
+  push2(code, &scopeLookupI, scope);
+}
+
+
 void cond() {
   // Appears here instead of cmds.js because it is a command, not a function.
   char buf[256]; // Used to hold next read symbols
@@ -715,6 +720,7 @@ void initScope() {
   scope = addCmd(scope, "cls",    &clearScreen);
   scope = addCmd(scope, "\"",     &strLiteral);
   scope = addCmd(scope, "\"\"\"", &str3Literal);
+  scope = addCmd(scope, "??",     &scopeLookup);
   scope = addSym(scope, "i{",     push(heap, &immediate));
   scope = addCmd(scope, "prompt", &nop);
 
