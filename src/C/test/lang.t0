@@ -335,5 +335,11 @@ MAX . .nl // 10
 " 'y look () " 2 test
 
 
+'Set section
+Set :set
+" 'foo set .? " #F test
+" 'foo set .add  'foo set .?  " #T test
+
+
 'Error section
 " #F " true test
