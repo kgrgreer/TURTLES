@@ -116,3 +116,15 @@ end } :EmptySet
 { | charCode } ::c>$
 true  :#T
 false :#F
+
+
+{ let Set :loaded |
+  { file |
+    .nl
+    file loaded .?
+      { | " not re" .$ }
+      { | file require_  file loaded .add }
+    ifelse
+    " loading " .$ file .$ .nl
+  }
+} () ::require
