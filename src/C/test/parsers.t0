@@ -61,10 +61,10 @@
 
 
 " Delimiter Parser" section
-" 1,2,3 " " `0 `9 range () .value " 49 testp
-" 1,2,3 " " [ `0 `9 range ', lit ] 0 seq1 () .value " 49 testp
-" 1,2,3, " " [ `0 `9 range ', lit ] 0 seq1 plus () .value cjoin '123 =$ " #T testp
-" 1,2,3, " " `0 `9 range ', lit delim () .value cjoin '123 =$ " #T testp
+" 1,2,3  "  " `0 `9 range () .value " 49 testp
+" 1,2,3  "  " [ `0 `9 range ', lit ] 0 seq1 () .value " 49 testp
+" 1,2,3, "  " [ `0 `9 range ', lit ] 0 seq1 star () .value cjoin '123 =$ " #T testp
+" 1,2,3, "  " `0 `9 range ', lit delim () .value cjoin '123 =$ " #T testp
 
 
 /*

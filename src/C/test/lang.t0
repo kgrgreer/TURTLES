@@ -5,6 +5,7 @@
 " a .get " 42 test
 " 66 a .set a .get " 66 test
 
+
 'Comment section
 """
 1
@@ -193,6 +194,9 @@ a { v | v v * } map .[] .nl
 " [ 'abc 123     'youandme ] join 'abc123youandme =$ " #T test
 " [ 'abc 'def 'xyz ] ', joinWith 'abc,def,xyz =$ " #T test
 """ [ 'abc 'def 'xyz ] joins " abc def xyz" =$ """ #T test
+" { a b | a b + } :plus  1 2 plus () " 3 test
+" 1 plus curry :plus1  2 plus1 () " 3 test
+" 1 2 plus curry curry :three  three () " 3 test
 
 
 " Own Variables" section
@@ -317,6 +321,7 @@ MAX . .nl // 10
   " 1 2 +" emit
 """ 3 test
 
+
 " Scope Lookup" section
 " 1 :x 'x ?? " 1 test
 " 2 :y { | 'y ?? } () " 2 test
@@ -325,7 +330,7 @@ MAX . .nl // 10
 " { let 1 :x 2 :y 3 :z | { | 'z ?? } } () () " 3 test
 " 5 { let 1 :x 2 :y 3 :z | { _ | 'z ?? } } () () " 3 test
 
-{ let 1 :x 2 :y | { s | s ?? } } () :look // doesn't work if inner function takes args
+{ let 1 :x 2 :y | { s | s ?? } } () :look
 " 'x look () " 1 test
 " 'y look () " 2 test
 

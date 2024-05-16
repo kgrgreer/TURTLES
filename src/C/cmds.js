@@ -1,4 +1,3 @@
-// TODO: cond statement
 // TODO: give af and sf better names
 
 exports.CMDS = [

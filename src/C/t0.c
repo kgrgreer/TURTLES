@@ -87,6 +87,7 @@ FILE* tin;
     -  | could be replaced with |0 |1 |2 ...
     -  extend ??? behaviour in prefix.t0
     -  Add split
+    -  Add support for string templates
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely

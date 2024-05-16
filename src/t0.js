@@ -200,7 +200,7 @@ var scope = {
   '-':       bfn((a,b) => a - b),
   '/':       bfn((a,b) => a / b),
   '^':       bfn((a,b) => Math.pow(a,b)),
-  // ???: Where is this used?
+  // Used for name: value ; style in let statements
   ';':       code => { code.push(function() {
     var value = stack.pop(), sym = stack.pop();
     scope[sym] = (code) => code.push(() => stack.push(value))}) },

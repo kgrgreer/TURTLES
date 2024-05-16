@@ -49,6 +49,7 @@ nil :{}  // Identity Function
 // { start end block | { | start end <= } { | start block () start++ } while } ::for // coded natively
 
 // Standard High-Order Functions
+{ a f | { | a f () } } ::curry
 { a f | 0  a # 1 - { i | a i @ f () } for } ::do
 { a f | a # 1 -  0 { i | a i @ f () } for } ::doReverse
 { a | [ a {} doReverse ] } ::reverse
@@ -70,7 +71,7 @@ nil :{}  // Identity Function
     cond
       { | i l = } { | oldKey setKey eof }
       { | i l < } { | s i charAt }
-      { | true    } { | 32 }
+      { | true  } { | 32 }
     end ()
     i++
   } setKey

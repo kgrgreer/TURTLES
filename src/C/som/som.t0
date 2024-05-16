@@ -1,10 +1,9 @@
 // som.t0
 // SOM to T0 Compiler
 
-
-// "translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4"
+// translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4
 { let
-  call:                { m o | o m o () () } ;
+  // call:             { m o | o m o () () } ; // Not used?
   program:             { o | o .classdef plus } ;
   classdef:            { o | [
     o .identifier '= o .superclass '(
@@ -70,8 +69,7 @@
   OperatorSequence:    { o | '~&|*/\+<>,%@-= anyChar plus &join mapp } ;
   Keyword:             { o | [ o .Identifier " :" ] seq &join mapp tok } ;
   KeywordSequence:     { o | o .Keyword plus tok } ;
-  // Javascript string escaping is causing need for extra escaping
-  STStringChar:        { o | [ '\\b '\\n '\\r '\\f '\\0 '\\' '\\\\ '' notChars ] alt } ;
+  STStringChar:        { o | [ '\b '\n '\r '\f '\0 '\' '\\ '' notChars ] alt } ;
   STString:            { o | [ '' o .STStringChar star '' ] 1 seq1 &join mapp } ;
   Comment:             { o | [ '" '" notChars star '" ] 1 seq1 tok } ;
   Whitespace:          { o | [ tab cr nl "  " ] alt plus tok } ;
