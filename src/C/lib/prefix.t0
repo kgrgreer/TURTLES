@@ -122,9 +122,12 @@ false :#F
   { file |
     .nl
     file loaded .?
-      { | " not re" .$ }
-      { | file require_  file loaded .add }
+      { | " not reloading " .$ file .$ }
+      { |
+        " loading " .$ file .$ .nl
+        file require_
+        file loaded .add
+      }
     ifelse
-    " loading " .$ file .$ .nl
   }
 } () ::require
