@@ -65,25 +65,18 @@ nil :{}  // Identity Function
 
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
-{ | switch
-  '? { v this | false }
+// Set Collection
+{ | switch '? { v this | false } { v this | v this SetNode } end } :EmptySet
+
+{ value parent | { | switch
+  '? { v this | v value =$ { | v parent .? } || }
   { v this | v this SetNode }
-end } :EmptySet
+end } } ::SetNode
 
-{ value parent |
-  { | switch
-    '? { v this | v value =$ { | v parent .? } || }
-    { v this | v this SetNode }
-  end }
-} ::SetNode
-
-{ let EmptySet :set |
-  { | switch
-    '? { v this | v set .? }
-    { v this | v set .add :set }
-  end }
-} ::Set
-
+{ let EmptySet :set | { | switch
+  '? { v this | v set .? }
+  { v this | v set .add :set } // Could check if already in set first
+end } } ::Set
 
 // Meta-programming Support
 { s eof let getKey :oldKey 0 :i s ` +$ :s s len :l |
