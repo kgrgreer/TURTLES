@@ -78,7 +78,7 @@
 } } ::alt
 
 { parser min | { ps let 0 :i false :ret |
-  [ { | ps :ret  parser ps .parse :ps ps } { | i . .nl i++ ps .value } while ]
+  [ { | ps :ret  parser ps .parse :ps ps } { | i++ ps .value } while ]
   i min >=  { | ret .:value } { _ | #F } ifelse
 } } ::repeatp
 
@@ -92,11 +92,13 @@
 
 { parser | { ps let parser ps .parse :ret | ret { | ret } { | false ps .:value } ifelse } } ::opt
 
+{ | &join mapp } ::joinp
+
 { parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 
-{ str | { ps | str ps .head charCode $indexOf -1 = { | ps .tail .value charCode  ps .tail .:value } { | false } ifelse } } ::notChars
+{ str | { ps | str ps .head charCode $indexOf -1 = { | ps .tail .value charCode ps .tail .:value } { | false } ifelse } } ::notChars
 
-{ str | { ps | str ps .head charCode $indexOf -1 > { | ps .tail .value charCode  ps .tail .:value } { | false } ifelse } } ::anyChar
+{ str | { ps | str ps .head charCode $indexOf -1 > { | ps .tail .value charCode ps .tail .:value } { | false } ifelse } } ::anyChar
 
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
 
