@@ -345,6 +345,21 @@ Set :set
 'Template section
 """ ${ text {{ 'code }} text}$ dup .$ " text code text" =$ """ #T test
 
+// TODO: doesn't work because fn, ln and age aren't in scope
+"""
+{ fn ln age |
+${
+First Name: {{ fn }}
+Last Name:  {{ ln }}
+Age:        {{ age #>$ }}
+}$ .$
+} ::displayUser
+'John 'Smith 42 displayUser
+#T
+""" #T test
+
+exit
+
 
 'Error section
 " #F " true test
