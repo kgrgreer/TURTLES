@@ -10,10 +10,9 @@
 } () :TemplateParser
 
 { input let input 0 #F #F PStream :ps 0 :result |
-  " input: " .$ input .$ .nl
   ps TemplateParser .Template () :result
   result
-    { | 'value: .$ result .value .$ result .value }
+    { | result .value }
     { | " syntax error" .$ }
   ifelse
   .nl
