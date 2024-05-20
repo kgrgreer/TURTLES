@@ -100,6 +100,8 @@
 
 { str | { ps | str ps .head charCode $indexOf -1 > { | ps .tail .value charCode ps .tail .:value } { | false } ifelse } } ::anyChar
 
+{ ps | ps .head { | ps .head charCode ps .tail .:value } { | #F } ifelse } :charp // match any character
+
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
 
 { o m super f | { ps | o m super () () f mapp ps .parse } } ::action
