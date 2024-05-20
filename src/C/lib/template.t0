@@ -6,7 +6,7 @@
   { o | [ '{{ o .CodeBody '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp } :Code
   { o | [ '}} lit notp charp ] 1 seq1 plus joinp } :CodeBody
   { o | charp } :Text
-  | { m | 'method: .$ m .$ .nl m ?? }
+  | { m | m ?? }
 } () :TemplateParser
 
 { input let input 0 #F #F PStream :ps 0 :result |
@@ -18,8 +18,6 @@
   .nl
 } ::templateComp // BUG: Doesn't work if named "templateCompiler" !!!
 
-{ str | str templateComp emit } :!templateC
-
-{ let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop drop ] join 'templateC emit } :!${
+{ let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop drop ] join """ templateComp emit""" emit } :!${
 
 ${ hello there {{ 'foo }} }$ .$
