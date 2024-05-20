@@ -15,9 +15,6 @@
     { | result .value }
     { | " syntax error" .$ }
   ifelse
-  .nl
 } ::templateComp // BUG: Doesn't work if named "templateCompiler" !!!
 
 { let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop drop ] join """ templateComp emit""" emit } :!${
-
-${ hello there {{ 'foo }} }$ .$
