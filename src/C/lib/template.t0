@@ -18,28 +18,10 @@
     { | " syntax error" .$ }
   ifelse
   .nl
-} ::template
+} ::templateComp
 
-// " a b cdef " template
-
-// " {{{code}}}" template
-
-// " not code" template
-
-// " not code {{{code}}} more not code" template
-
-// Idea: <strlen> #$ strings starts here without escaping
-'((((((((((((((((foo .$ .nl
-
-
-// '' """ not code {{{ " hello" }}} more not code """ template ''
-// .$ .$ .$
-'((((((((((((bar .nl
-
-{ str | str template emit } :!templateC
-
+{ str | str templateComp emit } :!templateC
 { |
   i{ """ {{{ nl }}} not code {{{ " hello" }}} more not code""" }i templateC
 } :test
-
 { | test () .$  .nl } 10 repeat

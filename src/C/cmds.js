@@ -174,10 +174,8 @@ exports.INSTRUCTIONS = [
   [ 'define',           'char* sym', 'scope = addSym(scope, sym, push2(heap, emitConstant, pop(stack)));' ],
   [ 'defineAuto',       'char* sym', `
     void* fn = pop(stack);
-    scope = addSym(scope, sym, push2(heap, emitAutoConstant,  fn));
-
-    sym[-1] = '&';
-    scope = addSym(scope, &sym[-1], push2(heap, emitConstant, fn));
+    scope = addSym(scope, &sym[1], push2(heap, emitAutoConstant, fn));
+    scope = addSym(scope, sym,     push2(heap, emitConstant,     fn));
   ` ],
   [ 'forwardReference', 'char* sym', `
     long ptr = findSym(scope, sym);

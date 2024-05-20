@@ -87,7 +87,7 @@ FILE* tin;
     -  | could be replaced with |0 |1 |2 ...
     -  extend ??? behaviour in prefix.t0
     -  Add split
-    -  Add support for string templates
+    -  Add support for string templates {{ }}
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -176,7 +176,7 @@ Scope* createScope(char* key /* copied */, long ptr) {
 
 
 /* Creates a new tree with added binding. Doesn't modify existing tree. */
-Scope* addSym(Scope* root, char* key, long ptr) {
+Scope* addSym(Scope* root, char* key /* copied */, long ptr) {
   if ( root == NULL ) return createScope(key, ptr);
 
   int cmp = strcmp(key, root->key);
@@ -216,6 +216,7 @@ long findSym(Scope* root, char* key) {
 bool isSpace(char c) {
   return c == ' ' || c == '\t' || c == '\n';
 }
+
 
 int readChar() {
   long ptr = findSym(scope, "_key_"); // TODO: use key != key
@@ -364,8 +365,9 @@ void unknownSymbol() {
   if ( sym[0] == ':' ) {
     if ( sym[1] == ':' ) {
       // function definition appears as ::name, an auto variable
-      char* s = strdup(sym+2);
       // printf("DEFINE AUTO: %s\n", s);
+      char* s = strdup(&sym[1]);
+      s[0] = '&';
       push2(code, defineAuto, s);
     } else if ( sym[1] == '!' ) {
       // function definition appears as :!name, an immediate variable
