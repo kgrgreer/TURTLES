@@ -319,17 +319,8 @@ MAX . .nl // 10
 
 'Emit section
 
-"""  1 2 + """           :code1
-"""  " <emitted>" dup .$ """ :code2
+"""  " 1 2 +" emit """ 3 test
 
-// " code1 emit " 3 test
-
-// " { | '<here> .$ i{ code1 emit }i } ::bar bar " 3 test
-
-"  { | '<bar> .$ i{ code2 emit }i i{ 'emitting .$ }i } ::bar bar bar bar bar bar guru " #T test
-
-
-exit
 
 " Scope Lookup" section
 " 1 :x 'x ?? " 1 test
