@@ -1,4 +1,5 @@
 'lib/Combinatorics.t0 require
+'lib/template.t0 require
 
 'Let section
 42 Let :a
@@ -339,6 +340,10 @@ MAX . .nl // 10
 Set :set
 " 'foo set .? " #F test
 " 'foo set .add  'foo set .?  " #T test
+
+
+'Template section
+""" ${ text {{ 'code }} text}$ dup .$ " text code text" =$ """ #T test
 
 
 'Error section

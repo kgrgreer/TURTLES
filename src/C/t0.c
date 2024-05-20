@@ -176,6 +176,7 @@ Scope* createScope(char* key /* copied */, long ptr) {
 
 
 /* Creates a new tree with added binding. Doesn't modify existing tree. */
+// TODO: createScope is copying key, which it doesn't need to always do.
 Scope* addSym(Scope* root, char* key /* copied */, long ptr) {
   if ( root == NULL ) return createScope(key, ptr);
 
@@ -659,6 +660,23 @@ void strLiteral() {
   push2(code, constant, (void*) strdup(buf));
 }
 
+void str3Literal() {
+  char buf[4096];
+  int i = 0, quoteCount = 0;
+
+  while ( ( buf[i++] = readChar() ) ) {
+    if ( buf[i-1] == '"' ) {
+      if ( ++quoteCount == 3 ) {
+        buf[i-3] = '\0';
+        push2(code, constant, (void*) strdup(buf));
+        return;
+      }
+    } else {
+      quoteCount = 0;
+    }
+  }
+  // error
+}
 
 void emptyString() {
   push2(code, constant, (void*) "");
@@ -706,6 +724,7 @@ void initScope() {
   scope = addCmd(scope, "clearStack", &clearStack);
   scope = addCmd(scope, "cls",        &clearScreen);
   scope = addCmd(scope, "\"",         &strLiteral);
+  scope = addCmd(scope, "\"\"\"",     &str3Literal);
   scope = addCmd(scope, "\\0",        &emptyString);
   scope = addCmd(scope, "??",         &scopeLookup);
   scope = addSym(scope, "i{",         push(heap, &immediate));

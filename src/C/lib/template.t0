@@ -1,11 +1,10 @@
 'lib/parsers.t0 require
 
 { ps | ps .head { | ps .head charCode dup .$ ps .tail .:value } { | 'EOF .$ .nl #F } ifelse } :charp // Does the tail value need to be set? Same for anyChar and notChars
-
 { let
-  { o | [ o .Code o .Text ] alt star joinp { s | [ "  [ " '""" "  " s ` '"""  "  ] join """ ] join } mapp } :Template
-  { o | [ '{{{ o .CodeBody '}}} ] 1 seq1 { c | [ ` '""" ` c ` '""" ` ] join } mapp } :Code
-  { o | [ '}}} lit notp charp ] 1 seq1 plus joinp } :CodeBody
+  { o | [ o .Code o .Text ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp } :Template
+  { o | [ '{{ o .CodeBody '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp } :Code
+  { o | [ '}} lit notp charp ] 1 seq1 plus joinp } :CodeBody
   { o | charp } :Text
   | { m | 'method: .$ m .$ .nl m ?? }
 } () :TemplateParser
@@ -21,10 +20,7 @@
 } ::templateComp // BUG: Doesn't work if named "templateCompiler" !!!
 
 { str | str templateComp emit } :!templateC
-{ |
-  i{ """ {{{ nl }}} not code {{{ " hello" }}} more not code""" }i templateC
-} :test
-{ | test () .$  .nl } 10 repeat
 
-// This is how to make your own String syntax
-// { let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop drop ] join } :!${
+{ let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop drop ] join 'templateC emit } :!${
+
+${ hello there {{ 'foo }} }$ .$
