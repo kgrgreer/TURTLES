@@ -650,13 +650,18 @@ void cond() {
 
 void strLiteral() {
   char buf[4096];
-  int i = 0;
+  int  i = 0;
 
   while ( ( buf[i++] = readChar() ) != '"' );
 
   buf[i-1] = '\0';
 
   push2(code, constant, (void*) strdup(buf));
+}
+
+
+void emptyString() {
+  push2(code, constant, (void*) "");
 }
 
 
@@ -694,18 +699,17 @@ void nop() { }
 
 
 void initScope() {
-  scope = addCmd(scope, "???",    &unknownSymbol);
-//  scope = addCmd(scope, "/*",     &cComment);
-//  scope = addCmd(scope, "//",     &cppComment);
-  scope = addCmd(scope, "{",      &defun);
-  scope = addCmd(scope, "switch", &switch_);
-  scope = addCmd(scope, "cond",   &cond);
+  scope = addCmd(scope, "???",        &unknownSymbol);
+  scope = addCmd(scope, "{",          &defun);
+  scope = addCmd(scope, "switch",     &switch_);
+  scope = addCmd(scope, "cond",       &cond);
   scope = addCmd(scope, "clearStack", &clearStack);
-  scope = addCmd(scope, "cls",    &clearScreen);
-  scope = addCmd(scope, "\"",     &strLiteral);
-  scope = addCmd(scope, "??",     &scopeLookup);
-  scope = addSym(scope, "i{",     push(heap, &immediate));
-  scope = addCmd(scope, "prompt", &nop);
+  scope = addCmd(scope, "cls",        &clearScreen);
+  scope = addCmd(scope, "\"",         &strLiteral);
+  scope = addCmd(scope, "\\0",        &emptyString);
+  scope = addCmd(scope, "??",         &scopeLookup);
+  scope = addSym(scope, "i{",         push(heap, &immediate));
+  scope = addCmd(scope, "prompt",     &nop);
 
   scope = addCmds(scope);
 

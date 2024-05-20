@@ -56,14 +56,14 @@ nil :{}  // Identity Function
 { a f | [ a f do ] } ::map
 { a v f | v a f do } ::reduce
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
-{ a | a " " { | >$ +$ } reduce } ::join // join an array of strings into a single string
-{ a | a " " { | c>$ +$ } reduce } ::cjoin // join an array of chars int a string
-{ a w let true :first | (* a ! { | " " ret<- } if *) a {} filter { i | first { | false :first i } { | w i +$ } ifelse } map join } ::joinWith // join with a specified delimiter
+{ a | a \0 { | >$ +$ } reduce } ::join // join an array of strings into a single string
+{ a | a \0 { | c>$ +$ } reduce } ::cjoin // join an array of chars int a string
+{ a w let true :first | (* a ! { | \0 ret<- } if *) a {} filter { i | first { | false :first i } { | w i +$ } ifelse } map join } ::joinWith // join with a specified delimiter
 { a | a "  " joinWith } ::joins // join, space separated, removing false values
 
 
 // String Literals
-// { let 0 :c | [ { | c `" =  } { | key :c c charCode } until drop ] join } :!" // needs empty string to work
+// { let 0 :c | [ { | c `" = } { | key :c c charCode } until drop ] join } :!" // ISSUE: Doesn't work?
 { let 0 :prev 0 :c | [ { | prev `" =  c `" =  & } { | c :prev key :c c charCode } until drop drop ] join } :!""
 { let 0 :c'' 0 :c' 0 :c | [ { | c'' `" =  c' `" =  c `" =  & & } { | c' :c''  c :c'  key :c  c charCode } until drop drop drop ] join } :!"""
 
