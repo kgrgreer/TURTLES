@@ -18,10 +18,13 @@
     { | " syntax error" .$ }
   ifelse
   .nl
-} ::templateComp
+} ::templateComp // BUG: Doesn't work if named "templateCompiler" !!!
 
 { str | str templateComp emit } :!templateC
 { |
   i{ """ {{{ nl }}} not code {{{ " hello" }}} more not code""" }i templateC
 } :test
 { | test () .$  .nl } 10 repeat
+
+// This is how to make your own String syntax
+// { let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop drop ] join } :!${

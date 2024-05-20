@@ -660,25 +660,6 @@ void strLiteral() {
 }
 
 
-void str3Literal() {
-  char buf[4096];
-  int i = 0, quoteCount = 0;
-
-  while ( ( buf[i++] = readChar() ) ) {
-    if ( buf[i-1] == '"' ) {
-      if ( ++quoteCount == 3 ) {
-        buf[i-3] = '\0';
-        push2(code, constant, (void*) strdup(buf));
-        return;
-      }
-    } else {
-      quoteCount = 0;
-    }
-  }
-  // error
-}
-
-
 void immediate() { // i{
 //   long outerCode = code->ptr;
   char buf[4096];
@@ -722,7 +703,6 @@ void initScope() {
   scope = addCmd(scope, "clearStack", &clearStack);
   scope = addCmd(scope, "cls",    &clearScreen);
   scope = addCmd(scope, "\"",     &strLiteral);
-  scope = addCmd(scope, "\"\"\"", &str3Literal);
   scope = addCmd(scope, "??",     &scopeLookup);
   scope = addSym(scope, "i{",     push(heap, &immediate));
   scope = addCmd(scope, "prompt", &nop);
