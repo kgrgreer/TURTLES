@@ -14,10 +14,10 @@
 
 { c b | { | c () ! } b while } ::until
 
-{ let 0 :prev 0 :c | { | prev 42 =  c 47 =  & } { | c :prev key :c } until } :!/*
+{ let 0 :prev 0 :c | { | prev `* =  c `/ =  & } { | c :prev key :c } until } :!/*
 /* Now we have C-style comments */
 
-{ let 0 :prev 0 :c | { | prev 42 =  c 41 =  & } { | c :prev key :c } until } :!(*
+{ let 0 :prev 0 :c | { | prev `* =  c `) =  & } { | c :prev key :c } until } :!(*
 (* Now we have Beta-style comments, let's just use to comment out code *)
 // Maybe {* *} would be better for code comments?
 
