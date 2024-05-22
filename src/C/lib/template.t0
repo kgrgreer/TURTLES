@@ -1,18 +1,21 @@
 'lib/parsers.t0 require
 
-{ let
-  { o | [ o .Code *char ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp } :Template
-  { o | [ '{{ o .CodeBody '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp } :Code
-  { o | [ '}} lit notp *char ] 1 seq1 plus joinp } :CodeBody
-  | { | ?? }
-} () :TemplateParser
+{ | i{
+  { let
+    { o | [ o .Code *char ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp } :Template
+    { o | [ '{{ o .CodeBody '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp } :Code
+    { o | [ '}} lit notp *char ] 1 seq1 plus joinp } :CodeBody
+    | { | ?? }
+  } () :parser
 
-{ input let input 0 #F #F PStream :ps 0 :result |
-  ps TemplateParser .Template () :result
-  result
-    { | result .value }
-    { | " syntax error" .$ }
-  ifelse
-} ::tCompiler // BUG: Doesn't work if named "templateCompiler" !!!
+  { input let input 0 #F #F PStream :ps 0 :result |
+    ps parser .Template () :result
+    result
+      { | result .value }
+      { | " syntax error" .$ }
+    ifelse
+  } ::compiler
+  }i
 
-{ let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop2 ] join tCompiler emit } :!${
+  { let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop2 ] join compiler emit }
+} () :!${
