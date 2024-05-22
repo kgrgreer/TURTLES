@@ -17,5 +17,8 @@
   } ::compiler
   }i
 
-  { let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop2 ] join compiler emit }
+  { let 0 :prev 0 :c |
+    [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop2 ] join
+    compiler emit
+  }
 } () :!${
