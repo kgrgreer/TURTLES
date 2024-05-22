@@ -2,10 +2,7 @@
 // A Parse Combinator Library
 
 // A Parser Stream - used as input for parsers
-
-// TODO: Add .value$
-
-{ str pos value ignore let false :tail |
+{ str pos value ignore  let false :tail |
   { m |
     m switch
       'parse  { parser this | this parser () }
@@ -33,12 +30,7 @@
         if
         tail
       }
-      'maybeIgnore { this let this ignore () :ps |
-        ps
-          { | this .value ps .:value  }
-          { | this }
-        ifelse
-      }
+      'maybeIgnore { this let this ignore () :ps | ps { | this .value ps .:value  } { | this } ifelse }
       'value    { this | value }
       ':xxvalue { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
       ':value   { v2 this | str pos v2 ignore PStream }
@@ -50,18 +42,13 @@
 
 { p | { ps | p ps .parseToken } } ::tok
 
-// ???: add do$ ?, rename charAt c@?
-{ str v | { ps let 0 :i |
+{ str v | { ps let 0 :i |   // ???: add do$ ?, rename charAt c@?
   { | i str len <  { | ps .head str i charAt = } && } { | ps .tail :ps  i++ } while
   str len i = { | v ps .:value } { | false } ifelse
 } } ::litMap
 
 { str | str str litMap } ::lit
-
-{ start end c | c start >=  c end <= & } ::inRange
-{ start end | { ps |
-  start end ps .head inRange { | ps .tail } { | false } ifelse
-} } ::range
+{ start end | { ps | start ps .head end <=< { | ps .tail } { | false } ifelse } } ::range
 
 { parsers | parsers { p | p fn? { | p } { | p lit } ifelse } map } ::prepare
 
@@ -70,7 +57,7 @@
   parsers # i = { a | a ps .:value } { _ | false } ifelse
 } } ::seq
 
-{ parsers i | parsers seq { a | a i @ } mapp } ::seq1
+{ parsers i | parsers seq { | i @ } mapp } ::seq1
 
 { parsers | parsers prepare :parsers { ps let 0 :i false :ret |
   { | i parsers # < { | parsers i @ ps .parse :ret ret ! } && } { | i++ } while
@@ -90,17 +77,16 @@
   { a | [ a 0 @  { e | e } do a 1 @ ] } mapp
 } ::delim
 
-{ parser | { ps let parser ps .parse :ret | ret { | ret } { | false ps .:value } ifelse } } ::opt
+{ parser | { ps let parser ps .parse :ret | ret { | false ps .:value } || } } ::opt
 
 { | &join mapp } ::joinp
 
 { parser | { ps | parser ps .parse { | false } { | ps } ifelse } } ::notp
 
-{ str | { ps | str ps .head charCode $indexOf -1 = { | ps .tail .value charCode ps .tail .:value } { | false } ifelse } } ::notChars
-
-{ str | { ps | str ps .head charCode $indexOf -1 > { | ps .tail .value charCode ps .tail .:value } { | false } ifelse } } ::anyChar
-
-{ ps | ps .head { | ps .head charCode ps .tail .:value } { | #F } ifelse } :charp // match any character
+{ p | { ps let ps .head :head | head { | head p () } && { | head charCode ps .tail .:value } && } } ::char?
+{ str | { c | str c charCode $indexOf -1 = } char? } ::!chars
+{ str | { c | str c charCode $indexOf -1 > } char? } ::chars
+{ c | #T } char? :*char
 
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
 

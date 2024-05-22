@@ -50,14 +50,14 @@
 'this " 'this lit opt () .value 'this =$ " #T testp
 
 
-" AnyChar Parser" section
-" thisthenthat0123 "  " 'this anyChar      () .value 't =$ " #T testp
-" thisthenthat0123 "  " 'this anyChar star () .value join 'thisth =$ " #T testp
+" chars Parser" section
+" thisthenthat0123 "  " 'this chars      () .value 't =$ " #T testp
+" thisthenthat0123 "  " 'this chars star () .value join 'thisth =$ " #T testp
 
 
-" NotChars Parser" section
-" thisthenthat0123 "  " '0123456789 notChars      () .value 't =$ " #T testp
-" thisthenthat0123 "  " '0123456789 notChars star () .value join 'thisthenthat =$ " #T testp
+" !chars Parser" section
+" thisthenthat0123 "  " '0123456789 !chars      () .value 't =$ " #T testp
+" thisthenthat0123 "  " '0123456789 !chars star () .value join 'thisthenthat =$ " #T testp
 
 
 " Delimiter Parser" section
@@ -70,7 +70,7 @@
 /*
 // doesn't work without some kind of wildcard parser
 " Not Parser" section
-" this then that." " [ '. lit anyChar notp ] 1 seq1 () guru .value .$ #T " #T testp
+" this then that." " [ '. lit chars notp ] 1 seq1 () guru .value .$ #T " #T testp
 */
 
 

@@ -35,6 +35,7 @@ nil :{}  // Identity Function
 // Standard Forth-like Stack Functions
 // { _ } ::drop // coded natively
 { _ _ } ::drop2
+{ _ _ _ } ::drop3
 { a | a a } ::dup
 { a b | a b a b } ::dup2
 { a b | b a } ::swap
@@ -65,8 +66,8 @@ nil :{}  // Identity Function
 // String Literals
 // These appear to work but break things for unknown reason. TODO: fix
 // { let 0 :c | [ { | c `" = } { | key :c c charCode } until drop ] join } :!" // ISSUE: Doesn't work?
-// { let 0 :prev 0 :c | [ { | prev `" =  c `" =  & } { | c :prev key :c c charCode } until drop drop ] join } :!""
-// { let 0 :c'' 0 :c' 0 :c | [ { | c'' `" =  c' `" =  c `" =  & & } { | c' :c''  c :c'  key :c  c charCode } until drop drop drop ] join } :!"""
+// { let 0 :prev 0 :c | [ { | prev `" =  c `" =  & } { | c :prev key :c c charCode } until drop2 ] join } :!""
+// { let 0 :c'' 0 :c' 0 :c | [ { | c'' `" =  c' `" =  c `" =  & & } { | c' :c''  c :c'  key :c  c charCode } until drop3 ] join } :!"""
 
 
 // TODO: split
@@ -74,17 +75,27 @@ nil :{}  // Identity Function
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
 // Set Collection
-{ | switch '? { v this | false } { v this | v this SetNode } end } :EmptySet
+{ | switch
+  '? { v this | false }
+  'top { this | nil }
+  'pop { this | null this }
+  { v this | v this ListNode }
+end } :EmptyList
 
 { value parent | { | switch
   '? { v this | v value =$ { | v parent .? } || }
-  { v this | v this SetNode }
-end } } ::SetNode
+  'top { this | value }
+  'pop { this | value parent }
+  /* handles add and push */ { v this | v this ListNode }
+end } } ::ListNode
 
-{ let EmptySet :set | { | switch
+{ let EmptyList :set | { | switch
   '? { v this | v set .? }
-  { v this | v set .add :set } // Could check if already in set first
-end } } ::Set
+  'top { this | set .top }
+  'pop { this | set .pop :set }
+  /* handles add and push */ { v this | v set .add :set } // Could check if already in set first
+end } } dup ::Set ::Stack // Stack and Set use the same LinkedList implementation
+
 
 // Meta-programming Support
 { s eof let getKey :oldKey 0 :i s ` +$ :s s len :l |
@@ -112,6 +123,10 @@ end } } ::Set
 { | ` lpadWith } ::lpad
 { s p padChar | [ s { | padChar } p s len - repeat ] join } ::rpadWith
 { | ` rpadWith } ::rpad
+
+// Range Functions
+{ start i end | i start >  i end <  & } ::<_<
+{ start i end | i start >= i end <= & } ::<=<
 
 // Experimental Renames
 { | charCode } ::c>$

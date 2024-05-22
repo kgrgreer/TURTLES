@@ -342,10 +342,21 @@ Set :set
 " 'foo set .add  'foo set .?  " #T test
 
 
-'Template section
-""" ${ text {{ 'code }} text}$ dup .$ " text code text" =$ """ #T test
+'Stack section
+Stack :stack
+'a stack .push
+'b stack .push
+'c stack .push
+" stack .top 'c =$ " #T test
+" stack .pop 'c =$ " #T test
+" stack .top 'b =$ " #T test
+" stack .pop 'b =$ " #T test
+" stack .top 'a =$ " #T test
+" stack .pop 'a =$ " #T test
 
-// TODO: doesn't work because fn, ln and age aren't in scope
+
+'Template section
+""" ${ text {{ 'code }} text}$ " text code text" =$ """ #T test
 """
 { fn ln age |
 ${
@@ -357,8 +368,6 @@ Age:        {{ age #>$ }}
 'John 'Smith 42 displayUser
 #T
 """ #T test
-
-exit
 
 
 'Error section

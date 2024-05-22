@@ -22,8 +22,8 @@ exports.CMDS = [
   [ 'if_',    'if',       af('c,b',   'if ( c ) callI(b);') ],
   [ 'ifelse_','ifelse',   af('c,i,e', 'callI(c ? i : e);')  ],
   [ 'drop',   'drop',     'pop(stack);' ],
-  [ 'andand', '&&',       'void* aFn = pop(stack); if ( ! pop(stack) ) { push(stack, (void*) 0); } else { push(stack, aFn); call(); }' ],
-  [ 'oror',   '||',       'void* aFn = pop(stack); if (   pop(stack) ) { push(stack, (void*) 1); } else { push(stack, aFn); call(); }'   ],
+  [ 'andand', '&&',       'void* aFn = pop(stack); void* p = pop(stack); if ( ! p ) { push(stack, p); } else { push(stack, aFn); call(); }' ],
+  [ 'oror',   '||',       'void* aFn = pop(stack); void* p = pop(stack); if (   p ) { push(stack, p); } else { push(stack, aFn); call(); }'   ],
   [ 'for_',   'for',      af('s,e,b', `
     if ( s <= e ) {
       for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }

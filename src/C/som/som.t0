@@ -66,12 +66,12 @@
   Identifier:          { o | [ o .Alpha o .AlphaNum star &join mapp ] seq &join mapp tok } ;
   STPrimitive:         { o | 'primitive lit } ;
   Separator:           { o | '- lit 4 repeat tok } ;
-  OperatorSequence:    { o | '~&|*/\+<>,%@-= anyChar plus &join mapp } ;
+  OperatorSequence:    { o | '~&|*/\+<>,%@-= chars plus &join mapp } ;
   Keyword:             { o | [ o .Identifier " :" ] seq &join mapp tok } ;
   KeywordSequence:     { o | o .Keyword plus tok } ;
-  STStringChar:        { o | [ '\b '\n '\r '\f '\0 '\' '\\ '' notChars ] alt } ;
+  STStringChar:        { o | [ '\b '\n '\r '\f '\0 '\' '\\ '' !chars ] alt } ;
   STString:            { o | [ '' o .STStringChar star '' ] 1 seq1 &join mapp } ;
-  Comment:             { o | [ '" '" notChars star '" ] 1 seq1 tok } ;
+  Comment:             { o | [ '" '" !chars star '" ] 1 seq1 tok } ;
   Whitespace:          { o | [ tab cr nl "  " ] alt plus tok } ;
   ignore:              { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
   | { m | m ?? }

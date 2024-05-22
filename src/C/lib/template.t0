@@ -1,11 +1,10 @@
 'lib/parsers.t0 require
 
 { let
-  { o | [ o .Code o .Text ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp } :Template
+  { o | [ o .Code *char ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp } :Template
   { o | [ '{{ o .CodeBody '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp } :Code
-  { o | [ '}} lit notp charp ] 1 seq1 plus joinp } :CodeBody
-  { o | charp } :Text
-  | { m | m ?? }
+  { o | [ '}} lit notp *char ] 1 seq1 plus joinp } :CodeBody
+  | { | ?? }
 } () :TemplateParser
 
 { input let input 0 #F #F PStream :ps 0 :result |
@@ -14,6 +13,6 @@
     { | result .value }
     { | " syntax error" .$ }
   ifelse
-} ::templateComp // BUG: Doesn't work if named "templateCompiler" !!!
+} ::tCompiler // BUG: Doesn't work if named "templateCompiler" !!!
 
-{ let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop drop ] join templateComp emit } :!${
+{ let 0 :prev 0 :c | [ { | prev `} =  c `$ =  & } { | c :prev key :c c charCode } until drop2 ] join tCompiler emit } :!${
