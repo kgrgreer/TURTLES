@@ -83,7 +83,7 @@ if ( a < 1000000000 ) {
   `) ],
     [ 'isFn',           'fn?',             sf('i',     'i > 0 && i < heap->size && ( heap->arr[i] == callClosure || heap->arr[i] == callClosure0 )') ],
     [ 'arrayAt',        '@',               sf('a,i',   '((long*)a)[i+1]') ],
-    [ 'arrayAtAt',      '@@',              sf('a,i,j',   '((long*)(((long*)a)[i+1]))[j+1]') ],
+    [ 'arrayAtAt',      '@@',              sf('a,i,j', '((long*)(((long*)a)[i+1]))[j+1]') ], // ???: Is this need or helpful?
     [ 'arraySet',       ':@',              af('v,a,i', '((long*)a)[i+1] = v;') ], // ???: rename?
     [ 'arrayLen',       '#',               sf('a',     '((long*)a)[0]') ],
     [ 'arrayWithValue', '[]WithValue',     af('len,val', `
