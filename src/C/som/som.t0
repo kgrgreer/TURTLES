@@ -82,7 +82,7 @@
   { m | m switch
     'super  { m o | o m super () () () }
     'method { | m super { a | [
-      "     '" a 0 @ 0 @ "  { :--- " a 0 @ 1 @ "  | "
+      "     '" a 0 0 @@ "  { :--- " a 0 1 @@ "  | "
       a 2 @
       "  } "
     ] join } action }
@@ -100,7 +100,7 @@
     'messages            { | m super { a | [
       a 0 @ { i | '. i + } map joins
       a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
-      a 2 @ { | a 2 @ 1 @  a 2 @ 2 @  'pick '. a 2 @ 0 @ + 'drop } if
+      a 2 @ { | a 2 1 @@  a 2 2 @@  'pick '. a 2 0 @@ + 'drop } if
     ] joins } action }
     'fields              { | m super { a | a { | a joins } { | " " } ifelse } action }
     'STString            { | m super { a | [ '" "  " a '" ] join } action }
@@ -113,8 +113,8 @@
         superName_:      a 2 @ ;
         instanceFields_: a 4 @ ;
         methods_:        a 5 @ ;
-        classFields_:    a 6 @ { | a 6 @ 1 @ } { | " " } ifelse ;
-        classMethods_:   a 6 @ { | a 6 @ 2 @ } { | [ ] } ifelse ;
+        classFields_:    a 6 @ { | a 6 1 @@ } { | " " } ifelse ;
+        classMethods_:   a 6 @ { | a 6 2 @@ } { | [ ] } ifelse ;
       | [
         nl " { | { "
         instanceFields_ nl
