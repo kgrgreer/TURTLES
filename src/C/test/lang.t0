@@ -185,6 +185,7 @@ a b +[] .[] .nl
 " 3 { a | a } () " 3 test
 " 4 { a let a a + :b | a b + } () " 12 test
 "   { let 42 :a | a } () " 42 test
+"   { let a: 42 ; | a } () " 42 test
 
 
 " Function Programming" section
