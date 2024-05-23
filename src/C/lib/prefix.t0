@@ -80,19 +80,19 @@ false :#F
 { v | { | switch 'get { this | v } { v' this | v' :v } end } } ::Let
 
 // Set Collection
-{ | switch
-  '? { v this | false }
-  'top { this | nil }
-  'pop { this | nil this }
-  { v this | v this ListNode }
-end } :EmptyList
-
 { value parent | { | switch
   '? { v this | v value =$ { | v parent .? } || }
   'top { this | value }
   'pop { this | value parent }
   /* handles add and push */ { v this | v this ListNode }
 end } } ::ListNode
+
+{ | switch
+  '? { v this | false }
+  'top { this | nil }
+  'pop { this | nil this }
+  { v this | v this ListNode }
+end } :EmptyList
 
 { let EmptyList :set | { | switch
   '? { v this | v set .? }
