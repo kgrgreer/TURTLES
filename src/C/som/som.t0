@@ -5,7 +5,7 @@
 
 // translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4
 { let
-  call:                { m o | o m o () () } ; Call the method with specified name, used for testing
+  call:                { m o | o m o () () } ; // Call the method with specified name, used for testing
   program:             { o | o .classdef plus } ;
   classdef:            { o | [
     o .identifier '= o .superclass '(
