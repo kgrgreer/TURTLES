@@ -395,12 +395,11 @@ void unknownSymbol() {
     int len = strlen(sym);
 
     if ( sym[len-1] == ':' ) {
-      sym[len-1] = '\0';
-      char* s = strdup(sym);
-      push2(code, constant, s);
-printf("UNKNOWN SYMBOL: %s\n", s);
+      push2(code, constant, strndup(sym, len-1));
     } else {
-      push2(code, forwardReference, strdup(sym));
+      char* s = strdup(sym);
+      printf("UNKNOWN SYMBOL: %s\n", s);
+      push2(code, forwardReference, s);
     }
   }
 }
