@@ -8,14 +8,13 @@ Tester :t // Create an instance of Tester
 '0 0 #F #F PStream `0 `9 range () .value c>$ .$
 '1 0 #F #F PStream SOMParser .Num () .value c>$ .$
 
-{ input name let input 0 #F #F PStream :ps |
+{ input name test let input 0 #F #F PStream :ps |
   .nl " input:: " .$ input .$ .nl
-  [ ps name SOMParser .call () .value .$ ] drop
+  [ ps name SOMParser .call () .value test #T t .test ] drop
   .nl
 } ::testsom
 
-" primitive " 'STPrimitive testsom
-
-exit
+'primitive 'STPrimitive " 'primitive =$ " testsom
+'0 'Num " `0 =" testsom
 
 t .report
