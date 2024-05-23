@@ -1,0 +1,21 @@
+'som/som.t0 require
+'lib/Tester.t0 require
+
+Tester :t // Create an instance of Tester
+
+{ script answer | [ script answer t .test  ] drop } ::test
+
+'0 0 #F #F PStream `0 `9 range () .value c>$ .$
+'1 0 #F #F PStream SOMParser .Num () .value c>$ .$
+
+{ input name let input 0 #F #F PStream :ps |
+  .nl " input:: " .$ input .$ .nl
+  [ ps name SOMParser .call () .value .$ ] drop
+  .nl
+} ::testsom
+
+" primitive " 'STPrimitive testsom
+
+exit
+
+t .report
