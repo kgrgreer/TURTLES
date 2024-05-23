@@ -1,6 +1,8 @@
 // Tester.t0
 // Simple Unit Tests
 
+'lib/ansi.t0 require
+
 { let 0 :passed 0 :failed |
   { m | m switch
     'score { f this |
