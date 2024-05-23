@@ -29,6 +29,11 @@
 nil :nop // TODO: remove
 nil :{}  // Identity Function
 
+// Experimental Renames
+{ | charCode } ::c>$
+true  :#T
+false :#F
+
 { n | 0 n - } ::neg
 { n | n n 0 < { | neg } if } ::abs
 
@@ -78,7 +83,7 @@ nil :{}  // Identity Function
 { | switch
   '? { v this | false }
   'top { this | nil }
-  'pop { this | null this }
+  'pop { this | nil this }
   { v this | v this ListNode }
 end } :EmptyList
 
@@ -127,12 +132,6 @@ end } } dup ::Set ::Stack // Stack and Set use the same LinkedList implementatio
 // Range Functions
 { start i end | i start >  i end <  & } ::<_<
 { start i end | i start >= i end <= & } ::<=<
-
-// Experimental Renames
-{ | charCode } ::c>$
-true  :#T
-false :#F
-
 
 { let Set :loaded |
   { file |
