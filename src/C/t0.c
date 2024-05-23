@@ -85,9 +85,9 @@ FILE* tin;
     -  ? Replace . with >> for 'print'?
     -  Use ' for characters use " for front-quoted strings or #?
     -  | could be replaced with |0 |1 |2 ...
-    -  extend ??? behaviour in prefix.t0
     -  Add split
-    -  Add support for string templates {{ }}
+    -  startsWith and endsWith
+    -  extend ??? behaviour in prefix.t0
 
   Ideas:
     - What if stack frames had their own heap? That would make it more likely
@@ -440,6 +440,8 @@ void defineLocalVar(char* name, long i /* frame position */ ) {
 // Ex. { :name a b let 0 :i 1 :j | ... <- ... name<- } is like 0 1 { a b i j | ... }
 // | ... is optional if there's no body
 // :name is optional
+// In 'let' variables can also use prefix naming like:
+// { let a: 42 ;  b: 66 ; | ... }
 void defun() {
   long   start = heap->ptr;
   char   buf[256];
@@ -485,13 +487,29 @@ void defun() {
 
   if ( strcmp(buf, "let") == 0 ) {
     while ( true ) { // for each :<name>
+      char* varName;
       while ( true ) { // for each word before :<name> // TODO: make next 5 lines a MACRO
         if ( ! readSym(buf, sizeof(buf)) ) {
           printf("Syntax Error: Unclosed function, missing |\n");
           return;
         }
 
-        if ( buf[0] == ':' ) break;
+        if ( buf[0] == ':' ) {
+          varName = strdup(buf+1); // TODO: free
+          break;
+        }
+
+        if ( buf[strlen(buf)-1] == ':' ) {
+          buf[strlen(buf)-1] = 0;
+          varName = strdup(buf); // TODO: free
+          continue;
+        }
+
+        if ( strcmp(buf, ";") == 0 ) {
+          buf[0] = ':';
+          strcpy(&buf[1], varName);
+          break;
+        }
 
         // couldn't happen, :name would have to appear first
         if ( strcmp(buf, "|") == 0 ) goto body;
@@ -501,7 +519,6 @@ void defun() {
         evalSym(buf);
       } // while word before :<name>
 
-      char* varName = strdup(buf+1); // TODO: free
       defineLocalVar(varName, i);
       i++;
       evalSym(buf);
