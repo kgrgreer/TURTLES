@@ -1,6 +1,8 @@
 // som.t0
 // SOM to T0 Compiler
 
+'lib/template.t0 require
+
 // translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4
 { let
   // call:             { m o | o m o () () } ; // Not used?
@@ -115,7 +117,29 @@
         methods_:        a 5 @ ;
         classFields_:    a 6 @ { | a 6 1 @@ } { | " " } ifelse ;
         classMethods_:   a 6 @ { | a 6 2 @@ } { | [ ] } ifelse ;
-      | [
+      |
+      ${
+      { | {
+        {{ instanceFields_ }}
+        let  {{ superName_ }}_ :super |
+        { m | m switch
+          'super { m o | o m super () () () }
+          {{ methods_ nl joinWith }}
+          { | m super () () }
+        end }
+      } () } ::{{ name_ }}_
+      {
+        {{ classFields_ }}
+        let Class :super |
+        { m | m switch
+          'new_ { | {{  name_ }}_ }
+          'name { | {{ name_ }} }
+          {{ classMethods_ nl joinWith }}
+          { | m super () () }
+        end }
+      } :{{ name_ }}
+      }$
+      (* [
         nl " { | { "
         instanceFields_ nl
         "   let " superName_ " _ :super |" nl
@@ -137,6 +161,7 @@
         "   end }" nl
         " } :" name_ nl
       ] join
+      *)
     } action }
     { | m super () () }
   end }
