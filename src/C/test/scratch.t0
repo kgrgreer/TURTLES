@@ -1,0 +1,23 @@
+// Doesn't work
+{ | '42 ??? } () .
+
+(*
+{ let |
+  i{
+    { | ??? } ::????
+  }i
+
+  { sym | ${ ---Unknown Symbol: '{{ sym }}'---}$ .$ .nl sym ???? }
+} () :!???
+*)
+
+'start .$ .nl
+{ sym | ${ ---Unknown Symbol: '{{ sym }}'---}$ .$ .nl 42 } :!???
+
+42 56 + .
+
+<foo>
+
+// 'done .$ .nl
+
+exit
