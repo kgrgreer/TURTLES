@@ -1,6 +1,7 @@
 // See:
 //   https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
 //   https://en.wikipedia.org/wiki/ANSI_escape_::
+//   https://www.arp242.net/safeterm.html
 
 27 c>$ :ANSI.ESC
 { n | [ ANSI.ESC '[1; n #>$ 'm ] join } ::ANSI.CODE
