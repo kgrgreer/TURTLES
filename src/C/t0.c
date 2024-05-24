@@ -382,6 +382,7 @@ void unknownSymbol() {
       push2(code, define, s);
     }
   } else if ( ( sym[0] >= '0' && sym[0] <= '9' ) || ( sym[0] == '-' && sym[1] >= '0' && sym[1] <= '9' ) ) {
+    // TODO: call $># ?
     // Parse Integers
     push2(code, constant, (void*) atol(sym));
   } else if ( sym[0] == '\'' ) {
@@ -733,6 +734,7 @@ void nop() { }
 
 
 void initScope() {
+  scope = addCmd(scope, "????",        &unknownSymbol);
   scope = addCmd(scope, "???",        &unknownSymbol);
   scope = addCmd(scope, "{",          &defun);
   scope = addCmd(scope, "switch",     &switch_);

@@ -1,6 +1,7 @@
 'som/som.t0 require
 'lib/Tester.t0 require
 
+nop ::prompt
 Tester :t // Create an instance of Tester
 
 { script answer | [ script answer t .test  ] drop } ::test
@@ -8,13 +9,40 @@ Tester :t // Create an instance of Tester
 '0 0 #F #F PStream `0 `9 range () .value c>$ .$
 '1 0 #F #F PStream SOMParser .Num () .value c>$ .$
 
-{ input name test let input 0 #F #F PStream :ps |
-  .nl " input:: " .$ input .$ .nl
-  [ ps name SOMParser .call () .value test #T t .test ] drop
+{ name input test let input 0 #F #F PStream :ps |
+  " Rule: " .$ name .$ " , input: " .$ input .$ .nl
+  [ ps name SOMParser .call () dup { | .value test #T t .test } { | 'syntax-error .$ .nl } ifelse ] drop
   .nl
 } ::testsom
 
-'primitive 'STPrimitive " 'primitive =$ " testsom
-'0 'Num " `0 =" testsom
+'superclass   'Object         " 'Object =$"         testsom
+'superclass   " "             " 0 ="                testsom
+'fields       '|foo|          " join 'foo =$ "      testsom
+// 'fields       '|foo bar|          " guru 'foobar =$ "      testsom
+'identifier   'primitive      " 'primitive =$ "     testsom
+'identifier   'foo            " 'foo =$ "           testsom
+'Alpha        'm              " 'm =$"              testsom
+'Alpha        'M              " 'M =$"              testsom
+'Num          '0              " '0 =$"              testsom
+'AlphaNum     'M              " 'M =$"              testsom
+'AlphaNum     '0              " '0 =$"              testsom
+'Identifier   " foo "           " 'foo =$"          testsom
+'STPrimitive  'primitive      " 'primitive =$ "     testsom
+'Separator    " ----  "       " # 4 = "             testsom
+'OperatorSeq  '~&|*/\+<>,%@-= " '~&|*/\+<>,%@-= =$" testsom
+'Keyword      " foo: "          " 'foo: =$"         testsom
+'KeywordSeq   " foo:bar: "      " 'foo:bar: =$"     testsom
+'STString     " 'string' "      " 'string =$"       testsom
+'STString     " 'a\nb\r' "      " len 4 ="            testsom
+'STString     " '\n\n' "      " [ nl nl ] join =$"            testsom
+'Comment      """ "comment"     """  " # 7 ="       testsom
+'Whitespace   "  "            " sp =$"              testsom
+'Whitespace   "   "           """ "   " =$"""       testsom
+'Whitespace   tab             " tab =$"             testsom
+'Whitespace   nl              " nl =$"              testsom
+'Whitespace   cr              " cr =$"              testsom
+[ cr nl tab sp ] join :ws
+'Whitespace   ws              " ws =$"              testsom
+
 
 t .report

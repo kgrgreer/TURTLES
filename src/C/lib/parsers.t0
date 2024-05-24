@@ -22,7 +22,7 @@
       'ignoreOn { ignore this | str pos value ignore PStream .maybeIgnore }
       'pos    { this | pos }
       'head   { this |
-        // [ " pos: " pos " , head-> " str pos charAt ] join .$ .nl
+//        [ " pos: " pos " , head-> " str pos charAt ] join .$ .nl
         str pos charAt }
       'tail   { this |
         tail !

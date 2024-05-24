@@ -18,64 +18,73 @@
   instanceFields:      { o | o .fields } ;
   classFields:         { o | o .fields } ;
   fields:              { o | [ '| o .variable star '| ] 1 seq1 opt } ;
-  method:              { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
-  pattern:             { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt } ;
-  unaryPattern:        { o | o .unarySelector } ;
-  binaryPattern:       { o | [ o .binarySelector o .argument ] seq } ;
-  keywordPattern:      { o | [ o .keyword o .argument ] seq plus } ;
-  methodBlock:         { o | [ '( o .blockContents opt ') ] 1 seq1 } ;
-  unarySelector:       { o | [ o .identifier " :" lit notp ] 0 seq1 } ;
-  binarySelector:      { o | o .OperatorSequence } ;
-  identifier:          { o | [ o .STPrimitive { | o .Identifier () } ] alt } ;
+    method:              { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
+    pattern:             { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt } ;
+    unaryPattern:        { o | o .unarySelector } ;
+    binaryPattern:       { o | [ o .binarySelector o .argument ] seq } ;
+    keywordPattern:      { o | [ o .keyword o .argument ] seq plus } ;
+    methodBlock:         { o | [ '( o .blockContents opt ') ] 1 seq1 } ;
+    unarySelector:       { o | [ o .identifier " :" lit notp ] 0 seq1 } ;
+    binarySelector:      { o | o .OperatorSeq } ;
+  identifier:          { o | [ o .STPrimitive o .Identifier ] alt } ;
   keyword:             { o | o .Keyword } ;
   argument:            { o | o .variable } ;
-  blockContents:       { o | [ [ '| o .localDefs '| ] 1 seq1 opt { | o .blockBody () } ] seq } ;
-  localDefs:           { o | o .variable star } ;
-  blockBody:           { o | [ { | o .blockBodyReturn () } { | o .blockBodyExpression () } ] alt } ;
-  blockBodyReturn:     { o |  [ '^ o .result ] 1 seq1 } ;
-  blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] 1 seq1 opt ] seq } ;
-  result:              { o | [ o .expression '. lit opt ] 0 seq1 } ;
-  expression:          { o | [ o .assignation o .evaluation ] alt } ;
-  assignation:         { o | [ o .assignments o .evaluation ] seq } ;
-  assignments:         { o | o .assignment plus } ;
-  assignment:          { o | [ o .variable ':= ] 0 seq1 } ;
-  evaluation:          { o | [ o .primary o .messages opt ] seq } ;
-  primary:             { o | [ o .variable { | o .nestedTerm () } { | o .nestedBlock () } { | o .literal () } ] alt } ;
+    blockContents:       { o | [ [ '| o .localDefs '| ] 1 seq1 opt { | o .blockBody () } ] seq } ;
+    localDefs:           { o | o .variable star } ;
+    blockBody:           { o | [ { | o .blockBodyReturn () } { | o .blockBodyExpression () } ] alt } ;
+    blockBodyReturn:     { o |  [ '^ o .result ] 1 seq1 } ;
+    blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] 1 seq1 opt ] seq } ;
+    result:              { o | [ o .expression '. lit opt ] 0 seq1 } ;
+    expression:          { o | [ o .assignation o .evaluation ] alt } ;
+    assignation:         { o | [ o .assignments o .evaluation ] seq } ;
+    assignments:         { o | o .assignment plus } ;
+    assignment:          { o | [ o .variable ':= ] 0 seq1 } ;
+    evaluation:          { o | [ o .primary o .messages opt ] seq } ;
+    primary:             { o | [ o .variable { | o .nestedTerm () } { | o .nestedBlock () } { | o .literal () } ] alt } ;
   variable:            { o | o .identifier } ;
-  messages:            { o | [ o .unaryMessage star o .binaryMessage star o .keywordMessage opt ] seq } ;
-  unaryMessage:        { o | { | o .unarySelector () } } ;
-  binaryMessage:       { o | [ o .binarySelector o .binaryOperand ] seq } ;
-  binaryOperand:       { o | [ o .primary o .unaryMessage star ] seq } ;
-  keywordMessage:      { o | [ o .keyword o .formula ] seq plus } ;
-  formula:             { o | [ o .binaryOperand { | o .binaryMessage () } star ] seq } ;
-  nestedTerm:          { o | [ '( o .expression ') ] 1 seq1 } ;
-  literal:             { o | [ o .literalArray o .literalSymbol  o .literalString  o .literalNumber ] alt } ;
-  literalArray:        { o | [ '# '( { | o .literal () } star ') ] 2 seq1 } ;
-  literalNumber:       { o | o .Number } ;
-  literalSymbol:       { o | [ '# [ o .string o .selector ] alt ] 1 seq1 tok } ;
+    messages:            { o | [ o .unaryMessage star o .binaryMessage star o .keywordMessage opt ] seq } ;
+    unaryMessage:        { o | { | o .unarySelector () } } ;
+    binaryMessage:       { o | [ o .binarySelector o .binaryOperand ] seq } ;
+    binaryOperand:       { o | [ o .primary o .unaryMessage star ] seq } ;
+    keywordMessage:      { o | [ o .keyword o .formula ] seq plus } ;
+    formula:             { o | [ o .binaryOperand { | o .binaryMessage () } star ] seq } ;
+    nestedTerm:          { o | [ '( o .expression ') ] 1 seq1 } ;
+    literal:             { o | [ o .literalArray o .literalSymbol  o .literalString  o .literalNumber ] alt } ;
+    literalArray:        { o | [ '# '( { | o .literal () } star ') ] 2 seq1 } ;
+    literalNumber:       { o | o .Number } ;
+    literalSymbol:       { o | [ '# [ o .string o .selector ] alt ] 1 seq1 tok } ;
   literalString:       { o | o .STString } ;
-  selector:            { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt } ;
-  keywordSelector:     { o | o .KeywordSequence } ;
+    selector:            { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt } ;
+  keywordSelector:     { o | o .KeywordSeq } ;
   string:              { o | o .STString } ;
-  nestedBlock:         { o | [ '[  { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
-  blockPattern:        { o | [ o .blockArguments '| ] 0 seq1 } ;
-  blockArguments:      { o | [ " :" o .argument ] seq &join mapp plus } ;
-//  Number:            { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
-  Number:              { o | [ '- lit opt o .Num plus &join mapp [ '. o .Num plus &join mapp ] seq &join mapp opt ] seq { | { i | i } filter join } mapp tok } ;
-  Alpha:               { o | [ 'a 'z range 'A 'Z range ] alt } ;
-  Num:                 { o | `0 `9 range } ;
+    nestedBlock:         { o | [ '[  { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
+    blockPattern:        { o | [ o .blockArguments '| ] 0 seq1 } ;
+    blockArguments:      { o | [ " :" o .argument ] seq joinp plus } ;
+  //  Number:            { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
+    Number:              { o | [ '- lit opt o .Num plus joinp [ '. o .Num plus joinp ] seq joinp opt ] seq { | { i | i } filter join } mapp tok } ;
+  Alpha:               { o | [ `a `z range `A `Z range ] alt { | c>$ } mapp } ;
+  Num:                 { o | `0 `9 range { | c>$ } mapp } ;
   AlphaNum:            { o | [ o .Alpha o .Num ] alt } ;
-  Identifier:          { o | [ o .Alpha o .AlphaNum star &join mapp ] seq &join mapp tok } ;
+  Identifier:          { o | [ o .Alpha o .AlphaNum star joinp ] seq joinp tok } ;
   STPrimitive:         { o | 'primitive lit } ;
-  Separator:           { o | '- lit 4 repeat tok } ;
-  OperatorSequence:    { o | '~&|*/\+<>,%@-= chars plus &join mapp } ;
-  Keyword:             { o | [ o .Identifier " :" ] seq &join mapp tok } ;
-  KeywordSequence:     { o | o .Keyword plus tok } ;
-  STStringChar:        { o | [ '\b '\n '\r '\f '\0 '\' '\\ '' !chars ] alt } ;
-  STString:            { o | [ '' o .STStringChar star '' ] 1 seq1 &join mapp } ;
+  Separator:           { o | '- lit 4 repeatp tok } ;
+  OperatorSeq:         { o | '~&|*/\+<>,%@-= chars plus joinp } ;
+  Keyword:             { o | [ o .Identifier ': ] seq joinp tok } ;
+  KeywordSeq:          { o | o .Keyword plus joinp tok } ;
+  STStringChar:        { o | [
+    '\b  8 c>$ litMap // backspace
+    '\t  9 c>$ litMap // tab
+    '\n 10 c>$ litMap // newline
+    '\f 12 c>$ litMap // formfeed
+    '\r 13 c>$ litMap // carriage return
+    '\' 39 c>$ litMap // single quote
+    '\\ 92 c>$ litMap // backslash
+    //      '\0 litMap // zero byte character, doesn't work well with C strings
+    '' !chars ] alt } ;
+  STString:            { o | [ '' o .STStringChar star '' ] 1 seq1 joinp } ;
   Comment:             { o | [ '" '" !chars star '" ] 1 seq1 tok } ;
-  Whitespace:          { o | [ tab cr nl "  " ] alt plus tok } ;
-  ignore:              { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
+  Whitespace:          { o | [ tab cr nl sp ] alt plus joinp tok } ;
+    ignore:              { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
   | { | ?? }
 } () :SOMParser
 

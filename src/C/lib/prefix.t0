@@ -48,6 +48,7 @@ false :#F
 { a b c | b c a } ::rot
 
 13 charCode :cr
+"  " :sp         { | sp .$ }  ::.sp
 9  charCode :tab { | tab .$ } ::.tab  // or name \t?
 10 charCode :nl  { | nl  .$ } ::.nl   // or name \n?
 "  " :`          { | `   .$ } ::.`
