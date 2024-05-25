@@ -12,7 +12,7 @@
 #define DEBUG       1
 #define PERFORMANCE 1
 
-#define MAX_FN_SIZE 100
+#define MAX_FN_SIZE 1000
 
 FILE* tin;
 
@@ -167,7 +167,7 @@ void callI(long ptr) {
 
 Scope* createScope(char* key /* copied */, long ptr) {
   Scope* node = (Scope*) malloc(sizeof(Scope));
-  node->key   = (char*)  malloc(sizeof(key));
+  node->key   = (char*)  malloc(strlen(key) + 1);
   node->ip    = ptr;
   node->left  = node->right = NULL;
   strcpy(node->key, key);
@@ -341,7 +341,7 @@ void localVarSetup() {
 
 char* strAdd(char* s1, char* s2) {
   int   l1 = strlen(s1);
-  char* s3 = (char*) malloc(l1 + sizeof(s2));
+  char* s3 = (char*) malloc(l1 + strlen(s2)+1);
 
   strcpy(s3, s1);
   strcpy(s3+l1, s2);
@@ -499,9 +499,9 @@ void defun() {
           break;
         }
 
-        if ( buf[strlen(buf)-1] == ':' ) {
-          buf[strlen(buf)-1] = 0;
-          varName = strdup(buf); // TODO: free
+        int len = strlen(buf);
+        if ( buf[len-1] == ':' ) {
+          varName = strndup(buf, len-1); // TODO: free
           continue;
         }
 
