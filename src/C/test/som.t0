@@ -25,33 +25,33 @@ Tester :t // Create an instance of Tester
 keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ } () #F" testsom // adds '00' to end of terms
 
 
-'identifier   'primitive      " 'primitive =$ "     testsom
-'identifier   'foo            " 'foo =$ "           testsom
+identifier:   'primitive      " 'primitive =$ "     testsom
+identifier:   'foo            " 'foo =$ "           testsom
 // 'literalArray '#(1)           " #T "           testsom
-'Number       '5              " 5 ="                testsom
-'Alpha        'm              " 'm =$"              testsom
-'Alpha        'M              " 'M =$"              testsom
-'Num          '0              " '0 =$"              testsom
-'AlphaNum     'M              " 'M =$"              testsom
-'AlphaNum     '0              " '0 =$"              testsom
-'Identifier   " foo "           " 'foo =$"          testsom
-'STPrimitive  'primitive      " 'primitive =$ "     testsom
-'Separator    " ----  "       " # 4 = "             testsom
-'OperatorSeq  '~&|*/\+<>,%@-= " '~&|*/\+<>,%@-= =$" testsom
+Number:       '5              " 5 ="                testsom
+Alpha:        'm              " 'm =$"              testsom
+Alpha:        'M              " 'M =$"              testsom
+Num:          '0              " '0 =$"              testsom
+AlphaNum:     'M              " 'M =$"              testsom
+AlphaNum:     '0              " '0 =$"              testsom
+Identifier:   " foo "           " 'foo =$"          testsom
+STPrimitive:  'primitive      " 'primitive =$ "     testsom
+Separator:    " ----  "       " # 4 = "             testsom
+OperatorSeq:  '~&|*/\+<>,%@-= " '~&|*/\+<>,%@-= =$" testsom
 Keyword:      " foo: "          " 'foo: =$"         testsom
 Keyword:      " foo:a "         " 'foo: =$"         testsom
 KeywordSeq:   " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
-'STString     " 'string' "      " 'string =$"       testsom
-'STString     " 'a\nb\r' "      " len 4 ="          testsom
-'STString     " '\n\n' "      " [ nl nl ] join =$"  testsom
-'Comment      """ "comment"     """  " # 7 ="       testsom
-'Whitespace   "  "            " sp =$"              testsom
-'Whitespace   "   "           """ "   " =$"""       testsom
-'Whitespace   tab             " tab =$"             testsom
-'Whitespace   nl              " nl =$"              testsom
-'Whitespace   cr              " cr =$"              testsom
-[ cr nl tab sp ] join :ws
-'Whitespace   ws              " ws =$"              testsom
+STString:     " 'string' "      " 'string =$"       testsom
+STString:     " 'a\nb\r' "      " len 4 ="          testsom
+STString:     " '\n\n' "      " [ nl nl ] join =$"  testsom
+Comment:      """ "comment"     """  " # 7 ="       testsom
+Whitespace:   "  "            " sp =$"              testsom
+Whitespace:   "   "           """ "   " =$"""       testsom
+Whitespace:   tab             " tab =$"             testsom
+Whitespace:   nl              " nl =$"              testsom
+Whitespace:   cr              " cr =$"              testsom
+  [ cr nl tab sp ] join :ws
+Whitespace:   ws              " ws =$"              testsom
 
 
 t .report
