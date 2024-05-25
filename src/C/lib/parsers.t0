@@ -22,7 +22,7 @@
       'ignoreOn { ignore this | str pos value ignore PStream .maybeIgnore }
       'pos    { this | pos }
       'head   { this |
-//        [ " pos: " pos " , head-> " str pos charAt ] join .$ .nl
+        // [ " pos: " pos " , head-> " str pos charAt ] join .$ .nl
         str pos charAt }
       'tail   { this |
         tail !
@@ -30,10 +30,9 @@
         if
         tail
       }
-      'maybeIgnore { this let this ignore () :ps | ps { | this .value ps .:value  } { | this } ifelse }
+      'maybeIgnore { this let this ignore () :ps | ps { | 'ignoring .$ .nl this .value ps .:value  } { | this } ifelse }
       'value    { this | value }
-      ':xxvalue { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse }
-      ':value   { v2 this | str pos v2 ignore PStream }
+      ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse } // optimization, doesn't work well until '=' works with more than integers
       'toString { this | [ " PStream pos: " pos " , value: '" value '' nl ] join }
                 { this | [ " PStream Unknown Method '" m '' nl ] join dup .$ }
     end
