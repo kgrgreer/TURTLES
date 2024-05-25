@@ -27,7 +27,7 @@ keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a
 
 identifier:   'primitive      " 'primitive =$ "     testsom
 identifier:   'foo            " 'foo =$ "           testsom
-// 'literalArray '#(1)           " #T "           testsom
+'literalArray '#(1 2 3)           " # 3 = "           testsom exit
 Number:       '5              " 5 ="                testsom
 Alpha:        'm              " 'm =$"              testsom
 Alpha:        'M              " 'M =$"              testsom
