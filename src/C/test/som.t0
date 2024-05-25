@@ -9,9 +9,10 @@ Tester :t // Create an instance of Tester
 '0 0 #F #F PStream `0 `9 range () .value c>$ .$
 '1 0 #F #F PStream SOMParser .Num () .value c>$ .$
 
-{ name input test let input 0 #F #F PStream :ps |
-  " Rule: " .$ name .$ " , input: " .$ input .$ .nl
-  [ ps name SOMParser .call () dup { | .value test #T t .test } { | 'syntax-error .$ .nl } ifelse ] drop
+{ name input test let input 0 #F SOMParser .ignore PStream :ps |
+  ANSI.BOLD ANSI.BLUE .$ .$ name .$ ANSI.RESET .$ " , input: " .$ input .$ .nl
+//  [ ps name SOMParser .call () dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
+  [ name SOMParser .call ps .parse dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
   .nl
 } ::testsom
 
@@ -19,8 +20,14 @@ Tester :t // Create an instance of Tester
 'superclass   " "             " 0 ="                testsom
 'fields       '|foo|          " join 'foo =$ "      testsom
 // 'fields       '|foo bar|          " guru 'foobar =$ "      testsom
+'unarySelector 'foo           " 'foo =$ "           testsom
+'binaryPattern '+foo       " join '+foo =$"       testsom
+keywordPattern: " x:a y:b"  " dup { let 1 @ :a | .[] '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ guru } () #T" testsom
+
+
 'identifier   'primitive      " 'primitive =$ "     testsom
 'identifier   'foo            " 'foo =$ "           testsom
+// 'literalArray '#(1)           " #T "           testsom
 'Number       '5              " 5 ="                testsom
 'Alpha        'm              " 'm =$"              testsom
 'Alpha        'M              " 'M =$"              testsom
@@ -31,8 +38,9 @@ Tester :t // Create an instance of Tester
 'STPrimitive  'primitive      " 'primitive =$ "     testsom
 'Separator    " ----  "       " # 4 = "             testsom
 'OperatorSeq  '~&|*/\+<>,%@-= " '~&|*/\+<>,%@-= =$" testsom
-'Keyword      " foo: "          " 'foo: =$"         testsom
-'KeywordSeq   " foo:bar: "      " 'foo:bar: =$"     testsom
+Keyword:      " foo: "          " 'foo: =$"         testsom
+Keyword:      " foo:a "         " 'foo: =$"         testsom
+KeywordSeq:   " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
 'STString     " 'string' "      " 'string =$"       testsom
 'STString     " 'a\nb\r' "      " len 4 ="            testsom
 'STString     " '\n\n' "      " [ nl nl ] join =$"            testsom

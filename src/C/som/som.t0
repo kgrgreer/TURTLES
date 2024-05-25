@@ -20,12 +20,12 @@
   fields:              { o | [ '| o .variable star '| ] 1 seq1 opt } ;
     method:              { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
     pattern:             { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt } ;
-    unaryPattern:        { o | o .unarySelector } ;
-    binaryPattern:       { o | [ o .binarySelector o .argument ] seq } ;
+  unaryPattern:        { o | o .unarySelector } ;
+  binaryPattern:       { o | [ o .binarySelector o .argument ] seq } ;
     keywordPattern:      { o | [ o .keyword o .argument ] seq plus } ;
     methodBlock:         { o | [ '( o .blockContents opt ') ] 1 seq1 } ;
-    unarySelector:       { o | [ o .identifier " :" lit notp ] 0 seq1 } ;
-    binarySelector:      { o | o .OperatorSeq } ;
+  unarySelector:       { o | [ o .identifier ': lit notp ] 0 seq1 } ;
+  binarySelector:      { o | o .OperatorSeq } ;
   identifier:          { o | [ o .STPrimitive o .Identifier ] alt } ;
   keyword:             { o | o .Keyword } ;
   argument:            { o | o .variable } ;
@@ -50,8 +50,8 @@
     formula:             { o | [ o .binaryOperand { | o .binaryMessage () } star ] seq } ;
     nestedTerm:          { o | [ '( o .expression ') ] 1 seq1 } ;
     literal:             { o | [ o .literalArray o .literalSymbol  o .literalString  o .literalNumber ] alt } ;
-    literalArray:        { o | [ '# '( { | o .literal () } star ') ] 2 seq1 } ;
-    literalNumber:       { o | o .Number } ;
+    literalArray:        { o | [ '# '( o .literal star ') ] 2 seq1 } ;
+  literalNumber:       { o | o .Number } ;
     literalSymbol:       { o | [ '# [ o .string o .selector ] alt ] 1 seq1 tok } ;
   literalString:       { o | o .STString } ;
     selector:            { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt } ;
