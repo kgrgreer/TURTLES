@@ -22,7 +22,7 @@ Tester :t // Create an instance of Tester
 // 'fields       '|foo bar|          " guru 'foobar =$ "      testsom
 'unarySelector 'foo           " 'foo =$ "           testsom
 'binaryPattern '+foo       " join '+foo =$"       testsom
-keywordPattern: " x:a y:b"  " dup { let 1 @ :a | .[] '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ guru } () #T" testsom
+keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ } () #F" testsom // adds '00' to end of terms
 
 
 'identifier   'primitive      " 'primitive =$ "     testsom
@@ -42,8 +42,8 @@ Keyword:      " foo: "          " 'foo: =$"         testsom
 Keyword:      " foo:a "         " 'foo: =$"         testsom
 KeywordSeq:   " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
 'STString     " 'string' "      " 'string =$"       testsom
-'STString     " 'a\nb\r' "      " len 4 ="            testsom
-'STString     " '\n\n' "      " [ nl nl ] join =$"            testsom
+'STString     " 'a\nb\r' "      " len 4 ="          testsom
+'STString     " '\n\n' "      " [ nl nl ] join =$"  testsom
 'Comment      """ "comment"     """  " # 7 ="       testsom
 'Whitespace   "  "            " sp =$"              testsom
 'Whitespace   "   "           """ "   " =$"""       testsom
