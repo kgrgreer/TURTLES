@@ -39,13 +39,15 @@ exports.CMDS = [
     sprintf(str, "%ld", (long) n);
     push(stack, strdup(str));
   `) ],
-  // TODO: $>#
   [ 'toStr',     '>$', af('a', `
     // TODO: base on heap-> ptr instead of constant
     push(stack, (void*) a);
     if ( a < 10000000 ) {
       ntoStr();
     }
+  `) ],
+  [ 'strToNum',  '$>#',   af('s', `
+    push(stack, (void*) atol((char*) s));
   `) ],
   [ 'strToChar', '$>c',   sf('s', '((char*) s)[0]') ],
   [ 'print',  '.',        af('a', `

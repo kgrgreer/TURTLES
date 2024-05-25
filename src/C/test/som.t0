@@ -21,6 +21,7 @@ Tester :t // Create an instance of Tester
 // 'fields       '|foo bar|          " guru 'foobar =$ "      testsom
 'identifier   'primitive      " 'primitive =$ "     testsom
 'identifier   'foo            " 'foo =$ "           testsom
+'Number       '5              " 5 ="                testsom
 'Alpha        'm              " 'm =$"              testsom
 'Alpha        'M              " 'M =$"              testsom
 'Num          '0              " '0 =$"              testsom

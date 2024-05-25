@@ -61,7 +61,7 @@
     blockPattern:        { o | [ o .blockArguments '| ] 0 seq1 } ;
     blockArguments:      { o | [ " :" o .argument ] seq joinp plus } ;
   //  Number:            { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
-    Number:              { o | [ '- lit opt o .Num plus joinp [ '. o .Num plus joinp ] seq joinp opt ] seq { | { i | i } filter join } mapp tok } ;
+  Number:              { o | [ '- lit opt o .Num plus joinp [ '. o .Num plus joinp ] seq joinp opt ] seq { | { | } filter join $># } mapp tok } ; // $># only works with integers
   Alpha:               { o | [ `a `z range `A `Z range ] alt { | c>$ } mapp } ;
   Num:                 { o | `0 `9 range { | c>$ } mapp } ;
   AlphaNum:            { o | [ o .Alpha o .Num ] alt } ;
