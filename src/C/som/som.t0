@@ -93,9 +93,9 @@ i{
     '\\ 92 c>$ litMap // backslash
     //      '\0 litMap // zero byte character, doesn't work well with C strings
     '' !chars ] alt } ;
-  STString:            { o | [ '' o .STStringChar star '' ] 1 seq1 joinp } ;
+  STString:            { o | [ '' << STStringChar >> star '' ] 1 seq1 joinp } ;
   Comment:             { o | [ '" '" !chars star '" ] 1 seq1 tok } ;
   Whitespace:          { o | [ tab cr nl sp ] alt plus joinp tok } ;
-    ignore:              { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
+    ignore:              { o | [ << Whitespace >>  << Comment >> ] alt plus tok } ;
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
