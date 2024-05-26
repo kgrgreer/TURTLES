@@ -190,8 +190,6 @@ ColourBall = Ball (
 )
 " ;;
 
-debugger
-
 'program " Test3 = (
 
   arg1: a1 arg2: a2 = ( self foo. self bar. ^2 )
