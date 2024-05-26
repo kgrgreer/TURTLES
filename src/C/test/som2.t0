@@ -19,8 +19,6 @@ SOMParser :som
 
 // Comment: '"thisisacomment" ;;
 
-// exit
-(*
 'OperatorSeq '~ ;;
 'OperatorSeq '& ;;
 'OperatorSeq '| ;;
@@ -33,7 +31,6 @@ SOMParser :som
 'STStringChar '' ;;
 
 'STString " 'a string'" ;;
-*)
 
 'Num '0 ;;
 'Num '9 ;;
