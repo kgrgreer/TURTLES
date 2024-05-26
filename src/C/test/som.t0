@@ -50,7 +50,7 @@ unarySelector:    "  "   " #T" testsom
 
 identifier:   'primitive      " 'primitive =$ "     testsom
 identifier:   'foo            " 'foo =$ "           testsom
-// literalArray: '#(1 2 3)           " # 3 = "           testsom exit
+literalArray: " #(1 2 3)"     " # 3 = "             testsom
 Number:       '5              " 5 ="                testsom
 Alpha:        'm              " 'm =$"              testsom
 Alpha:        'M              " 'M =$"              testsom
