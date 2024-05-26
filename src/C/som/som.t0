@@ -3,74 +3,86 @@
 
 'lib/template.t0 require
 
+i{
+{ let 0 :prev 0 :c |
+  [ { | prev `> = c `> = & } { | c :prev key :c c c>$ } until drop2 ] join
+  { name |
+    ${ { | o .{{ name }} () } }$ dup .$
+    emit
+  } ()
+} :!<<
+}i
+
+
 // translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4
 { let
   call:                { m o | o m o () () } ; // Call the method with specified name, used for testing
-  program:             { o | o .classdef plus } ;
+  program:             { o | << classdef >> plus } ;
   classdef:            { o | [
-    o .identifier '= o .superclass '(
-      o .instanceFields
-      o .method star
-      [ o .Separator o .classFields opt o .method star ] seq opt
+    << identifier >> '= << superclass >> '(
+      << instanceFields >>
+      << method >> star
+      [ << Separator >>  << classFields >> opt << method >> star ] seq opt
     ')
   ] seq } ;
-  superclass:          { o | o .Identifier opt } ;
-  instanceFields:      { o | o .fields } ;
-  classFields:         { o | o .fields } ;
-  fields:              { o | [ '| o .variable star '| ] 1 seq1 opt } ;
-    method:              { o | [ o .pattern '= [ o .STPrimitive o .methodBlock ] alt ] seq } ;
-    pattern:             { o | [ o .keywordPattern o .binaryPattern o .unaryPattern ] alt } ;
-  unaryPattern:        { o | o .unarySelector } ;
-  binaryPattern:       { o | [ o .binarySelector o .argument ] seq } ;
-    keywordPattern:      { o | [ o .keyword o .argument ] seq plus } ;
-    methodBlock:         { o | [ '( o .blockContents opt ') ] 1 seq1 } ;
-  unarySelector:       { o | [ o .identifier ': lit notp ] 0 seq1 } ;
-  binarySelector:      { o | o .OperatorSeq } ;
-  identifier:          { o | [ o .STPrimitive o .Identifier ] alt } ;
-  keyword:             { o | o .Keyword } ;
-  argument:            { o | o .variable } ;
-    blockContents:       { o | [ [ '| o .localDefs '| ] 1 seq1 opt { | o .blockBody () } ] seq } ;
-    localDefs:           { o | o .variable star } ;
-    blockBody:           { o | [ { | o .blockBodyReturn () } { | o .blockBodyExpression () } ] alt } ;
-    blockBodyReturn:     { o |  [ '^ o .result ] 1 seq1 } ;
-    blockBodyExpression: { o | [ { | o .expression () } [ '. { | o .blockBody () } opt ] 1 seq1 opt ] seq } ;
-    result:              { o | [ o .expression '. lit opt ] 0 seq1 } ;
-    expression:          { o | [ o .assignation o .evaluation ] alt } ;
-    assignation:         { o | [ o .assignments o .evaluation ] seq } ;
-    assignments:         { o | o .assignment plus } ;
-    assignment:          { o | [ o .variable ':= ] 0 seq1 } ;
-    evaluation:          { o | [ o .primary o .messages opt ] seq } ;
-    primary:             { o | [ o .variable { | o .nestedTerm () } { | o .nestedBlock () } { | o .literal () } ] alt } ;
-  variable:            { o | o .identifier } ;
-    messages:            { o | [ o .unaryMessage star o .binaryMessage star o .keywordMessage opt ] seq } ;
-    unaryMessage:        { o | { | o .unarySelector () } } ;
-    binaryMessage:       { o | [ o .binarySelector o .binaryOperand ] seq } ;
-    binaryOperand:       { o | [ o .primary o .unaryMessage star ] seq } ;
-    keywordMessage:      { o | [ o .keyword o .formula ] seq plus } ;
-    formula:             { o | [ o .binaryOperand { | o .binaryMessage () } star ] seq } ;
-    nestedTerm:          { o | [ '( o .expression ') ] 1 seq1 } ;
-    literal:             { o | [ o .literalArray o .literalSymbol  o .literalString  o .literalNumber ] alt } ;
-    literalArray:        { o | [ '# '( o .literal star ') ] 2 seq1 } ;
-  literalNumber:       { o | o .Number } ;
-    literalSymbol:       { o | [ '# [ o .string o .selector ] alt ] 1 seq1 tok } ;
-  literalString:       { o | o .STString } ;
-    selector:            { o | [ o .binarySelector o .keywordSelector o .unarySelector ] alt } ;
-  keywordSelector:     { o | o .KeywordSeq } ;
-  string:              { o | o .STString } ;
-    nestedBlock:         { o | [ '[  { | o .blockPattern () } opt { | o .blockContents () } opt '] ] seq } ;
-    blockPattern:        { o | [ o .blockArguments '| ] 0 seq1 } ;
-    blockArguments:      { o | [ " :" o .argument ] seq joinp plus } ;
-  //  Number:            { o | [ '- lit opt o .Num plus [ '. o .Num plus ] seq opt ] seq tok } ;
-  Number:              { o | [ '- lit opt o .Num plus joinp [ '. o .Num plus joinp ] seq joinp opt ] seq { | { | } filter join $># } mapp tok } ; // $># only works with integers
+  superclass:          { o | << Identifier >> opt } ;
+  instanceFields:      { o | << fields >> } ;
+  classFields:         { o | << fields >> } ;
+  fields:              { o | [ '| << variable >> star '| ] 1 seq1 opt } ;
+    method:              { o | [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq } ;
+    pattern:             { o | [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt } ;
+  unaryPattern:        { o | << unarySelector >> } ;
+  binaryPattern:       { o | [ << binarySelector >>  << argument >> ] seq } ;
+    keywordPattern:      { o | [ << keyword >>  << argument >>> ] seq plus } ;
+    methodBlock:         { o | [ '( << blockContents >> opt ') ] 1 seq1 } ;
+  unarySelector:       { o | [ << identifier >> ': lit notp ] 0 seq1 } ;
+  binarySelector:      { o | << OperatorSeq >> } ;
+  identifier:          { o | [ << STPrimitive >>  << Identifier >> ] alt } ;
+  keyword:             { o | << Keyword >> } ;
+  argument:            { o | << variable >> } ;
+    blockContents:       { o | [ [ '| << localDefs >> '| ] 1 seq1 opt  <<  blockBody >> ] seq } ;
+    localDefs:           { o | << variable >> star } ;
+    blockBody:           { o | [ << blockBodyReturn >>  << blockBodyExpression >> ] alt } ;
+    blockBodyReturn:     { o |  [ '^ <<  result >> ] 1 seq1 } ;
+    blockBodyExpression: { o | [ << expression >> [ '. << blockBody >> opt ] 1 seq1 opt ] seq } ;
+    result:              { o | [ << expression >> '. lit opt ] 0 seq1 } ;
+    expression:          { o | [ << assignation >>  << evaluation >> ] alt } ;
+    assignation:         { o | [ << assignments >>  << evaluation >> ] seq } ;
+    assignments:         { o | << assignment >> plus } ;
+    assignment:          { o | [ << variable >> ':= ] 0 seq1 } ;
+    evaluation:          { o | [ << primary >>  << messages >> opt ] seq } ;
+    primary:             { o | [ << variable >>   << nestedTerm >>  << nestedBlock >>  << .literal >> ] alt } ;
+  variable:            { o | << identifier >> } ;
+    messages:            { o | [ << unaryMessage >> star << .binaryMessage >> star << keywordMessage >> opt ] seq } ;
+    unaryMessage:        { o | << unarySelector >> } ;
+    binaryMessage:       { o | [ << binarySelector >>  << binaryOperand >> ] seq } ;
+    binaryOperand:       { o | [ << primary >>  << unaryMessage >> star ] seq } ;
+    keywordMessage:      { o | [ << keyword >>  << formula >> ] seq plus } ;
+    formula:             { o | [ << binaryOperand >>  << binaryMessage >> star ] seq } ;
+    nestedTerm:          { o | [ '( << expression >> ') ] 1 seq1 } ;
+    literal:             { o | [ << literalArray >>  << literalSymbol >>  << literalString >>  << literalNumber >> ] alt } ;
+    literalArray:        { o | [ '# '( << literal >> star ') ] 2 seq1 } ;
+  literalNumber:       { o | << Number >> } ;
+    literalSymbol:       { o | [ '# [ << string >>  << selector >> ] alt ] 1 seq1 tok } ;
+  literalString:       { o | << STString >> } ;
+    selector:            { o | [ << binarySelector >>  << keywordSelector >>  << unarySelector >> ] alt } ;
+    keywordSelect2:     { o | << KeywordSeq >> } ;
+    keywordSelector:     { o | << KeywordSeq >> } ;
+  string:              { o | << STString >> } ;
+    nestedBlock:         { o | [ '[  << blockPattern >> opt  << blockContents >> opt '] ] seq } ;
+    blockPattern:        { o | [ << blockArguments >> '| ] 0 seq1 } ;
+    blockArguments:      { o | [ " :" << argument >> ] seq joinp plus } ;
+  //  Number:            { o | [ '- lit opt << Num >> plus [ '. << Num >> plus ] seq opt ] seq tok } ;
+  Number:              { o | [ '- lit opt << Num >> plus joinp [ '. << Num >> plus joinp ] seq joinp opt ] seq { | { | } filter join $># } mapp tok } ; // $># only works with integers
   Alpha:               { o | [ `a `z range `A `Z range ] alt { | c>$ } mapp } ;
   Num:                 { o | `0 `9 range { | c>$ } mapp } ;
-  AlphaNum:            { o | [ o .Alpha o .Num ] alt } ;
-  Identifier:          { o | [ o .Alpha o .AlphaNum star joinp ] seq joinp tok } ;
+  AlphaNum:            { o | [ << Alpha >>  << Num >> ] alt } ;
+  Identifier:          { o | [ << Alpha >>  << AlphaNum >> star joinp ] seq joinp tok } ;
   STPrimitive:         { o | 'primitive lit } ;
   Separator:           { o | '- lit 4 repeatp tok } ;
   OperatorSeq:         { o | '~&|*/\+<>,%@-= chars plus joinp } ;
-  Keyword:             { o | [ o .Identifier ': ] seq joinp tok } ;
-  KeywordSeq:          { o | o .Keyword plus joinp tok } ;
+  Keyword:             { o | [ << Identifier >> ': ] seq joinp tok } ;
+  KeywordSeq:          { o | << Keyword >> plus joinp tok } ;
   STStringChar:        { o | [
     '\b  8 c>$ litMap // backspace
     '\t  9 c>$ litMap // tab
@@ -85,96 +97,5 @@
   Comment:             { o | [ '" '" !chars star '" ] 1 seq1 tok } ;
   Whitespace:          { o | [ tab cr nl sp ] alt plus joinp tok } ;
     ignore:              { o | [ o .Whitespace  o .Comment ] alt plus tok } ;
-  | { | ?? }
+  | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
-
-"""
-
-{ | { let SOMParser :super |
-  { m | m switch
-    'super  { m o | o m super () () () }
-    'method { | m super { a | [
-      "     '" a 0 0 @@ "  { :--- " a 0 1 @@ "  | "
-      a 2 @
-      "  } "
-    ] join } action }
-    'STPrimitive         { | m super { a | "  { | }" } action } // TODO: lookup primitive implementation
-    'blockContents       { | m super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } action }
-    'blockBodyReturn     { | m super { a | a "  ---<-" + } action }
-    'blockBodyExpression { | m super { a | a joins } action }
-    'formula             { | m super { a | a 0 @ a 1 @ joins + } action }
-    'keywordMessage      { | m super { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins a len ] } action }
-    'binaryOperand       { | m super { a | a 0 @ a 1 @ joins + } action }
-    'evaluation          { | m super { a | a joins } action }
-    'unaryPattern        { | m super { a | [ a " " ] } action }
-    'keywordPattern      { | m super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } action }
-    'assignation         { | m super { a | [ a 1 @  a 0 @ { i | "  " } map " dup" joinWith a 0 @ join ] join } action }
-    'messages            { | m super { a | [
-      a 0 @ { i | '. i + } map joins
-      a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
-      a 2 @ { | a 2 1 @@  a 2 2 @@  'pick '. a 2 0 @@ + 'drop } if
-    ] joins } action }
-    'fields              { | m super { a | a { | a joins } { | " " } ifelse } action }
-    'STString            { | m super { a | [ '" "  " a '" ] join } action }
-    'superclass          { | m super { a | a { | a } { | 'Object } ifelse } action }
-    'program             { | m super { a | a nl joinWith } action }
-    'assignment          { | m super { a | "  :" a + } action }
-    'nestedBlock         { | m super { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } action }
-    'classdef            { | m super { a let
-        name_:           a 0 @ ;
-        superName_:      a 2 @ ;
-        instanceFields_: a 4 @ ;
-        methods_:        a 5 @ ;
-        classFields_:    a 6 @ { | a 6 1 @@ } { | " " } ifelse ;
-        classMethods_:   a 6 @ { | a 6 2 @@ } { | [ ] } ifelse ;
-      |
-      ${
-      { | {
-        {{ instanceFields_ }}
-        let  {{ superName_ }}_ :super |
-        { m | m switch
-          'super { m o | o m super () () () }
-          {{ methods_ nl joinWith }}
-          { | m super () () }
-        end }
-      } () } ::{{ name_ }}_
-      {
-        {{ classFields_ }}
-        let Class :super |
-        { m | m switch
-          'new_ { | {{  name_ }}_ }
-          'name { | {{ name_ }} }
-          {{ classMethods_ nl joinWith }}
-          { | m super () () }
-        end }
-      } :{{ name_ }}
-      }$
-      (* [
-        nl " { | { "
-        instanceFields_ nl
-        "   let " superName_ " _ :super |" nl
-        "   { m | m switch" nl
-        "     'super { m o | o m super () () () }" nl
-        methods_ nl joinWith
-        "     { | m super () () }" nl
-        "   end }" nl
-        " } () } ::" name_ '_ nl
-        nl
-        " { "
-        classFields_ nl
-        "   let Class :super |" nl
-        "   { m | m switch" nl
-        "     'new_ { | " name_ " _ }" nl
-        "     'name { | '" name_ "  }" nl
-        classMethods_ nl joinWith
-        "     { | m super () () }" nl
-        "   end }" nl
-        " } :" name_ nl
-      ] join
-      *)
-    } action }
-    { | m super () () }
-  end }
-} () } ::SOMCompiler
-
-"""

@@ -20,14 +20,37 @@ Tester :t // Create an instance of Tester
 'superclass   " "             " 0 ="                testsom
 'fields       '|foo|          " join 'foo =$ "      testsom
 // 'fields       '|foo bar|          " guru 'foobar =$ "      testsom
-'unarySelector 'foo           " 'foo =$ "           testsom
-'binaryPattern '+foo       " join '+foo =$"       testsom
-keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ } () #F" testsom // adds '00' to end of terms
+unarySelector: 'foo           " 'foo =$ "           testsom
+binaryPattern: '+foo       " join '+foo =$"       testsom
+// keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ } () #F" testsom // adds '00' to end of terms
 
+literalNumber: '42 " 42 = " testsom
+literalString: ''42' " '42 =$ " testsom
+// literalSymbol: " #'foo'"      " guru #T"            testsom // crashes
+
+KeywordSeq:        " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
+KeywordSeq:        " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
+KeywordSeq:        " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
+KeywordSeq:        " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
+keywordSelector:   " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
+
+binarySelector:  '~&|*/\+<>,%@-= " '~&|*/\+<>,%@-= =$" testsom
+unarySelector:  'foo " 'foo =$" testsom
+selector:          " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow space, is that correct
+selector:  '~&|*/\+<>,%@-= " '~&|*/\+<>,%@-= =$" testsom
+
+selector:  'foo " 'foo =$" testsom
+
+
+(*
+binarySelector:   "  "   " #T" testsom
+keywordSelector:  "  "   " #T" testsom
+unarySelector:    "  "   " #T" testsom
+*)
 
 identifier:   'primitive      " 'primitive =$ "     testsom
 identifier:   'foo            " 'foo =$ "           testsom
-'literalArray '#(1 2 3)           " # 3 = "           testsom exit
+// literalArray: '#(1 2 3)           " # 3 = "           testsom exit
 Number:       '5              " 5 ="                testsom
 Alpha:        'm              " 'm =$"              testsom
 Alpha:        'M              " 'M =$"              testsom
@@ -44,7 +67,7 @@ KeywordSeq:   " foo:bar:"     " 'foo:bar: =$"       testsom // doesn't allow spa
 STString:     " 'string' "      " 'string =$"       testsom
 STString:     " 'a\nb\r' "      " len 4 ="          testsom
 STString:     " '\n\n' "      " [ nl nl ] join =$"  testsom
-Comment:      """ "comment"     """  " # 7 ="       testsom
+Comment:      """ "comment"   """  " # 7 ="         testsom
 Whitespace:   "  "            " sp =$"              testsom
 Whitespace:   "   "           """ "   " =$"""       testsom
 Whitespace:   tab             " tab =$"             testsom
