@@ -233,6 +233,7 @@ exports.INSTRUCTIONS = [
     }
     ((Fn) nextI())();
   `, true ],
+  // TODO: Don't use execSm because we don't want to call ???, which should be callable directly
   [ 'scopeLookupI', 'Scope* cscope,int cfd', `
     char* key = (char*) pop(stack);
 
