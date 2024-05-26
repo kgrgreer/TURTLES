@@ -18,9 +18,9 @@
     }
     'report { this |
       .nl
-      " Tests Run: " .$ passed failed + . .nl
-      "    PASSED: " .$ [ ANSI.GREEN passed #>$ ANSI.RESET ] join .$ .nl
-      "    FAILED: " .$ [ ANSI.RED   failed #>$ ANSI.RESET ] join .$ .nl .nl
+      " TOTAL TESTS: " .$ passed failed + . .nl
+      "      PASSED: " .$ [ ANSI.GREEN passed #>$ ANSI.RESET ] join .$ .nl
+      "      FAILED: " .$ [ ANSI.RED   failed #>$ ANSI.RESET ] join .$ .nl .nl
     }
     { this | " unknown method: " .$ m .$ }
   end }
