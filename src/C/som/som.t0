@@ -99,3 +99,14 @@ i{
   ignore:              { o | [ << Whitespace >>  << Comment >> ] alt plus tok } ;
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
+
+
+{ let
+  super: SOMParser ;
+  fields: { m | 'xxxx .$ m super () } ;
+  fieldsxxx: { m | 'xxxxxx .$ m super { a | a { | a joins } { | " " } ifelse } action } ;
+  |
+    { m |
+      m m ?? { | super } || ()
+    }
+} () :SOMCompiler

@@ -233,7 +233,6 @@ exports.INSTRUCTIONS = [
     }
     ((Fn) nextI())();
   `, true ],
-  // TODO: Don't use execSm because we don't want to call ???, which should be callable directly
   [ 'scopeLookupI', 'Scope* cscope,int cfd', `
     char* key = (char*) pop(stack);
 
@@ -242,8 +241,19 @@ exports.INSTRUCTIONS = [
 
     scope = cscope;
     fd    = cfd;
-//     printf("scopeLookup: %s\\n", key);
-    execSym(key);
+
+    long ptr = findSym(scope, key);
+    if ( ptr == -1 ) {
+      push(stack, 0);
+    } else {
+      // TODO: this code should be refactored out of here and shared
+      long prev = code->ptr;
+      callI(ptr);
+      push(code, ret);    // add a return statement
+      execute(prev);      // execute any compiled code
+      code->ptr = prev;
+    }
+
     scope = oldScope;
     fd    = oldFd;
   `, false ]
