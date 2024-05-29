@@ -103,10 +103,13 @@ i{
 
 { let
   super: SOMParser ;
-  fields: { m | 'xxxx .$ m super () } ;
-  fieldsxxx: { m | 'xxxxxx .$ m super { a | a { | a joins } { | " " } ifelse } action } ;
+  fields: { v | 'here .$ v .[] v } ;
   |
-    { m |
-      m m ?? { | super } || ()
+    { m let m ?? :f |
+//    'method: .$ m .$ .nl
+      f
+        { | m super () /* a method which returns a parser */ () /* a parser */ { p | { | p f mapp } } () }
+        { | m super () }
+      ifelse
     }
 } () :SOMCompiler

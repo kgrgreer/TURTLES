@@ -21,6 +21,7 @@ SOMCompiler :som
 'fields       '|foo|          " join 'foo =$ "      testsom
 'fields       " |foo bar|"      " join dup .$   'foobar =$ "      testsom
 
+exit
 unarySelector: 'foo           " 'foo =$ "           testsom
 binaryPattern: '+foo       " join '+foo =$"       testsom
 // keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ } () #F" testsom // adds '00' to end of terms
