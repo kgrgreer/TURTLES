@@ -3,6 +3,7 @@
 
 'lib/template.t0 require
 
+// << name >> -> { | o .name () }
 i{
 { let 0 :prev 0 :c |
   [ { | prev `> = c `> = & } { | c :prev key :c c c>$ } until drop2 ] join
@@ -13,6 +14,7 @@ i{
 } :!<<
 }i
 
+// !!!: Parsers are functions but methods are methods (take o). Should parsers be methods?
 
 // translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4
 { let
