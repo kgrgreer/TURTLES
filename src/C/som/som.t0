@@ -103,6 +103,7 @@ i{
 } () :SOMParser
 
 
+(*
 { let
   super: SOMParser ;
   fields: { v | 'here .$ v .[] v } ;
@@ -114,4 +115,12 @@ i{
         { | m super () }
       ifelse
     }
+} () :SOMCompiler
+*)
+
+{ let
+  super: SOMParser ;
+  fields: { o | super .fields } ;
+  |
+  { m | m ?? { | m super () } || }
 } () :SOMCompiler
