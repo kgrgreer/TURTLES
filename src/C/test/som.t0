@@ -6,8 +6,7 @@ Tester :t // Create an instance of Tester
 
 { script answer | [ script answer t .test  ] drop } ::test
 
-// SOMParser :som
-SOMCompiler :som
+SOMParser :som
 
 { name input test let input 0 #F som .ignore PStream :ps |
   ANSI.BOLD ANSI.BLUE .$ .$ name .$ ANSI.RESET .$ " , input: " .$ input .$ .nl
@@ -18,12 +17,8 @@ SOMCompiler :som
 
 'superclass   'Object         " 'Object =$"         testsom
 'superclass   " "             " 0 ="                testsom
-// 'fields       '|foo|          " join 'foo =$ "      testsom
-// 'fields       " |foo bar|"      "  join dup .$  'foobar =$ "      testsom
-'fields       '|foo|          " 'foo =$ "      testsom
-'fields       " |foo bar|"      """  " foo bar" =$ """      testsom
-
-exit
+'fields       '|foo|          " join 'foo =$ "      testsom
+'fields       " |foo bar|"      "  join dup .$  'foobar =$ "      testsom
 unarySelector: 'foo           " 'foo =$ "           testsom
 binaryPattern: '+foo       " join '+foo =$"       testsom
 // keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ } () #F" testsom // adds '00' to end of terms
@@ -79,6 +74,20 @@ Whitespace:   nl              " nl =$"              testsom
 Whitespace:   cr              " cr =$"              testsom
   [ cr nl tab sp ] join :ws
 Whitespace:   ws              " ws =$"              testsom
+
+
+
+SOMCompiler :som
+
+{ name input test let input 0 #F som .ignore PStream :ps |
+  ANSI.BOLD ANSI.BLUE .$ .$ name .$ ANSI.RESET .$ " , input: " .$ input .$ .nl
+//  [ ps name som .call () dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
+  [ name som .call ps .parse dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
+  .nl
+} ::testsom
+
+'fields       '|foo|          " 'foo =$ "      testsom
+'fields       " |foo bar|"      """  " foo bar" =$ """      testsom
 
 
 t .report
