@@ -105,9 +105,9 @@ i{
 
 // TODO: super needs to still pass correct 'o'
 { let
-  super:  SOMParser ;
+  _super_:  SOMParser ;
 
-  fields: { o | super .fields { | joins } mapp } ;
+  fields: { o | _super_ .fields { | joins } mapp } ;
   (*
   'STPrimitive         { | m super { a | "  { | }" } action } // TODO: lookup primitive implementation
   'blockContents       { | m super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } action }
@@ -138,5 +138,5 @@ i{
   *)
 
   |
-  { m | m ?? { | m super () } || }
+  { m | m ?? { | m _super_ () } || }
 } () :SOMCompiler
