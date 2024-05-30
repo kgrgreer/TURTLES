@@ -103,24 +103,9 @@ i{
 } () :SOMParser
 
 
-(*
 { let
   super: SOMParser ;
-  fields: { v | 'here .$ v .[] v } ;
-  |
-    { m let m ?? :f |
-//    'method: .$ m .$ .nl
-      f
-        { | m super () /* a method which returns a parser */ () /* a parser */ { p | { | p f mapp } } () }
-        { | m super () }
-      ifelse
-    }
-} () :SOMCompiler
-*)
-
-{ let
-  super: SOMParser ;
-  fields: { o | super .fields } ;
+  fields: { o | super .fields { v | v sp joinWith } mapp } ;
   |
   { m | m ?? { | m super () } || }
 } () :SOMCompiler

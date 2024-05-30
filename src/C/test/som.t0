@@ -18,8 +18,10 @@ SOMCompiler :som
 
 'superclass   'Object         " 'Object =$"         testsom
 'superclass   " "             " 0 ="                testsom
-'fields       '|foo|          " join 'foo =$ "      testsom
-'fields       " |foo bar|"      " join dup .$   'foobar =$ "      testsom
+// 'fields       '|foo|          " join 'foo =$ "      testsom
+// 'fields       " |foo bar|"      "  join dup .$  'foobar =$ "      testsom
+'fields       '|foo|          " 'foo =$ "      testsom
+'fields       " |foo bar|"      """  " foo bar" =$ """      testsom
 
 exit
 unarySelector: 'foo           " 'foo =$ "           testsom
