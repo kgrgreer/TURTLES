@@ -4,22 +4,12 @@
   { | delegate () } ::key
 } ()
 
-{ | { | key 10 != } { | } while } :!//
-// Now we have C++-style comments
+{ | { | key 10 != } { | } while } :!//  // Now we have C++-style comments
 
 // //////////////////////////////////////////////////////////////////////////
 // Prefix.t0
 // T0 Language Features written in T0
 // //////////////////////////////////////////////////////////////////////////
-
-{ c b | { | c () ! } b while } ::until
-
-{ let 0 :prev 0 :c | { | prev `* =  c `/ =  & } { | c :prev key :c } until } :!/*
-/* Now we have C-style comments */
-
-{ let 0 :prev 0 :c | { | prev `* =  c `) =  & } { | c :prev key :c } until } :!(*
-(* Now we have Beta-style comments, let's just use to comment out code *)
-// Maybe {* *} would be better for code comments?
 
 { | clearStack cls } ::clear
 
@@ -34,6 +24,7 @@ nil :{}  // Identity Function
 true  :#T
 false :#F
 
+// Math Functions
 { n | 0 n - } ::neg
 { n | n n 0 < { | neg } if } ::abs
 
@@ -41,6 +32,7 @@ false :#F
 // { _ } ::drop // coded natively
 { _ _ } ::drop2
 { _ _ _ } ::drop3
+{ n | { _ | } n repeat } ::dropn
 { a | a a } ::dup
 { a b | a b a b } ::dup2
 { a b | b a } ::swap
@@ -51,9 +43,11 @@ false :#F
 "  " :sp         { | sp .$ }  ::.sp
 9  charCode :tab { | tab .$ } ::.tab  // or name \t?
 10 charCode :nl  { | nl  .$ } ::.nl   // or name \n?
-"  " :`          { | `   .$ } ::.`
+sp :`            { | `   .$ } ::.`
 
+// Loops
 // { start end block | { | start end <= } { | start block () start++ } while } ::for // coded natively
+{ c b | { | c () ! } b while } ::until
 
 // Standard High-Order Functions
 { a f | { | a f () } } ::curry
@@ -65,16 +59,31 @@ false :#F
 { a p | [ a { e | e p () { | e } if } do ] } ::filter
 { a | a \0 { | >$ +$ } reduce } ::join // join an array of strings into a single string
 { a | a \0 { | c>$ +$ } reduce } ::cjoin // join an array of chars int a string
-{ a w let true :first | (* a ! { | \0 ret<- } if *) a {} filter { i | first { | false :first i } { | w i +$ } ifelse } map join } ::joinWith // join with a specified delimiter
-{ a | a "  " joinWith } ::joins // join, space separated, removing false values
+{ a w let true :first | a {} filter { i | first { | false :first i } { | w i +$ } ifelse } map join } ::joinWith // join with a specified delimiter
+{ a | a sp joinWith } ::joins // join, space separated, removing false values
 
+{ end let end len :l | [
+  { :check |
+    key
+    0  l 1 - { j |
+      j pick  end l 1 - j - charAt != { | true check<- } if
+    } for
+    l dropn
+    ] { | c>$ } map join
+    false
+  } {} while
+} ::readUntil
+
+// More Comment Styles
+{ | '*/ readUntil drop } :!/*    /* Now we have C-style comments */
+{ | '*) readUntil drop } :!(*    (* Now we have Beta-style comments *)
+{ | '*} readUntil drop } :!{*    {* Let's use these for commenting out code *}
 
 // String Literals
-// These appear to work but break things for unknown reason. TODO: fix
-// { let 0 :c | [ { | c `" = } { | key :c c charCode } until drop ] join } :!" // ISSUE: Doesn't work?
-// { let 0 :prev 0 :c | [ { | prev `" =  c `" =  & } { | c :prev key :c c charCode } until drop2 ] join } :!""
-// { let 0 :c'' 0 :c' 0 :c | [ { | c'' `" =  c' `" =  c `" =  & & } { | c' :c''  c :c'  key :c  c charCode } until drop3 ] join } :!"""
-
+// { | '" readUntil } :!"
+{ | '"" readUntil } :!""
+// { | '""" readUntil } :!"""
+{ | '"""" readUntil } :!""""
 
 // TODO: split
 

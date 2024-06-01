@@ -21,6 +21,7 @@ exports.CMDS = [
   [ 'or',     '|',        sf('a,b',   'a||b') ],
   [ 'if_',    'if',       af('c,b',   'if ( c ) callI(b);') ],
   [ 'ifelse_','ifelse',   af('c,i,e', 'callI(c ? i : e);')  ],
+  [ 'pick',   'pick',     sf('n',     'stack->arr[stack->ptr-n-1]') ],
   [ 'drop',   'drop',     'pop(stack);' ],
   [ 'andand', '&&',       'void* aFn = pop(stack); void* p = pop(stack); if ( ! p ) { push(stack, p); } else { push(stack, aFn); call(); }' ],
   [ 'oror',   '||',       'void* aFn = pop(stack); void* p = pop(stack); if (   p ) { push(stack, p); } else { push(stack, aFn); call(); }'   ],
