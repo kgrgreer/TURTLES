@@ -102,33 +102,40 @@ i{
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
 
+{ let sym :m ';; readUntil :body |
+  ${   {{ m }}: { o | '{{ m }} o .super {{ body }} mapp } ; }$ dup '----------------- .$ .$ .nl emit
+} :!!
 
 // TODO: super needs to still pass correct 'o'
 { let _super_: SOMParser ;
   super: { m o | o m _super_ () () } ;
-  fields:              { o | 'fields              o .super { | joins } mapp } ;
-  STPrimitive:         { o | 'STPrimitive         o .super { a | "  { | }" } mapp } ; // TODO: lookup primitive implementation
-  blockContents:       { o | 'blockContents       o .super { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } mapp } ;
-  blockBodyReturn:     { o | 'blockBodyReturn     o .super .blockBoyReturn { | "  ---<-" +$ } mapp } ;
-  blockBodyExpression: { o | 'blockBodyExpression o .super .blockBodyExpression { | joins } mapp } ; // ???: Need to wrap joins?
-  formula:             { o | 'formula             o .super .formula  { a | a 0 @ a 1 @ joins +$ } mapp } ;
-  keywordMessage:      { o | 'keywordMessage      o .super { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins a len ] } mapp } ;
-  binaryOperand:       { o | 'binaryOperand       o .super { a | a 0 @ a 1 @ joins + } mapp } ;
-  evaluation:          { o | 'evaluation          o .super .evaluation   { | joins } mapp } ;
-  unaryPattern:        { o | 'unaryPattern        o .super .unaryPattern { a | [ a " " ] } mapp } ;
-  keywordPattern:      { o | 'keywordPattern      o .super { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } mapp } ;
-  assignation:         { o | 'assignation         o .super { a | [ a 1 @  a 0 @ { i | "  " } map " dup" joinWith a 0 @ join ] join } mapp } ;
-  messages:            { o | 'messages            o .super { a | [
+
+  // What each line would like like without the !! macro:
+  // fields:            { o | 'fields o .super { | joins } mapp } ;
+
+  ! fields              { | joins } ;;
+  ! STPrimitive         {  a | "  { | }" } ;; // TODO: lookup primitive implementation
+  ! blockContents       { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } ;;
+  ! blockBodyReturn     { | "  ---<-" +$ } ;;
+  ! blockBodyExpression { | joins } ;; // ???: Need to wrap joins?
+  ! formula             { a | a 0 @ a 1 @ joins +$ } ;;
+  ! keywordMessage      { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins a len ] } ;;
+  ! binaryOperand       { a | a 0 @ a 1 @ joins + } ;;
+  ! evaluation          { | joins } ;;
+  ! unaryPattern        { a | [ a " " ] } ;;
+  ! keywordPattern      { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } ;;
+  ! assignation         { a | [ a 1 @  a 0 @ { i | "  " } map " dup" joinWith a 0 @ join ] join } ;;
+  ! messages            { a | [
     a 0 @ { i | '. i + } map joins
     a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
     a 2 @ { | a 2 1 @@  a 2 2 @@  'pick '. a 2 0 @@ + 'drop } if
-  ] joins } mapp } ;
-  fields:              { o | 'fields              o .super { a | a { | a joins } { | " " } ifelse } mapp } ;
-  STString:            { o | 'STString            o .super { a | [ '" "  " a '" ] join } mapp } ;
-  superclass:          { o | 'superclass          o .super { a | a { | a } { | 'Object } ifelse } mapp } ;
-  program:             { o | 'program             o .super { a | a nl joinWith } mapp } ;
-  assignment:          { o | 'assignment          o .super { a | "  :" a + } mapp } ;
-  nestedBlock:         { o | 'nestedBlock         o .super { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } mapp } ;
+  ] joins } ;;
+  ! fields              { a | a { | a joins } { | " " } ifelse } ;;
+  ! STString            { a | [ '" "  " a '" ] join } ;;
+  ! superclass          { a | a { | a } { | 'Object } ifelse } ;;
+  ! program             { a | a nl joinWith } ;;
+  ! assignment          { a | "  :" a + } ;;
+  ! nestedBlock         { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } ;;
   |
   { m | m ?? { | m _super_ () } || }
 } () :SOMCompiler
