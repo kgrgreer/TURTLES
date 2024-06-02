@@ -113,15 +113,15 @@ i{
   // What each line would like like without the !! macro:
   // fields:            { o | 'fields o .super { | joins } mapp } ;
 
-  ! fields              { | joins } ;;
+  ! fields              &joins ;;
   ! STPrimitive         {  a | "  { | }" } ;; // TODO: lookup primitive implementation
   ! blockContents       { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } ;;
   ! blockBodyReturn     { | "  ---<-" +$ } ;;
-  ! blockBodyExpression { | joins } ;; // ???: Need to wrap joins?
+  ! blockBodyExpression &joins ;;
   ! formula             { a | a 0 @ a 1 @ joins +$ } ;;
   ! keywordMessage      { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins a len ] } ;;
   ! binaryOperand       { a | a 0 @ a 1 @ joins + } ;;
-  ! evaluation          { | joins } ;;
+  ! evaluation          &joins ;;
   ! unaryPattern        { a | [ a " " ] } ;;
   ! keywordPattern      { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } ;;
   ! assignation         { a | [ a 1 @  a 0 @ { i | "  " } map " dup" joinWith a 0 @ join ] join } ;;
