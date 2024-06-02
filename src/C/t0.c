@@ -99,7 +99,9 @@ FILE* tin;
     - Use ( ) for comments? Along with (* *) (** **) (*** ***) (**** ****)
     - Do loops need break and continue?
     - maybe make : and :! read ahead a symbol? or have versions which read name from stack
-
+    : define
+    ! immediate
+    % automatic
 */
 
 Space* createSpace(long size) {

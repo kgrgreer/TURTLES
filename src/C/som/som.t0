@@ -4,7 +4,7 @@
 'lib/template.t0 require
 
 // << name >> -> { | o .name () }
-i{
+// i{
 { let 0 :prev 0 :c |
   [ { | prev `> = c `> = & } { | c :prev key :c c c>$ } until drop2 ] join
   { name |
@@ -12,7 +12,7 @@ i{
     emit
   } ()
 } :!<<
-}i
+// }i
 
 // !!!: Parsers are functions but methods are methods (take o). Should parsers be methods?
 
@@ -68,7 +68,7 @@ i{
   literalSymbol:       { o | [ '# [ << string >>  << selector >> ] alt ] 1 seq1 tok } ;
   literalString:       { o | << STString >> } ;
   selector:            { o | [ << binarySelector >>  << keywordSelector >>  << unarySelector >> ] alt } ;
-  keywordSelect2:     { o | << KeywordSeq >> } ;
+  keywordSelect2:      { o | << KeywordSeq >> } ;
   keywordSelector:     { o | << KeywordSeq >> } ;
   string:              { o | << STString >> } ;
   nestedBlock:         { o | [ '[  << blockPattern >> opt  << blockContents >> opt '] ] seq } ;
@@ -102,8 +102,10 @@ i{
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
 
+// Macro too make it shorter to write semantic actions
+// ! <name> <body> ;; -> name: { o | 'name o .super body mapp } ;
 { let sym :m ';; readUntil :body |
-  ${   {{ m }}: { o | '{{ m }} o .super {{ body }} mapp } ; }$ dup '----------------- .$ .$ .nl emit
+  ${ {{ m }}: { o | '{{ m }} o .super {{ body }} mapp } ; }$ emit
 } :!!
 
 // TODO: super needs to still pass correct 'o'
