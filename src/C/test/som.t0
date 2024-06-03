@@ -79,7 +79,7 @@ Whitespace:   ws              " ws =$"              testsom
 
 SOMCompiler :som
 
-{ name input test let input 0 #F som .ignore PStream :ps |
+{ name input test let input 0 #F som .ignore {} PStream :ps |
   ANSI.BOLD ANSI.BLUE .$ .$ name .$ ANSI.RESET .$ " , input: " .$ input .$ .nl
 //  [ ps name som .call () dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
   [ name som .call ps .parse dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop

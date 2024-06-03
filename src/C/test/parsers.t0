@@ -1,4 +1,4 @@
-{ input parser expected let input 0 #F #F PStream :ps |
+{ input parser expected let input 0 #F #F {} PStream :ps |
   " input: " .$ input .$ .nl
   [ ps parser expected t .test ] drop
   .nl

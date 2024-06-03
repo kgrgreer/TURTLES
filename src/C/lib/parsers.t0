@@ -2,7 +2,7 @@
 // A Parse Combinator Library
 
 // A Parser Stream - used as input for parsers
-{ str pos value ignore  let false :tail |
+{ str pos value ignore obj let false :tail |
   { m |
     m switch
       'parse  { parser this | this parser () }
@@ -18,21 +18,21 @@
           { | this parser () }
         ifelse
       }
-      'ignoreOff { this | str pos value false PStream }
-      'ignoreOn { ignore this | str pos value ignore PStream .maybeIgnore }
+      'ignoreOff { this | str pos value false obj PStream }
+      'ignoreOn { ignore this | str pos value ignore obj PStream .maybeIgnore }
       'pos    { this | pos }
       'head   { this |
         // [ " pos: " pos " , head-> " str pos charAt ] join .$ .nl
         str pos charAt }
       'tail   { this |
         tail !
-          { | str pos 1 + this .head ignore PStream ignore { | .maybeIgnore } if :tail }
+          { | str pos 1 + this .head ignore obj PStream ignore { | .maybeIgnore } if :tail }
         if
         tail
       }
       'maybeIgnore { this let this ignore () :ps | ps { | 'ignoring .$ .nl this .value ps .:value  } { | this } ifelse }
       'value    { this | value }
-      ':value { v2 this | value v2 = { | this } { | str pos v2 ignore PStream } ifelse } // optimization, doesn't work well until '=' works with more than integers
+      ':value { v2 this | value v2 = { | this } { | str pos v2 ignore obj PStream } ifelse } // optimization, doesn't work well until '=' works with more than integers
       'toString { this | [ " PStream pos: " pos " , value: '" value '' nl ] join }
                 { this | [ " PStream Unknown Method '" m '' nl ] join dup .$ }
     end

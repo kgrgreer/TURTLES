@@ -8,7 +8,7 @@
       CodeBody: { o | [ '}} lit notp *char ] 1 seq1 plus joinp } ;
     | { | ?? } } () :parser
 
-    { input let input 0 #F #F PStream parser .Template () :result |
+    { input let input 0 #F #F {} PStream parser .Template () :result |
       result
         { | result .value }
         { | " syntax error" .$ }
