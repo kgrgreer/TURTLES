@@ -7,7 +7,7 @@ SOMParser :som
 
 { sym src
   let
-    src 0 #F som .ignore PStream :ps
+    src 0 #F som .ignore {} PStream :ps
     sym som .call ps             :result
   |
   " Symbol: " .$ sym .$
