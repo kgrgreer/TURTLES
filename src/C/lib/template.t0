@@ -9,10 +9,7 @@
     | { m | 'MethodInParser: .$ m .$ .nl   m ?? } } () :parser
 
     { input let input 0 #F #F parser PStream .Template :result |
-      result
-        { | result .value }
-        { | " syntax error" .$ }
-      ifelse
+      result { | result .value } { | " syntax error" .$ } ifelse
     } ::compiler
   }i
 
