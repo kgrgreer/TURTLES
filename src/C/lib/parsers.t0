@@ -2,6 +2,7 @@
 // A Parse Combinator Library
 
 // A Parser Stream - used as input for parsers
+// TODO: switch to ?? style instead of switch
 { str pos value ignore obj let false :tail |
   { m |
     m switch
@@ -34,8 +35,8 @@
       'value    { this | value }
       ':value { v2 this | value v2 = { | this } { | str pos v2 ignore obj PStream } ifelse } // optimization, doesn't work well until '=' works with more than integers
       'toString { this | [ " PStream pos: " pos " , value: '" value '' nl ] join }
-                { this | [ " PStream Unknown Method '" m '' nl ] join dup .$ }
-    end
+      #F
+    end { | m obj () } ||
   }
 } ::PStream
 
