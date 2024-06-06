@@ -3,12 +3,12 @@
 { |
   i{
     { let
-      Template: { o | [ o .Code *char ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp } ;
-      Code:     { o | [ '{{ o .CodeBody '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp } ;
-      CodeBody: { o | [ '}} lit notp *char ] 1 seq1 plus joinp } ;
-    | { | ?? } } () :parser
+      Template: [ { | .Code } >> *char ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp ;
+      Code:     [ '{{ { | .CodeBody } >> '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp ;
+      CodeBody: [ '}} lit notp *char ] 1 seq1 plus joinp ;
+    | { m | 'MethodInParser: .$ m .$ .nl   m ?? } } () :parser
 
-    { input let input 0 #F #F {} PStream parser .Template () :result |
+    { input let input 0 #F #F parser PStream .Template :result |
       result
         { | result .value }
         { | " syntax error" .$ }
