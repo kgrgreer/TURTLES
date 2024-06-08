@@ -1,20 +1,20 @@
 'lib/parsers.t0 require
 
-{ |
+// Add string template support for string literals with interpolation like:
+//    ${ string literal {{ firstName }} {{ 1 2 + #>$ }} blah blah }$
+
+{ | // Create a sub-scope so that parser and compiler aren't globals
   i{
     { let
-      Template: [ { | .Code } >> *char ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp ;
-      Code:     [ '{{ { | .CodeBody } >> '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp ;
+      Template: [ { | .Code } *char ] alt star joinp { s | [ "  [ " '""" ` s '"""  "  ] join " ] join } mapp ;
+      Code:     [ '{{ { | .CodeBody } '}} ] 1 seq1 { c | [ '""" c '""" ` ] join } mapp ;
       CodeBody: [ '}} lit notp *char ] 1 seq1 plus joinp ;
-    | { m | 'MethodInParser: .$ m .$ .nl   m ?? } } () :parser
+    | { | ?? } } () :parser
 
     { input let input 0 #F #F parser PStream .Template :result |
       result { | result .value } { | " syntax error" .$ } ifelse
     } ::compiler
   }i
 
-  { let 0 :prev 0 :c |
-    [ { | prev `} = c `$ = & } { | c :prev key :c c c>$ } until drop2 ] join
-    compiler emit
-  }
+  { | '}$ readUntil compiler emit }
 } () :!${
