@@ -3,8 +3,13 @@
 // ???: could some of this code be rewritten in T0?
 
 void printStack() {
-  for ( long i = 0 ; i < stack->ptr ; i++ )
-    printf("%ld ", (long) stack->arr[i]);
+  for ( long i = 0 ; i < stack->ptr ; i++ ) {
+    long ptr = (long) stack->arr[i];
+    printf("%ld ", ptr);
+    if ( ptr > 10000000 ) {
+      printf("\"%s\" ", (char*) ptr);
+    }
+  }
 }
 
 
@@ -45,7 +50,11 @@ void dump_(long ptr) {
     char* desc = findKey(scope, fn);
     if ( strcmp(desc, "UNKNOWN") == 0 ) {
       if ( uc++ == 4 ) return;
-      printf("%ld : %ld\n", ptr, (long) fn);
+      if ( (long) fn > 1000000l ) {
+        printf("%ld : %ld \"%s\"\n", ptr, (long) fn, (char*) fn);
+      } else {
+        printf("%ld : %ld\n", ptr, (long) fn);
+      }
     } else {
       uc = 0;
       printf("%ld : %s\n", ptr, desc);
