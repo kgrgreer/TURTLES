@@ -5,15 +5,34 @@
 SOMParser :som
 // SOMCompiler :som
 
+
 { sym src
   let
-    src 0 #F som .ignore {} PStream :ps
-    sym som .call ps             :result
+    src 0 #F #F som PStream :ps
+//    ps ps ps sym ps () ()               :result
   |
-  " Symbol: " .$ sym .$
-  "  Input:  " .$ src .$ .nl
-  result { | (* result .toString *) '1 1 t .test } { | (* false *) 'syntax-error .$ '0 1 t .test } ifelse .nl
+  " Symbol: " .$ sym .$ .nl
+  "  Input: " .$ src .$ .nl
+  { let ps ps ps sym ps () ()               :result |
+    " Result: " .$ result .nl
+    result { | '1 1 t .test } { | 'syntax-error .$ '0 1 t .test } ifelse .nl
+  } ()
 } ::;;
+
+(*
+{ let '~~~ 0 #F #F som PStream :ps |
+'start .$ .nl
+   ps .pos . .nl
+   ps .toString .$ .nl
+   // 'OperatorSeq1 som ()
+   ps ps ps 'OperatorSeq ps () ()
+   .value .$ .nl
+//   .toString .$ .nl
+  'end .$ .nl
+} ()
+exit
+*)
+
 
 // 'Equal '= ;;
 
@@ -26,6 +45,7 @@ SOMParser :som
 'OperatorSeq '/ ;;
 'OperatorSeq '! ;;
 
+exit
 'STStringChar 'A ;;
 'STStringChar '" ;;
 'STStringChar '' ;;
