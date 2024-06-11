@@ -34,7 +34,7 @@
       'maybeIgnore { this let this ignore () :ps | ps { | 'ignoring .$ .nl this .value ps .:value  } { | this } ifelse }
       'value    { this | value }
       ':value { v2 this | value v2 = { | this } { | str pos v2 ignore obj PStream } ifelse } // optimization, doesn't work well until '=' works with more than integers
-      'toString { this | [ " PStream pos: " pos " , value: '" value '' nl ] join }
+      'toString { this | [ " PStream pos: " pos " , head: " this .head c>$ " , value: '" (* value *) '? '' nl ] join }
       #F
     end { | m obj () } ||
   }
@@ -59,6 +59,8 @@
 
 { parsers i | parsers seq { | i @ } mapp } ::seq1
 
+{ parsers i | { | parsers seq { | i @ } mapp () } } ::seq1p
+
 { parsers | parsers prepare :parsers { ps let 0 :i false :ret |
   { | i parsers # < { | parsers i @ ps .parse :ret ret ! } && } { | i++ } while
   ret
@@ -71,6 +73,14 @@
 
 { | 0 repeatp } ::star
 { | 1 repeatp } ::plus
+
+{ p | { | p 0 repeatp () } } ::starp
+{ p | { | p 1 repeatp () } } ::plusp
+
+(*
+{ | " 0 repeatp " emit } :!star
+{ | " 1 repeatp " emit } :!plus
+*)
 
 { parser delim |
   [ [ parser delim ] 0 seq1 star (* parser opt *) ] seq

@@ -8,10 +8,16 @@
 { let 0 :prev 0 :c |
   [ { | prev `> = c `> = & } { | c :prev key :c c c>$ } until drop2 ] join
   { name |
-    ${ { | o .{{ name }} () } }$ dup .$
+    ${ { ps | ps .{{ name }} } }$ dup .$
     emit
   } ()
 } :!<<
+
+// << name >> -> { | o .name () }
+{ let 0 :prev 0 :c  '>>> readUntil :name |
+  ${ { | .{{ name }} () } }$ dup .$
+  emit
+} :!<<<
 
 // Macro for semantic actions
 // !! <name> <body> ;;  ->  name: { o | 'name o .super body mapp } ;
@@ -33,9 +39,9 @@
       [ << Separator >>  << classFields >> opt << method >> star ] seq opt
     ')
   ] seq } ;
-  superclass:          { o | << Identifier >> opt } ;
-  instanceFields:      { o | << fields >> } ;
-  classFields:         { o | << fields >> } ;
+  superclass:          << Identifier >> opt ;
+  instanceFields:      << fields >> ;
+  classFields:         << fields >> ;
   fields:              { o | [ '| << variable >> star '| ] 1 seq1 opt } ;
   method:              { o | [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq } ;
   pattern:             { o | [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt } ;
@@ -82,16 +88,16 @@
   blockArguments:      { o | [ " :" << argument >> ] seq joinp plus } ;
   //  Number:            { o | [ '- lit opt << Num >> plus [ '. << Num >> plus ] seq opt ] seq tok } ;
   Number:              { o | [ '- lit opt << Num >> plus joinp [ '. << Num >> plus joinp ] seq joinp opt ] seq { | { | } filter join $># } mapp tok } ; // $># only works with integers
-  Alpha:               { o | [ `a `z range `A `Z range ] alt { | c>$ } mapp } ;
+  Alpha:               [ `a `z range `A `Z range ] alt { | c>$ } mapp ;
   Num:                 { o | `0 `9 range { | c>$ } mapp } ;
-  AlphaNum:            { o | [ << Alpha >>  << Num >> ] alt } ;
+  AlphaNum:            [ << Alpha >>  << Num >> ] alt ;
   Identifier:          { o | [ << Alpha >>  << AlphaNum >> star joinp ] seq joinp tok } ;
-  STPrimitive:         { o | 'primitive lit } ;
+  STPrimitive:         'primitive lit ;
   Separator:           { o | '- lit 4 repeatp tok } ;
-  OperatorSeq:         { o | '~&|*/\+<>,%@-= chars plus joinp } ;
+  OperatorSeq:         '~&|*/\+<>,%@-= chars plusp joinp ;
   Keyword:             { o | [ << Identifier >> ': ] seq joinp tok } ;
   KeywordSeq:          { o | << Keyword >> plus joinp tok } ;
-  STStringChar:        { o | [
+  STStringChar:        [
     '\b  8 c>$ litMap // backspace
     '\t  9 c>$ litMap // tab
     '\n 10 c>$ litMap // newline
@@ -100,10 +106,10 @@
     '\' 39 c>$ litMap // single quote
     '\\ 92 c>$ litMap // backslash
     //      '\0 litMap // zero byte character, doesn't work well with C strings
-    '' !chars ] alt } ;
-  STString:            { o | [ '' << STStringChar >> star '' ] 1 seq1 joinp } ;
-  Comment:             { o | [ '" '" !chars star '" ] 1 seq1 tok } ;
-  Whitespace:          { o | [ tab cr nl sp ] alt plus joinp tok } ;
+    '' !chars ] alt ;
+  STString:            [ '' << STStringChar >> starp '' ] 1 seq1p joinp ;
+  Comment:             [ '" '" !chars star '" ] 1 seq1 tok ;
+  Whitespace:          [ tab cr nl sp ] alt plus joinp tok ;
   ignore:              { o | [ << Whitespace >>  << Comment >> ] alt plus tok } ;
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser

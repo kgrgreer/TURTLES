@@ -296,7 +296,7 @@ void execute(long ptr) {
   long rip = ip;
   for ( ip = ptr ; ; ) {
     Fn fn = ((Fn) nextI());
-//    char* desc = findKey(scope, fn); printf("RUNNING: %s\n", desc);
+// char* desc = findKey(scope, fn); printf("RUNNING: %s\n", desc);
     fn();
     if ( returnPtr ) {
       if ( returnPtr == -1 || returnPtr == ptr ) returnPtr = 0;

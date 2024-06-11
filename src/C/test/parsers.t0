@@ -77,3 +77,33 @@
 " Map Parser" section
 " one" " 'one lit { | switch 'one 1 'two 2 3 end } mapp () .value " 1 testp
 " two" " 'two lit { | switch 'one 1 'two 2 3 end } mapp () .value " 2 testp
+
+
+'Grammar section
+{ let
+  call: { m o | o m o () () } ; // Call the method with specified name
+  this:   'this lit ;
+  that:   'that lit ;
+  repeat: 'a lit 1 repeatp ;
+  star:   'a lit star ;
+  plus:   'a lit plus ;
+  seq:    [ 'abc lit 'def lit ] seq ;
+  alt:    [ 'abc lit 'def lit ] alt ;
+  | { | ?? }
+} () :grammar
+
+{ input sym expected let input 0 #F #F grammar PStream :ps |
+  " symbol: " .$ sym .$ "  input: " .$ input .$ .nl
+  [ sym ps .call { | 'parse .$ .nl #T } { | 'no-parse .$ .nl #F } ifelse { | } expected t .testf ] drop
+  .nl
+} ::testg // test grammar
+
+
+" thisthenthat0123" 'this  #T testg
+" thisthenthat0123" 'that  #F testg
+'aaaaaa 'repeat #T testg
+'aaaaaa 'star #T testg
+'aaaaaa 'plus #T testg
+'abcdef 'seq #T testg
+'abc 'alt #T testg
+'def 'alt #T testg

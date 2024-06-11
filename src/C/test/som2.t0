@@ -9,11 +9,10 @@ SOMParser :som
 { sym src
   let
     src 0 #F #F som PStream :ps
-//    ps ps ps sym ps () ()               :result
   |
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
-  { let ps ps ps sym ps () ()               :result |
+  { let ps sym ps () ()               :result |
     " Result: " .$ result .nl
     result { | '1 1 t .test } { | 'syntax-error .$ '0 1 t .test } ifelse .nl
   } ()
@@ -43,9 +42,8 @@ exit
 'OperatorSeq '| ;;
 'OperatorSeq '* ;;
 'OperatorSeq '/ ;;
-'OperatorSeq '! ;;
+'OperatorSeq '! ;; // Should fail
 
-exit
 'STStringChar 'A ;;
 'STStringChar '" ;;
 'STStringChar '' ;;

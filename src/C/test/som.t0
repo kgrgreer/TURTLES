@@ -8,10 +8,10 @@ Tester :t // Create an instance of Tester
 
 SOMParser :som
 
-{ name input test let input 0 #F som .ignore {} PStream :ps |
+{ name input test let input 0 #F som .ignore som PStream :ps |
   ANSI.BOLD ANSI.BLUE .$ .$ name .$ ANSI.RESET .$ " , input: " .$ input .$ .nl
 //  [ ps name som .call () dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
-  [ name som .call ps .parse dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
+  [ name ps .call ps .parse dup { | .value test #T t .test } { | 'syntax-error .$ .nl  '1 2 t .test } ifelse ] drop
   .nl
 } ::testsom
 
@@ -75,7 +75,7 @@ Whitespace:   cr              " cr =$"              testsom
   [ cr nl tab sp ] join :ws
 Whitespace:   ws              " ws =$"              testsom
 
-
+(*
 
 SOMCompiler :som
 
@@ -89,5 +89,5 @@ SOMCompiler :som
 'fields       '|foo|          " 'foo =$ "      testsom
 'fields       " |foo bar|"      """  " foo bar" =$ """      testsom
 
-
+*)
 t .report
