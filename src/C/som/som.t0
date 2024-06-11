@@ -107,7 +107,7 @@
     '\\ 92 c>$ litMap // backslash
     //      '\0 litMap // zero byte character, doesn't work well with C strings
     '' !chars ] alt ;
-  STString:            [ '' << STStringChar >> starp '' ] 1 seq1p joinp ;
+  STString:            [ '' << STStringChar >> starp '' ] 1 seq1 joinp ;
   Comment:             [ '" '" !chars star '" ] 1 seq1 tok ;
   Whitespace:          [ tab cr nl sp ] alt plus joinp tok ;
   ignore:              { o | [ << Whitespace >>  << Comment >> ] alt plus tok } ;

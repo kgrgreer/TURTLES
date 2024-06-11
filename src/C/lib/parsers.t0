@@ -59,8 +59,6 @@
 
 { parsers i | parsers seq { | i @ } mapp } ::seq1
 
-{ parsers i | { | parsers seq { | i @ } mapp () } } ::seq1p
-
 { parsers | parsers prepare :parsers { ps let 0 :i false :ret |
   { | i parsers # < { | parsers i @ ps .parse :ret ret ! } && } { | i++ } while
   ret
