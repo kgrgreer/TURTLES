@@ -3,16 +3,6 @@
 
 'lib/template.t0 require
 
-// Macro for parser references
-// << name >> -> { | o .name () }
-{ let 0 :prev 0 :c |
-  [ { | prev `> = c `> = & } { | c :prev key :c c c>$ } until drop2 ] join
-  { name |
-    ${ { ps | ps .{{ name }} } }$ dup .$
-    emit
-  } ()
-} :!<<
-
 // << name >> -> { | o .name () }
 { let 0 :prev 0 :c  '>>> readUntil :name |
   ${ { | .{{ name }} () } }$ dup .$

@@ -99,3 +99,9 @@
 { p f | { ps | p ps .parse :ps ps { | ps .value f () ps .:value } { | false } ifelse } } ::mapp
 
 { o m super f | { ps | o m super () () f mapp ps .parse } } ::action
+
+// Macro for parser references
+// << name >> -> { | o .name () }
+{ let 0 :prev 0 :c '>> readUntil :name |
+  [ " { | ." name "  }" ] join emit
+} :!<<
