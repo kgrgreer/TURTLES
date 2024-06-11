@@ -102,6 +102,4 @@
 
 // Macro for parser references
 // << name >> -> { | o .name () }
-{ let 0 :prev 0 :c '>> readUntil :name |
-  [ " { | ." name "  }" ] join emit
-} :!<<
+{ let '>> readUntil :name | [ " { | ." name "  }" ] join emit } :!<<
