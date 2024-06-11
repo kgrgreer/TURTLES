@@ -85,10 +85,12 @@
   this:   'this lit ;
   that:   'that lit ;
   repeat: 'a lit 1 repeatp ;
-  star:   'a lit star ;
-  plus:   'a lit plus ;
-  seq:    [ 'abc lit 'def lit ] seq ;
-  alt:    [ 'abc lit 'def lit ] alt ;
+  star1:  'a lit star ;
+  plus1:  'a lit plus ;
+  seq1:   [ 'abc lit 'def lit ] seq ;
+  alt1:   [ 'abc lit 'def lit ] alt ;
+  alt2:   [ 'this lit 'that lit ] alt ;
+  alt3:   [ << this >> << that >> ] alt ;
   | { | ?? }
 } () :grammar
 
@@ -102,8 +104,14 @@
 " thisthenthat0123" 'this  #T testg
 " thisthenthat0123" 'that  #F testg
 'aaaaaa 'repeat #T testg
-'aaaaaa 'star #T testg
-'aaaaaa 'plus #T testg
-'abcdef 'seq #T testg
-'abc 'alt #T testg
-'def 'alt #T testg
+'aaaaaa 'star1 #T testg
+'aaaaaa 'plus1 #T testg
+'abcdef 'seq1 #T testg
+ 'abc 'alt1 #T testg
+ 'def 'alt1 #T testg
+'this 'alt2 #T testg
+'that 'alt2 #T testg
+'this 'alt3 #T testg
+'that 'alt3 #T testg
+
+exit

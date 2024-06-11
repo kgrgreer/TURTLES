@@ -182,16 +182,16 @@ Scope* createScope(char* key /* copied */, long ptr) {
 Scope* addSym(Scope* root, char* key /* copied */, long ptr) {
   if ( root == NULL ) return createScope(key, ptr);
 
-  int cmp = strcmp(key, root->key);
+  int c = strcmp(key, root->key);
 
   Scope* ret = createScope(root->key, root->ip);
   ret->left  = root->left;
   ret->right = root->right;
 
-  if ( cmp == 0 ) {
+  if ( c == 0 ) {
     // Should we free key in this case?
     ret->ip = ptr;
-  } else if ( cmp < 0 ) {
+  } else if ( c < 0 ) {
     ret->left  = addSym(ret->left, key, ptr);
   } else {
     ret->right = addSym(ret->right, key, ptr);
