@@ -3,12 +3,6 @@
 
 'lib/template.t0 require
 
-// << name >> -> { | o .name () }
-{ let 0 :prev 0 :c  '>>> readUntil :name |
-  ${ { | .{{ name }} () } }$ dup .$
-  emit
-} :!<<<
-
 // Macro for semantic actions
 // !! <name> <body> ;;  ->  name: { o | 'name o .super body mapp } ;
 { let sym :m ';; readUntil :body |
