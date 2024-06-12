@@ -184,6 +184,7 @@ a b +[] .[] .nl
 'Functions section
 " 1 { | } () " 1 test
 " 1 { }   () " 1 test
+" 1 {}    () " 1 test
 " { | 2 } () " 2 test
 " 3 { a | a } () " 3 test
 " 4 { a let a a + :b | a b + } () " 12 test
@@ -295,9 +296,8 @@ a { v | v v * } map .[] .nl
 
 " Immediate Blocks" section
 // Immediate Blocks are called at compile-time
-// TODO: like eval, requires an extra space at end of script
-i{ 'hello .$  }i
-{ | i{ 'foo .$  }i 'bar .$ } ::a
+i{ 'hello .$ }i
+{ | i{ 'foo .$ }i 'bar .$ } ::a
 a a a a a .nl
 
 // TODO: make test
@@ -377,4 +377,5 @@ Age:        {{ age #>$ }}
 
 
 'Error section
+// Have one failed test so we know the failure path is working
 " #F " true test
