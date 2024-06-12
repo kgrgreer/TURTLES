@@ -18,6 +18,18 @@ SOMParser :som
   } ()
 } ::;;
 
+{ sym src
+  let
+    src 0 #F #F som PStream :ps
+  |
+  " Symbol: " .$ sym .$ .nl
+  "  Input: " .$ src .$ .nl
+  { let ps sym ps () ()               :result |
+    " Result: " .$ result .nl
+    result { | 'unexpected-success .$ '0 1 t .test } { | 'expected-syntax-error .$ '1 1 t .test } ifelse .nl
+  } ()
+} ::!;;
+
 (*
 { let '~~~ 0 #F #F som PStream :ps |
 'start .$ .nl
@@ -42,11 +54,11 @@ exit
 'OperatorSeq '| ;;
 'OperatorSeq '* ;;
 'OperatorSeq '/ ;;
-'OperatorSeq '! ;; // Should fail
+'OperatorSeq '! !;; // Should fail
 
 'STStringChar 'A ;;
 'STStringChar '" ;;
-'STStringChar '' ;;
+'STStringChar '' !;;
 
 'STString " 'a string'" ;;
 
