@@ -31,7 +31,7 @@
         if
         tail
       }
-      'maybeIgnore { this let this ignore () :ps | ps { | 'ignoring .$ .nl this .value ps .:value  } { | this } ifelse }
+      'maybeIgnore { this let this ignore () :ps | ps { | this .value ps .:value  } { | this } ifelse }
       'value    { this | value }
       ':value { v2 this | value v2 = { | this } { | str pos v2 ignore obj PStream } ifelse } // optimization, doesn't work well until '=' works with more than integers
       'toString { this | [ " PStream pos: " pos " , head: " this .head c>$ " , value: '" (* value *) '? '' nl ] join }
@@ -101,5 +101,5 @@
 { o m super f | { ps | o m super () () f mapp ps .parse } } ::action
 
 // Macro for parser references
-// << name >> -> { | o .name () }
+// << name >> -> { | o .name }
 { let '>> readUntil :name | [ " { | ." name "  }" ] join emit } :!<<

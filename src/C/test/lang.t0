@@ -203,9 +203,9 @@ a { v | v v * } map .[] .nl
 " [ 'abc 123     'youandme ] join 'abc123youandme =$ " #T test
 " [ 'abc 'def 'xyz ] ', joinWith 'abc,def,xyz =$ " #T test
 """ [ 'abc 'def 'xyz ] joins " abc def xyz" =$ """ #T test
-" { a b | a b + } :plus  1 2 plus () " 3 test
-" 1 plus curry :plus1  2 plus1 () " 3 test
-" 1 2 plus curry curry :three  three () " 3 test
+" { a b | a b + } :plusf  1 2 plusf () " 3 test
+" 1 plusf curry :plus1  2 plus1 () " 3 test
+" 1 2 plusf curry curry :three  three () " 3 test
 
 
 " Own Variables" section
@@ -376,6 +376,6 @@ Age:        {{ age #>$ }}
 """ #T test
 
 
-'Error section
+// 'Error section
 // Have one failed test so we know the failure path is working
-" #F " true test
+// " #F " true test

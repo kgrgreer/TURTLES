@@ -12,7 +12,7 @@
 #define DEBUG       1
 #define PERFORMANCE 1
 
-#define MAX_FN_SIZE 1000
+#define MAX_FN_SIZE 10000
 
 FILE* tin;
 
@@ -759,8 +759,8 @@ void initScope() {
 
 
 void initSpace() {
-  heap  = createSpace(500000000);
-  stack = createSpace(50000);
+  heap  = createSpace(5000000000);
+  stack = createSpace(500000);
   code  = createSpace(0);
 
   code->arr = heap->arr; // Code stack shares memory with heap, just has its own ptr

@@ -8,7 +8,7 @@ SOMParser :som
 
 { sym src
   let
-    src 0 #F #F som PStream :ps
+    src 0 #F 'ignore som () som PStream :ps
   |
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
@@ -64,7 +64,7 @@ exit
 
 'Num '0 ;;
 'Num '9 ;;
-'Num 'a ;;
+'Num 'a !;;
 
 'AlphaNum '0 ;;
 'AlphaNum '9 ;;
@@ -73,7 +73,7 @@ exit
 'Identifier " identifier " ;;
 'Identifier 'testing123 ;;
 
-'Separator '--- ;;
+'Separator '--- !;;
 'Separator '---- ;;
 'Separator '----- ;;
 
@@ -82,12 +82,14 @@ exit
 'Number '10.2 ;;
 'Number '-2 ;;
 
-'Keyword " testing: " ;;
+'Keyword 'testing: ;;
 
 'identifier 'identifier ;;
 
 'unarySelector   'identifier ;;
 'binarySelector  '= ;;
+'binarySelector  '+ ;;
+
 'KeywordSeq " keyword1:keyword2: " ;;
 'keywordSelector " keyword1:keyword2: " ;;
 'unarySelector   " symbol " ;;
@@ -116,15 +118,16 @@ exit
 'unaryMessage 'foo ;;
 
 'primary '10  ;;
-'binaryOperand '10ab  ;;
+'binaryOperand '10ab ;;
 'binaryOperand '10  ;;
 
 'formula '10+2 ;;
 
-'result '5 ;;
+'resul '5 ;;
 'blockBody " ^5" ;;
 'blockContents " ^5" ;;
 'methodBlock " () " ;;
+'pattern 'foobar ;;
 'method " foobar = ( )" ;;
 
 
@@ -133,7 +136,7 @@ exit
 'literal " 0" ;;
 'primary " 0" ;;
 'evaluation " 0" ;;
-'result " a+b" ;;
+'resul " a+b" ;;
 'expression " a+b" ;;
 'evaluation " a+b" ;;
 'blockBodyReturn " ^ a+b" ;;
@@ -189,6 +192,7 @@ ColourBall = Ball (
 
 
 'argument " a1" ;;
+'argument " argument" ;;
 'blockArguments " :a1" ;;
 'blockPattern " :a1|" ;;
 'nestedBlock " [^42]" ;;
@@ -241,6 +245,7 @@ ColourBall = Ball (
 " ;;
 
 'unaryPattern " foo" ;;
+'binaryPattern " +argument" ;;
 'binaryPattern " + argument" ;;
 'keywordPattern " double: d" ;;
 'keywordPattern " double: d trouble: t" ;;
@@ -250,7 +255,7 @@ ColourBall = Ball (
 'messages " + argument" ;;
 'messages " double: d" ;;
 'messages " double: d trouble: t" ;;
-'unarySelector " double: " ;;
+'unarySelector " double: " !;;
 
 'keywordPattern " x: x y: y" ;;
 'formula " a  y: 4" ;;

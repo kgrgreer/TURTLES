@@ -10,77 +10,76 @@
 } :!!!
 
 
-// !!!: Parsers are functions but methods are methods (take o). Should parsers be methods?
-
 // translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4
 { let
-  call:                { m o | o m o () () } ; // Call the method with specified name, used for testing
-  program:             { o | << classdef >> plus } ;
-  classdef:            { o | [
+  call:                { m o | o m o () () } ; // Call the method with specified name
+  program:             << classdef >> plus ;
+  classdef:            [
     << identifier >> '= << superclass >> '(
       << instanceFields >>
       << method >> star
       [ << Separator >>  << classFields >> opt << method >> star ] seq opt
     ')
-  ] seq } ;
+  ] seq ;
   superclass:          << Identifier >> opt ;
   instanceFields:      << fields >> ;
   classFields:         << fields >> ;
-  fields:              { o | [ '| << variable >> star '| ] 1 seq1 opt } ;
-  method:              { o | [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq } ;
-  pattern:             { o | [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt } ;
-  unaryPattern:        { o | << unarySelector >> } ;
-  binaryPattern:       { o | [ << binarySelector >>  << argument >> ] seq } ;
-  keywordPattern:      { o | [ << keyword >>  << argument >>> ] seq plus } ;
-  methodBlock:         { o | [ '( << blockContents >> opt ') ] 1 seq1 } ;
-  unarySelector:       { o | [ << identifier >> ': lit notp ] 0 seq1 } ;
-  binarySelector:      { o | << OperatorSeq >> } ;
-  identifier:          { o | [ << STPrimitive >>  << Identifier >> ] alt } ;
-  keyword:             { o | << Keyword >> } ;
-  argument:            { o | << variable >> } ;
-  blockContents:       { o | [ [ '| << localDefs >> '| ] 1 seq1 opt  <<  blockBody >> ] seq } ;
-  localDefs:           { o | << variable >> star } ;
-  blockBody:           { o | [ << blockBodyReturn >>  << blockBodyExpression >> ] alt } ;
-  blockBodyReturn:     { o |  [ '^ <<  result >> ] 1 seq1 } ;
-  blockBodyExpression: { o | [ << expression >> [ '. << blockBody >> opt ] 1 seq1 opt ] seq } ;
-  result:              { o | [ << expression >> '. lit opt ] 0 seq1 } ;
-  expression:          { o | [ << assignation >>  << evaluation >> ] alt } ;
-  assignation:         { o | [ << assignments >>  << evaluation >> ] seq } ;
-  assignments:         { o | << assignment >> plus } ;
-  assignment:          { o | [ << variable >> ':= ] 0 seq1 } ;
-  evaluation:          { o | [ << primary >>  << messages >> opt ] seq } ;
-  primary:             { o | [ << variable >>   << nestedTerm >>  << nestedBlock >>  << .literal >> ] alt } ;
-  variable:            { o | << identifier >> } ;
-  messages:            { o | [ << unaryMessage >> star << .binaryMessage >> star << keywordMessage >> opt ] seq } ;
-  unaryMessage:        { o | << unarySelector >> } ;
-  binaryMessage:       { o | [ << binarySelector >>  << binaryOperand >> ] seq } ;
-  binaryOperand:       { o | [ << primary >>  << unaryMessage >> star ] seq } ;
-  keywordMessage:      { o | [ << keyword >>  << formula >> ] seq plus } ;
-  formula:             { o | [ << binaryOperand >>  << binaryMessage >> star ] seq } ;
-  nestedTerm:          { o | [ '( << expression >> ') ] 1 seq1 } ;
-  literal:             { o | [ << literalArray >>  << literalSymbol >>  << literalString >>  << literalNumber >> ] alt } ;
-  literalArray:        { o | [ '# '( << literal >> star ') ] 2 seq1 } ;
-  literalNumber:       { o | << Number >> } ;
-  literalSymbol:       { o | [ '# [ << string >>  << selector >> ] alt ] 1 seq1 tok } ;
-  literalString:       { o | << STString >> } ;
-  selector:            { o | [ << binarySelector >>  << keywordSelector >>  << unarySelector >> ] alt } ;
-  keywordSelect2:      { o | << KeywordSeq >> } ;
-  keywordSelector:     { o | << KeywordSeq >> } ;
-  string:              { o | << STString >> } ;
-  nestedBlock:         { o | [ '[  << blockPattern >> opt  << blockContents >> opt '] ] seq } ;
-  blockPattern:        { o | [ << blockArguments >> '| ] 0 seq1 } ;
-  blockArguments:      { o | [ " :" << argument >> ] seq joinp plus } ;
+  fields:              [ '| << variable >> star '| ] 1 seq1 opt ;
+  method2:             [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
+  method:              [ << pattern >> '= << methodBlock >> ] seq ;
+  pattern:             [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt ;
+  unaryPattern:        << unarySelector >> ;
+  binaryPattern:       [ << binarySelector >>  << argument >> ] seq ;
+  keywordPattern:      [ << keyword >>  << argument >> ] seq plus ;
+  methodBlock:         [ '( << blockContents >> opt ') ] 1 seq1 ;
+  unarySelector:       [ << identifier >> " :" lit notp ] 0 seq1 ;
+  binarySelector:      << OperatorSeq >> ;
+  identifier:          [ << STPrimitive >>  << Identifier >> ] alt ;
+  keyword:             << Keyword >> ;
+  argument:            << variable >> ;
+  blockContents:       [ [ '| << localDefs >> '| ] 1 seq1 opt  << blockBody >> ] seq ;
+  localDefs:           << variable >> star ;
+  blockBody:           [ << blockBodyReturn >>  << blockBodyExpression >> ] alt ;
+  resul:               [ << expression >> '. lit opt ] 0 seq1 ;
+  blockBodyReturn:     [ '^ << resul >> ] 1 seq1 ;
+  blockBodyExpression: [ << expression >> [ '. << blockBody >> opt ] 1 seq1 opt ] seq ;
+  expression:          [ << assignation >>  << evaluation >> ] alt ;
+  assignation:         [ << assignments >>  << evaluation >> ] seq ;
+  assignments:         << assignment >> plus ;
+  assignment:          [ << variable >> ':= ] 0 seq1 ;
+  evaluation:          [ << primary >>  << messages >> opt ] seq ;
+  primary:             [ << variable >>   << nestedTerm >>  << nestedBlock >>  << literal >> ] alt ;
+  variable:            << identifier >> ;
+  messages:            [ << unaryMessage >> star << binaryMessage >> star << keywordMessage >> opt ] seq ;
+  unaryMessage:        << unarySelector >> ;
+  binaryMessage:       [ << binarySelector >>  << binaryOperand >> ] seq ;
+  binaryOperand:       [ << primary >>  << unaryMessage >> star ] seq ;
+  keywordMessage:      [ << keyword >>  << formula >> ] seq plus ;
+  formula:             [ << binaryOperand >>  << binaryMessage >> star ] seq ;
+  nestedTerm:          [ '( << expression >> ') ] 1 seq1 ;
+  literal:             [ << literalArray >>  << literalSymbol >>  << literalString >>  << literalNumber >> ] alt ;
+  literalArray:        [ '# '( << literal >> star ') ] 2 seq1 ;
+  literalNumber:       << Number >> ;
+  literalSymbol:       [ '# [ << string >>  << selector >> ] alt ] 1 seq1 tok ;
+  literalString:       << STString >> ;
+  selector:            [ << binarySelector >>  << keywordSelector >>  << unarySelector >> ] alt ;
+  keywordSelect2:      << KeywordSeq >> ;
+  keywordSelector:     << KeywordSeq >> ;
+  string:              << STString >> ;
+  nestedBlock:         [ '[  << blockPattern >> opt  << blockContents >> opt '] ] seq ;
+  blockPattern:        [ << blockArguments >> '| ] 0 seq1 ;
+  blockArguments:      [ " :" << argument >> ] seq joinp plus ;
   //  Number:            { o | [ '- lit opt << Num >> plus [ '. << Num >> plus ] seq opt ] seq tok } ;
-  Number:              { o | [ '- lit opt << Num >> plus joinp [ '. << Num >> plus joinp ] seq joinp opt ] seq { | { | } filter join $># } mapp tok } ; // $># only works with integers
+  Number:              [ '- lit opt << Num >> plus joinp [ '. << Num >> plus joinp ] seq joinp opt ] seq { | { | } filter join $># } mapp tok ; // $># only works with integers
   Alpha:               [ `a `z range `A `Z range ] alt { | c>$ } mapp ;
-  Num:                 { o | `0 `9 range { | c>$ } mapp } ;
+  Num:                 `0 `9 range { | c>$ } mapp ;
   AlphaNum:            [ << Alpha >>  << Num >> ] alt ;
-  Identifier:          { o | [ << Alpha >>  << AlphaNum >> star joinp ] seq joinp tok } ;
+  Identifier:          [ << Alpha >>  << AlphaNum >> star joinp ] seq joinp tok ;
   STPrimitive:         'primitive lit ;
-  Separator:           { o | '- lit 4 repeatp tok } ;
-  OperatorSeq:         '~&|*/\+<>,%@-= chars plusp joinp ;
-  Keyword:             { o | [ << Identifier >> ': ] seq joinp tok } ;
-  KeywordSeq:          { o | << Keyword >> plus joinp tok } ;
+  Separator:           '- lit 4 repeatp tok ;
+  OperatorSeq:         '~&|*/\+<>,%@-= chars plus joinp ;
+  Keyword:             [ << Identifier >> " :" ] seq joinp tok ; // ': doesn't work because it gets confused with 'let' syntax
+  KeywordSeq:          << Keyword >> plus joinp tok ;
   STStringChar:        [
     '\b  8 c>$ litMap // backspace
     '\t  9 c>$ litMap // tab
@@ -91,10 +90,10 @@
     '\\ 92 c>$ litMap // backslash
     //      '\0 litMap // zero byte character, doesn't work well with C strings
     '' !chars ] alt ;
-  STString:            [ '' << STStringChar >> starp '' ] 1 seq1 joinp ;
+  STString:            [ '' << STStringChar >> star '' ] 1 seq1 joinp ;
   Comment:             [ '" '" !chars star '" ] 1 seq1 tok ;
   Whitespace:          [ tab cr nl sp ] alt plus joinp tok ;
-  ignore:              { o | [ << Whitespace >>  << Comment >> ] alt plus tok } ;
+  ignore:              [ << Whitespace >>  << Comment >> ] alt plus tok ;
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
 
