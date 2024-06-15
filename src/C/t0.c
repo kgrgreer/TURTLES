@@ -401,7 +401,7 @@ void unknownSymbol() {
       push2(code, constant, strndup(sym, len-1));
     } else {
       char* s = strdup(sym);
-      printf("UNKNOWN SYMBOL: %s\n", s);
+      printf("UNKNOWN/FUTURE SYMBOL: %s\n", s);
       push2(code, forwardReference, s);
     }
   }
