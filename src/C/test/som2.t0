@@ -13,7 +13,7 @@ SOMParser :som
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
   { let ps sym ps () ()               :result |
-    " Result: " .$ result .nl
+    " Result: " .$ result $? { | result .$ } if .nl
     result { | '1 1 t .test } { | 'syntax-error .$ '0 1 t .test } ifelse .nl
   } ()
 } ::;;
