@@ -86,6 +86,7 @@ if ( a < 1000000000 ) {
     printf(" ]");
   `) ],
     [ 'isFn',           'fn?',             sf('i',     'i > 0 && i < heap->size && ( heap->arr[i] == callClosure || heap->arr[i] == callClosure0 )') ],
+    [ 'isStr',          '$?',              sf('i',     'i > 1000000000') ],
     [ 'arrayAt',        '@',               sf('a,i',   '((long*)a)[i+1]') ],
     [ 'arrayAtAt',      '@@',              sf('a,i,j', '((long*)(((long*)a)[i+1]))[j+1]') ], // ???: Is this need or helpful?
     [ 'arraySet',       ':@',              af('v,a,i', '((long*)a)[i+1] = v;') ], // ???: rename?
