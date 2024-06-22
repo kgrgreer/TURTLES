@@ -13,7 +13,7 @@ SOMParser :som
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
   { let ps sym ps () ()               :result |
-    " Result: " .$ result $? { | result .$ } if .nl
+    " Result1: " .$ result { | result .value $? } && { | result .value .$ } if .nl
     result { | '1 1 t .test } { | 'syntax-error .$ '0 1 t .test } ifelse .nl
   } ()
 } ::;;
@@ -25,7 +25,7 @@ SOMParser :som
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
   { let ps sym ps () ()               :result |
-    " Result: " .$ result .nl
+    " Result2: " .$ result { | result .value $? { | result .value .$ } if } if .nl
     result { | 'unexpected-success .$ '0 1 t .test } { | 'expected-syntax-error .$ '1 1 t .test } ifelse .nl
   } ()
 } ::!;;
