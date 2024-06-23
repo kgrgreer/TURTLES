@@ -8,11 +8,14 @@
     'score { f this |
       f { | passed++ [ ANSI.GREEN " PASSED" ANSI.RESET ] join } { | failed++ [ ANSI.BLINK ANSI.WHITE ANSI.RED_BG "  FAILED " ANSI.RESET ] join } ifelse
     }
+    'count { | passed failed + 1 + }
     'test { script answer this |
+      this .count . .sp
       " Expect: " .$ script .$ "  -> " .$ answer . .`
       script eval answer = this .score .$ .nl
     }
     'testf { f answer this |
+      this .count . .sp
       " Expect: " .$ '<function> .$ "  -> " .$ answer . .`
       f () answer = this .score .$ .nl
     }
