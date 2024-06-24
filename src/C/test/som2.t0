@@ -2,8 +2,8 @@
 
 " SOM Parser Tests" section
 
-SOMParser :som
-// SOMCompiler :som
+// SOMParser :som
+SOMCompiler :som
 
 
 { sym src
@@ -13,7 +13,7 @@ SOMParser :som
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
   { let ps sym ps () ()               :result |
-    " Result1: " .$ result { | result .value $? } && { | result .value .$ } if .nl
+    result { | result .value $? } && { | " Result1: " .$ result .value .$ .nl } if
     result { | '1 1 t .test } { | 'syntax-error .$ '0 1 t .test } ifelse .nl
   } ()
 } ::;;
@@ -25,7 +25,6 @@ SOMParser :som
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
   { let ps sym ps () ()               :result |
-    " Result2: " .$ result { | result .value $? { | result .value .$ } if } if .nl
     result { | 'unexpected-success .$ '0 1 t .test } { | 'expected-syntax-error .$ '1 1 t .test } ifelse .nl
   } ()
 } ::!;;
@@ -72,6 +71,8 @@ exit
 
 'Identifier " identifier " ;;
 'Identifier 'testing123 ;;
+
+'STPrimitive 'primitive ;;
 
 'Separator '--- !;;
 'Separator '---- ;;
@@ -123,7 +124,9 @@ exit
 
 'formula '10+2 ;;
 
-'resul '5 ;;
+'fields " | field1 field2 | " ;;
+exit
+'result '5 ;;
 'blockBody " ^5" ;;
 'blockContents " ^5" ;;
 'methodBlock " () " ;;
