@@ -97,16 +97,21 @@
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
 
+{ p f | { ps | ps p () :ps ps { | ps .value (* f () *) ps .:value } { | false } ifelse } } ::mapp2
+{ p f | { ps | ps p () :ps ps { | ps ps .value ps .:value2 } { | false } ifelse } } ::mapp2
 
 // TODO: super needs to still pass correct 'o'
 { let _super_: SOMParser ;
   super: { m o | o m _super_ () () } ;
 
   // What each line would like like without the !! macro:
-  // fields:            { o | 'fields o .super { | joins } mapp } ;
-
-  !! fields              &joins ;;
-  !! STPrimitive         {  a | "  { | }" } ;; // TODO: lookup primitive implementation
+//   fields:            { o | 'fields o .super { | joins } mapp } ;
+ //  fields:              { o | o 'fields _super_ () &joins mapp () } ;
+   fields:              { o | o 'fields _super_ () { a | a { | a joins } { | sp } ifelse } mapp () } ;
+  // fields:              { o let 'fields _super_ () :super | { | super &joins mapp } } ;
+//  !! fields              &joins ;;
+//  !! STPrimitive         { a | "  { | } " } ;;
+  (*
   !! blockContents       { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } ;;
   !! blockBodyReturn     { | "  ---<-" +$ } ;;
   !! blockBodyExpression &joins ;;
@@ -123,11 +128,12 @@
     a 2 @ { | a 2 1 @@  a 2 2 @@  'pick '. a 2 0 @@ + 'drop } if
   ] joins } ;;
   !! fields              { a | a { | a joins } { | " " } ifelse } ;;
-  !! STString            { a | [ '" "  " a '" ] join } ;;
+  !! STString            { a | guru exit [ '" "  " a '" ] join } ;;
   !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
-  !! program             { a | a nl joinWith } ;;
+//  !! program             { a | a nl joinWith } ;;
   !! assignment          { a | "  :" a + } ;;
   !! nestedBlock         { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } ;;
+  *)
   |
   { m | m ?? { | m _super_ () } || }
 } () :SOMCompiler
