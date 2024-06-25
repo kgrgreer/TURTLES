@@ -18,6 +18,7 @@
 { } :nil // define 'nil', like doing nil = new Object() in Java/JS
 nil :nop // TODO: remove
 nil :{}  // Identity Function
+[ ] :[]  // Empty Array
 
 // Experimental Renames
 { | charCode } ::c>$
