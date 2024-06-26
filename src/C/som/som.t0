@@ -3,13 +3,6 @@
 
 'lib/template.t0 require
 
-// Macro for semantic actions
-// !! <name> <body> ;;  ->  name: { o | 'name o .super body mapp } ;
-{ let sym :m ';; readUntil :body |
-  ${ {{ m }}: { o | '{{ m }} o .super {{ body }} mapp } ; }$ emit
-} :!!!
-
-
 // translated from: https://github.com/SOM-st/SOM/blob/master/specification/SOM.g4
 { let
   call:                { m o | o m o () () } ; // Call the method with specified name
@@ -97,19 +90,20 @@
   | { s | (* 'method: .$ s .$ .nl *) s ?? (* dup ! { | 'unknown-method .$ .nl } if *) }
 } () :SOMParser
 
-{ p f | { ps | ps p () :ps ps { | ps .value (* f () *) ps .:value } { | false } ifelse } } ::mapp2
-{ p f | { ps | ps p () :ps ps { | ps ps .value ps .:value2 } { | false } ifelse } } ::mapp2
 
-// TODO: super needs to still pass correct 'o'
+// Macro for semantic actions
+// !! <name> <body> ;;  ->  name: { o | 'name o .super body mapp () } ;
+{ let sym :m ';; readUntil :body |
+  ${ {{ m }}: { o | '{{ m }} o .super {{ body }} mapp () } ; }$ emit
+} :!!!
+
+
 { let _super_: SOMParser ;
-  super: { m o | o m _super_ () () } ;
+  super: { m o | o m _super_ () } ;
 
   // What each line would like like without the !! macro:
-//   fields:            { o | 'fields o .super { | joins } mapp } ;
- //  fields:              { o | o 'fields _super_ () &joins mapp () } ;
-   fields:              { o | o 'fields _super_ () { a | a { | a joins } { | sp } ifelse } mapp () } ;
-  // fields:              { o let 'fields _super_ () :super | { | super &joins mapp } } ;
-//  !! fields              &joins ;;
+  //  fields:              { o | 'fields o .super { a | a { | a joins } { | sp } ifelse } mapp () } ;
+  !! fields { a | a { | a joins } { | sp } ifelse } ;;
 //  !! STPrimitive         { a | "  { | } " } ;;
   (*
   !! blockContents       { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } ;;
