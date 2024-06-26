@@ -26,11 +26,10 @@ exports.CMDS = [
   [ 'andand', '&&',       'void* aFn = pop(stack); void* p = pop(stack); if ( ! p ) { push(stack, p); } else { push(stack, aFn); call(); }' ],
   [ 'oror',   '||',       'void* aFn = pop(stack); void* p = pop(stack); if (   p ) { push(stack, p); } else { push(stack, aFn); call(); }'   ],
   [ 'for_',   'for',      af('s,e,b', `
-    if ( s <= e ) {
-      for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }
-    } else {
-      for ( long i = s ; i >= e ; i-- ) { push(stack, (void*) i); callI(b); }
-    }
+    for ( long i = s ; i <= e ; i++ ) { push(stack, (void*) i); callI(b); }
+  `) ],
+  [ 'rev_',   'rev',      af('s,e,b', `
+    for ( long i = s ; i >= e ; i-- ) { push(stack, (void*) i); callI(b); }
   `) ],
   [ 'while_', 'while',    af('c,b',   'while ( true ) { callI(c); if ( ! pop(stack) ) break; callI(b); }') ],
   [ 'repeat', 'repeat',   af('b,t',   'for ( long i = 0 ; i < t ; i++ ) callI(b);') ],
