@@ -32,9 +32,8 @@
 
 
 'Strings section
-" abc" 'abc " =$ " #T t .test
-""" abc""" 'abc " =$ " #T t .test
-" abc" 'abc " =$ " #T t .test
+""" " abc" 'abc =$ """ #T test
+"""" """ abc""" 'abc =$ """" #T test
 " 'ABC len " 3 test
 " 'abc 'abc =$ " #T test
 """ 'abc " abc" =$ """ #T test // TODO: doesn't work
@@ -198,6 +197,12 @@ a .[] .nl
 a { c | c 2 mod 0 = } filter .[] .nl
 " a 0 { | + } reduce " 55 test
 a { v | v v * } map .[] .nl
+" 0 [ 1 2 3 ] { e | e + } do 6 = " #T test
+" 0 [ ]       { e | e + } do 0 = " #T test
+" [ 1 2 3 ] 0 { i _ | i 1 + } reduce 3 = " #T test
+" []        0 { i _ | i 1 + } reduce 0 = " #T test
+" [ 1 2 3 ] {} map # 3 = " #T test
+" [ ] {} map # 0 = " #T test
 " [ 'abc 123 #>$ 'youandme ] join 'abc123youandme =$ " #T test
 " [ 'abc 123  >$ 'youandme ] join 'abc123youandme =$ " #T test
 " [ 'abc 123     'youandme ] join 'abc123youandme =$ " #T test
@@ -226,7 +231,7 @@ a { v | v v * } map .[] .nl
 } () " 10 test
 
 " { let 0 :i | 1 10 { | i++ } for i } () " 10 test
-" { let 0 :i | 10 1 { | i++ } for i } () " 10 test
+" { let 0 :i | 10 1 { | i++ } rev i } () " 10 test
 
 
 'Switch section
