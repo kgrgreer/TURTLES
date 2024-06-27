@@ -125,8 +125,7 @@ exit
 'formula '10+2 ;;
 
 'fields " | field1 field2 | " ;;
-exit
-'result '5 ;;
+'resul '5 ;;
 'blockBody " ^5" ;;
 'blockContents " ^5" ;;
 'methodBlock " () " ;;
