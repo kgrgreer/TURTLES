@@ -85,7 +85,9 @@
   { a | [ a 0 @  { e | e } do a 1 @ ] } mapp
 } ::delim
 
-{ parser | { ps let parser ps .parse :ret | ret { | false ps .:value } || } } ::opt
+{ parser v | { ps let parser ps .parse :ret | ret { | v ps .:value } || } } ::optMap
+
+{ parser | parser false optMap } ::opt
 
 { | &join mapp } ::joinp
 
