@@ -30,7 +30,7 @@
   identifier:          [ << STPrimitive >>  << Identifier >> ] alt ;
   keyword:             << Keyword >> ;
   argument:            << variable >> ;
-  blockContents:       [ [ '| << localDefs >> '| ] 1 seq1 [] optMap  << blockBody >> ] seq ;
+  blockContents:       [ [ '| << localDefs >> '| ] 1 seq1 [] optMap << blockBody >> ] seq ;
   localDefs:           << variable >> star ;
   blockBody:           [ << blockBodyReturn >>  << blockBodyExpression >> ] alt ;
   resul:               [ << expression >> '. lit opt ] 0 seq1 ;
@@ -105,7 +105,10 @@
   // fields:              { o | 'fields o .super &joins mapp () } ;
   !! fields &joins ;;
   !! STPrimitive         { a | "  { | } " } ;;
- // !! blockContents       { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } ;;
+  !! localDefs           &joins ;;
+//   blockContents:       [ [ '| << localDefs >> '| ] 1 seq1 [] optMap << blockBody >> ] seq ;
+
+  !! blockContents       { a let a 0 @ :defs a 1 @ :body | defs .$ body .[] defs sp body +$ +$ } ;;
   (*
   !! blockBodyReturn     { | "  ---<-" +$ } ;;
   !! blockBodyExpression &joins ;;

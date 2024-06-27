@@ -125,13 +125,17 @@ exit
 'formula '10+2 ;;
 
 'fields " | field1 field2 | " ;;
+'localDefs " | field1 field2 | " ;;
 'resul '5 ;;
 'blockBody " ^5" ;;
 'blockContents " ^5" ;;
+'blockContents " | a b | ^5 " ;;
+
+exit
+
 'methodBlock " () " ;;
 'pattern 'foobar ;;
 'method " foobar = ( )" ;;
-
 
 'Number " 0" ;;
 'literalNumber " 0" ;;
