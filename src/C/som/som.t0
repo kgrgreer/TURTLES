@@ -17,7 +17,7 @@
   superclass:          << Identifier >> opt ;
   instanceFields:      << fields >> ;
   classFields:         << fields >> ;
-  fields:              [ '| << variable >> star '| ] 1 seq1 opt ;
+  fields:              [ '| << variable >> star '| ] 1 seq1 [] optMap ;
   method2:             [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
   method:              [ << pattern >> '= << methodBlock >> ] seq ;
   pattern:             [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt ;
@@ -30,7 +30,7 @@
   identifier:          [ << STPrimitive >>  << Identifier >> ] alt ;
   keyword:             << Keyword >> ;
   argument:            << variable >> ;
-  blockContents:       [ [ '| << localDefs >> '| ] 1 seq1 opt  << blockBody >> ] seq ;
+  blockContents:       [ [ '| << localDefs >> '| ] 1 seq1 [] optMap  << blockBody >> ] seq ;
   localDefs:           << variable >> star ;
   blockBody:           [ << blockBodyReturn >>  << blockBodyExpression >> ] alt ;
   resul:               [ << expression >> '. lit opt ] 0 seq1 ;
@@ -102,11 +102,11 @@
   super: { m o | o m _super_ () } ;
 
   // What each line would like like without the !! macro:
-  //  fields:              { o | 'fields o .super { a | a { | a joins } { | sp } ifelse } mapp () } ;
-  !! fields { a | a { | a joins } { | sp } ifelse } ;;
-//  !! STPrimitive         { a | "  { | } " } ;;
+  // fields:              { o | 'fields o .super &joins mapp () } ;
+  !! fields &joins ;;
+  !! STPrimitive         { a | "  { | } " } ;;
+ // !! blockContents       { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } ;;
   (*
-  !! blockContents       { a | a 0 @ { | [ " { let" a 0 @ { i | " 0 :" i + } do " |" a 1 @ " } ()" ] joins } { | a 1 @ } ifelse } ;;
   !! blockBodyReturn     { | "  ---<-" +$ } ;;
   !! blockBodyExpression &joins ;;
   !! formula             { a | a 0 @ a 1 @ joins +$ } ;;
