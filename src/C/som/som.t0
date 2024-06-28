@@ -40,8 +40,8 @@
   assignation:         [ << assignments >>  << evaluation >> ] seq ;
   assignments:         << assignment >> plus ;
   assignment:          [ << variable >> ':= ] 0 seq1 ;
-  evaluation:          [ << primary >>  << messages >> opt ] seq ;
-  primary:             [ << variable >>   << nestedTerm >>  << nestedBlock >>  << literal >> ] alt ;
+  evaluation:          [ << primary >> << messages >> sp optMap ] seq ;
+  primary:             [ << variable >> << nestedTerm >> << nestedBlock >> << literal >> ] alt ;
   variable:            << identifier >> ;
   messages:            [ << unaryMessage >> star << binaryMessage >> star << keywordMessage >> opt ] seq ;
   unaryMessage:        << unarySelector >> ;
@@ -63,7 +63,7 @@
   blockPattern:        [ << blockArguments >> '| ] 0 seq1 ;
   blockArguments:      [ " :" << argument >> ] seq joinp plus ;
   //  Number:            { o | [ '- lit opt << Num >> plus [ '. << Num >> plus ] seq opt ] seq tok } ;
-  Number:              [ '- lit opt << Num >> plus joinp [ '. << Num >> plus joinp ] seq joinp opt ] seq { | { | } filter join $># } mapp tok ; // $># only works with integers
+  Number:              [ '- lit opt << Num >> plus joinp [ '. << Num >> plus joinp ] seq joinp opt ] seq { | { | } filter join (* $># *) } mapp tok ; // $># only works with integers
   Alpha:               [ `a `z range `A `Z range ] alt { | c>$ } mapp ;
   Num:                 `0 `9 range { | c>$ } mapp ;
   AlphaNum:            [ << Alpha >>  << Num >> ] alt ;
@@ -106,31 +106,28 @@
   !! fields &joins ;;
   !! STPrimitive         { a | "  { | } " } ;;
   !! localDefs           &joins ;;
-//   blockContents:       [ [ '| << localDefs >> '| ] 1 seq1 [] optMap << blockBody >> ] seq ;
-
-  !! blockContents       { a let a 0 @ :defs a 1 @ :body | defs .$ body .[] defs sp body +$ +$ } ;;
-  (*
+  !! blockContents       { a let a 0 @ :defs a 1 @ :body | ${ {{ defs }} | {{ body }} }$ } ;;
   !! blockBodyReturn     { | "  ---<-" +$ } ;;
   !! blockBodyExpression &joins ;;
   !! formula             { a | a 0 @ a 1 @ joins +$ } ;;
   !! keywordMessage      { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins a len ] } ;;
-  !! binaryOperand       { a | a 0 @ a 1 @ joins + } ;;
+  !! binaryOperand       { a | a 0 @ a 1 @ joins  dup .$ +$ } ;;
   !! evaluation          &joins ;;
   !! unaryPattern        { a | [ a " " ] } ;;
   !! keywordPattern      { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } ;;
-  !! assignation         { a | [ a 1 @  a 0 @ { i | "  " } map " dup" joinWith a 0 @ join ] join } ;;
-  !! messages            { a | [
-    a 0 @ { i | '. i + } map joins
-    a 1 @ { i | i 1 @ " swap ." i 0 @ +  } do
-    a 2 @ { | a 2 1 @@  a 2 2 @@  'pick '. a 2 0 @@ + 'drop } if
+//  assignation:         [ << assignments >>  << evaluation >> ] seq ;
+  !! assignation         { a let a 0 @ :assignments a 1 @ :evaluation |
+    [ evaluation  assignments ] join } ;;
+  !! messages            { a let a 0 @ :unary a 1 @ :binary a 2 @ :keyword | [
+    unary   { i | '. i +$ } map joins
+    binary  { i | i 1 @ " swap ." i 0 @ +$  } do
+    keyword { | keyword 1 @ keyword 2 @  'pick '. keyword 0 @ + 'drop } if
   ] joins } ;;
-  !! fields              { a | a { | a joins } { | " " } ifelse } ;;
-  !! STString            { a | guru exit [ '" "  " a '" ] join } ;;
+  !! STString            { a | [ '" "  " a '" ] join } ;;
   !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
-//  !! program             { a | a nl joinWith } ;;
+  !! program             { a | a nl joinWith } ;;
   !! assignment          { a | "  :" a + } ;;
   !! nestedBlock         { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } ;;
-  *)
   |
   { m | m ?? { | m _super_ () } || }
 } () :SOMCompiler

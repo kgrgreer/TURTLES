@@ -119,8 +119,8 @@ exit
 'unaryMessage 'foo ;;
 
 'primary '10  ;;
-'binaryOperand '10ab ;;
 'binaryOperand '10  ;;
+'binaryOperand '10ab ;;
 
 'formula '10+2 ;;
 
@@ -131,8 +131,6 @@ exit
 'blockContents " ^5" ;;
 'blockContents " | a b | ^5 " ;;
 
-exit
-
 'methodBlock " () " ;;
 'pattern 'foobar ;;
 'method " foobar = ( )" ;;
@@ -142,8 +140,17 @@ exit
 'literal " 0" ;;
 'primary " 0" ;;
 'evaluation " 0" ;;
-'resul " a+b" ;;
+'primary " a" ;;
+'binarySelector " +" ;;
+'binaryOperand " b" ;;
+
+'messages " +b" ;;
+'primary " a" ;;
+'evaluation " a" ;;
+'messages " +b" ;;
+'evaluation " a+b" ;;
 'expression " a+b" ;;
+'resul " a+b" ;;
 'evaluation " a+b" ;;
 'blockBodyReturn " ^ a+b" ;;
 'blockBody " ^ a+b" ;;
@@ -156,7 +163,9 @@ exit
 'keywordPattern " x: x y: y" ;;
 'method " double: d = ( ^ d + d )" ;;
 'method " x: x y: y = ( ^ x * y )" ;;
+'assignation " x:=0" ;;
 'assignation " x:=y:=0" ;;
+exit
 'method " center = ( x := y := 0 )" ;;
 'methodBlock " (x := y := 0)" ;;
 'blockContents " x := y := 0" ;;
