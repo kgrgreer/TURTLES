@@ -35,6 +35,7 @@ false :#F
 { _ _ _ } ::drop3
 { n | { _ | } n repeat } ::dropn
 { a | a a } ::dup
+{ a n | { | a } n 1 + repeat } ::dupn // 0 dupn is the same as drop
 { a b | a b a b } ::dup2
 { a b | b a } ::swap
 { a b | a b a } ::over

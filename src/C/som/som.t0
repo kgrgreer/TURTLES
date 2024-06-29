@@ -115,18 +115,17 @@
   !! evaluation          &joins ;;
   !! unaryPattern        { a | [ a " " ] } ;;
   !! keywordPattern      { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } ;;
-//  assignation:         [ << assignments >>  << evaluation >> ] seq ;
   !! assignation         { a let a 0 @ :assignments a 1 @ :evaluation |
-    [ evaluation  assignments ] join } ;;
+    [ evaluation { | " dup " } assignments # 1 - repeat assignments {} do ] join } ;;
   !! messages            { a let a 0 @ :unary a 1 @ :binary a 2 @ :keyword | [
     unary   { i | '. i +$ } map joins
     binary  { i | i 1 @ " swap ." i 0 @ +$  } do
-    keyword { | keyword 1 @ keyword 2 @  'pick '. keyword 0 @ + 'drop } if
+    keyword { | keyword 1 @ keyword 2 @  'pick '. keyword 0 @ +$ 'drop } if
   ] joins } ;;
   !! STString            { a | [ '" "  " a '" ] join } ;;
   !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
   !! program             { a | a nl joinWith } ;;
-  !! assignment          { a | "  :" a + } ;;
+  !! assignment          { a | "  :" a +$ } ;;
   !! nestedBlock         { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } ;;
   |
   { m | m ?? { | m _super_ () } || }

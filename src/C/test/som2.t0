@@ -165,7 +165,7 @@ exit
 'method " x: x y: y = ( ^ x * y )" ;;
 'assignation " x:=0" ;;
 'assignation " x:=y:=0" ;;
-exit
+'assignation " x:=y:=z:=0" ;;
 'method " center = ( x := y := 0 )" ;;
 'methodBlock " (x := y := 0)" ;;
 'blockContents " x := y := 0" ;;
