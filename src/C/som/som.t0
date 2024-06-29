@@ -110,7 +110,8 @@
   !! blockBodyReturn     { | "  ---<-" +$ } ;;
   !! blockBodyExpression &joins ;;
   !! formula             { a | a 0 @ a 1 @ joins +$ } ;;
-  !! keywordMessage      { a | [ a { i | i 0 @ } map join a { i | i 1 @ } map joins a len ] } ;;
+  // returns [ methodName$ args$ (space separated) # of args ]
+  !! keywordMessage      { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins  a len ] } ;;
   !! binaryOperand       { a | a 0 @ a 1 @ joins  dup .$ +$ } ;;
   !! evaluation          &joins ;;
   !! unaryPattern        { a | [ a " " ] } ;;
@@ -120,7 +121,7 @@
   !! messages            { a let a 0 @ :unary a 1 @ :binary a 2 @ :keyword | [
     unary   { i | '. i +$ } map joins
     binary  { i | i 1 @ " swap ." i 0 @ +$  } do
-    keyword { | keyword 1 @ keyword 2 @  'pick '. keyword 0 @ +$ 'drop } if
+    keyword { | keyword 1 @  keyword 2 @ #>$ 'pick  '. keyword 0 @ +$ 'drop } if
   ] joins } ;;
   !! STString            { a | [ '" "  " a '" ] join } ;;
   !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
