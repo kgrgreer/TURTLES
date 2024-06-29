@@ -59,7 +59,7 @@
   keywordSelect2:      << KeywordSeq >> ;
   keywordSelector:     << KeywordSeq >> ;
   string:              << STString >> ;
-  nestedBlock:         [ '[  << blockPattern >> opt  << blockContents >> opt '] ] seq ;
+  nestedBlock:         [ '[  << blockPattern >> [] optMap  << blockContents >> [] optMap '] ] seq ;
   blockPattern:        [ << blockArguments >> '| ] 0 seq1 ;
   blockArguments:      [ " :" << argument >> ] seq joinp plus ;
   //  Number:            { o | [ '- lit opt << Num >> plus [ '. << Num >> plus ] seq opt ] seq tok } ;
