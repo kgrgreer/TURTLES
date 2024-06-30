@@ -7,23 +7,22 @@ SOMParser :som
   .nl
   ANSI.BOLD ANSI.BLUE .$ .$ name .$ ANSI.RESET .$ " , input: " .$ input .$ .nl
   { let ps name ps () () :result |
-    [ result guru
-      { | result .value test #T t .test }
-      { | 'syntax-error .$ .nl  '1 2 t .test }
+    [ result
+      { | result { | result .value test #T t .test } { | } ifelse  }
+      { | (* 'syntax-error .$ .nl  '1 2 t .test *) }
     ifelse ] drop
   } ()
-  .nl
 } ::testsom
 
-// 'superclass   'Object         " 'Object =$"         testsom
-// 'superclass   " "             " 0 ="                testsom
+'superclass   'Object         " 'Object =$"         testsom
+'superclass   " "             " 0 ="                testsom
 'fields       '|foo|          " join 'foo =$ "      testsom
 'fields       " |foo bar|"      "  join dup .$  'foobar =$ "      testsom
 unarySelector: 'foo           " 'foo =$ "           testsom
 binaryPattern: '+foo       " join '+foo =$"       testsom
 // keywordPattern: " x:a y: b "  " dup .[] { let 1 @ :a | '0: .$ a 0 @ .$  '1: .$ a 1 @ .$ } () #F" testsom // adds '00' to end of terms
 
-literalNumber: '42 " 42 = " testsom
+literalNumber: '42 " '42 =$ " testsom
 literalString: ''42' " '42 =$ " testsom
 // literalSymbol: " #'foo'"      " guru #T"            testsom // crashes
 
@@ -50,7 +49,7 @@ unarySelector:    "  "   " #T" testsom
 identifier:   'primitive      " 'primitive =$ "     testsom
 identifier:   'foo            " 'foo =$ "           testsom
 literalArray: " #(1 2 3)"     " # 3 = "             testsom
-Number:       '5              " 5 ="                testsom
+Number:       '5              " '5 =$"              testsom
 Alpha:        'm              " 'm =$"              testsom
 Alpha:        'M              " 'M =$"              testsom
 Num:          '0              " '0 =$"              testsom
