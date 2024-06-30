@@ -26,49 +26,49 @@
 
 
 " Optional Parser" section
-" thisthenthat " " 'this lit ()     .value 'this =$ " #T testp
-" thisthenthat " " 'this lit opt () .value 'this =$ " #T testp
+'thisthenthat  'this lit      'this testp
+'thisthenthat  'this lit opt  'this testp
 
 
 " Repeat Parser" section
-" AAAB " " 'A lit 0 repeatp () .value join len " 3  testp
-" AAAB " " 'A lit 4 repeatp ()                 " #F testp
+'AAAB  'A lit 0 repeatp joinp  'AAA  testp
+'AAAB  'A lit 4 repeatp        #F    testp
 
 
 " Seq Parser" section
-" thisthenthat0123 " " [ 'this lit 'then lit ] seq () .value join 'thisthen =$ " #T testp
-" thisthenthat0123 " " [ 'this     'then     ] seq () .value join 'thisthen =$ " #T testp
-" (this) " " [ '( 'this ') ] 1 seq1 () .value 'this =$ " #T testp
+'thisthenthat0123  [ 'this lit 'then lit ] seq joinp  'thisthen   testp
+'thisthenthat0123  [ 'this 'then ] seq joinp          'thisthen   testp
+'(this)            [ '( 'this ') ] 1 seq1             'this       testp
 
 
 " Alt Parser" section
-" thisthenthat0123 " " [ 'think 'this ] alt () .value 'this =$ " #T testp
+'thisthenthat0123  [ 'think 'this ] alt 'this testp
 
 
 " Range Parser" section
-" 567 " " `0 `9 range () .value " `5 testp
-" abc " " `0 `9 range ()        " #F testp
+'567  `0 `9 range { | c>$ } mapp  '5  testp
+'abc  `0 `9 range   #F  testp
 
 
 " Repeat Parser" section
-" 567 " " `0 `9 range star () .value cjoin '567 =$ " #T testp
+'567  `0 `9 range star { | cjoin } mapp  '567  testp
 
 
 " Opt(ional) Parser" section
-'this " 'that lit () " #F testp
-'this " 'this lit () .value 'this =$ " #T testp
-'this " 'that lit opt () .value " #F testp
-'this " 'this lit opt () .value 'this =$ " #T testp
+'this   'that lit       #F    testp
+'this   'this lit       'this testp
+'this   'that lit opt   { v | #F v = { | 'skip } if } mapp 'skip    testp
+'this   'this lit opt   'this testp
 
 
 " chars Parser" section
-" thisthenthat0123 "  " 'this chars      () .value 't =$ " #T testp
-" thisthenthat0123 "  " 'this chars star () .value join 'thisth =$ " #T testp
+'thisthenthat0123   'this chars      't        testp
+'thisthenthat0123   'this chars star joinp 'thisth   testp
 
 
 " !chars Parser" section
-" thisthenthat0123 "  " '0123456789 !chars      () .value 't =$ " #T testp
-" thisthenthat0123 "  " '0123456789 !chars star () .value join 'thisthenthat =$ " #T testp
+'thisthenthat0123   '0123456789 !chars              't              testp
+'thisthenthat0123   '0123456789 !chars star joinp   'thisthenthat   testp
 
 
 " Delimiter Parser" section
