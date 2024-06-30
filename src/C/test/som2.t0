@@ -29,31 +29,14 @@ SOMCompiler :som
   } ()
 } ::!;;
 
-(*
-{ let '~~~ 0 #F #F som PStream :ps |
-'start .$ .nl
-   ps .pos . .nl
-   ps .toString .$ .nl
-   // 'OperatorSeq1 som ()
-   ps ps ps 'OperatorSeq ps () ()
-   .value .$ .nl
-//   .toString .$ .nl
-  'end .$ .nl
-} ()
-exit
-*)
+Comment: '"thisisacomment" ;;
 
-
-// 'Equal '= ;;
-
-// Comment: '"thisisacomment" ;;
-
-'OperatorSeq '~ ;;
-'OperatorSeq '& ;;
-'OperatorSeq '| ;;
-'OperatorSeq '* ;;
-'OperatorSeq '/ ;;
-'OperatorSeq '! !;; // Should fail
+OperatorSeq: '~ ;;
+OperatorSeq: '& ;;
+OperatorSeq: '| ;;
+OperatorSeq: '* ;;
+OperatorSeq: '/ ;;
+OperatorSeq: '! !;; // Should fail
 
 'STStringChar 'A ;;
 'STStringChar '" ;;
