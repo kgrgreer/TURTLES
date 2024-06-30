@@ -1,17 +1,28 @@
-{ input parser expected let input 0 #F #F {} PStream :ps |
-  " input: " .$ input .$ .nl
-  [ ps parser expected t .test ] drop
+{ input parser output let input 0 #F #F {} PStream :ps |
+  " expect: " .$ input .$ "  -> " .$ output .$ .nl
+  ps parser () { result |
+    output
+      { |
+        result
+          { | result .value output =$ t .score .$ .nl }
+          { | #F t .score .$ .nl }
+        ifelse
+      }
+      { | result ! t .score .$ .nl }
+    ifelse
+  } ()
   .nl
 } ::testp
 
 
 " Literal Parser" section
-" thisthenthat0123" " 'this lit () .value 'this =$ " #T testp
-" thisthenthat0123" " 'that lit ()                 " #F testp
+
+" thisXXX1"  'this lit  'this  testp
+" thisXXX2"  'that lit  #F     testp
 
 
 " Literal Map Parser" section
-// litMap
+" thisXXX1"  'this 'foo litMap  'foo  testp
 
 
 " Optional Parser" section

@@ -12,7 +12,7 @@ SOMCompiler :som
   |
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
-  { let ps sym ps () ()               :result |
+  { let ps sym ps () () :result |
     result { | result .value $? } && { | " Result1: " .$ result .value .$ .nl } if
     result { | '1 1 t .test } { | 'syntax-error .$ '0 1 t .test } ifelse .nl
   } ()
