@@ -9,9 +9,9 @@ Tester :t // Create an instance of Tester
 { script answer | [ script answer t .test  ] drop } ::test
 { f      answer | [ f      answer t .testf ] drop } ::testf
 
-// 'test/lang.t0    require
+'test/lang.t0    require
 'test/parsers.t0 require
-// 'demo/ansi.t0    require
+'demo/ansi.t0    require
 // 'test/som.t0     require
 // 'test/som2.t0    require
 

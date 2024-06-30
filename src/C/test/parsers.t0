@@ -72,10 +72,10 @@
 
 
 " Delimiter Parser" section
-" 1,2,3  "  " `0 `9 range () .value " 49 testp
-" 1,2,3  "  " [ `0 `9 range ', lit ] 0 seq1 () .value " 49 testp
-" 1,2,3, "  " [ `0 `9 range ', lit ] 0 seq1 star () .value cjoin '123 =$ " #T testp
-" 1,2,3, "  " `0 `9 range ', lit delim () .value cjoin '123 =$ " #T testp
+'1,2,3    `0 `9 range { | c>$ } mapp  '1                              testp
+'1,2,3    [ `0 `9 range ', ] 0 seq1 { | c>$ } mapp '1                 testp
+'1,2,3,   [ `0 `9 range ', lit ] 0 seq1 star  { | cjoin } mapp '123   testp
+'1,2,3,   `0 `9 range ', lit delim { | cjoin } mapp '123              testp
 
 
 /*
@@ -86,13 +86,13 @@
 
 
 " Map Parser" section
-" one" " 'one lit { | switch 'one 1 'two 2 3 end } mapp () .value " 1 testp
-" two" " 'two lit { | switch 'one 1 'two 2 3 end } mapp () .value " 2 testp
+'one  'one lit { | switch 'one '1 'two '2 '3 end } mapp '1 testp
+'two  'two lit { | switch 'one '1 'two '2 '3 end } mapp '2 testp
 
 
 'Grammar section
 { let
-  call: { m o | o m o () () } ; // Call the method with specified name
+  call:   { m o | o m o () () } ; // Call the method with specified name
   this:   'this lit ;
   that:   'that lit ;
   repeat: 'a lit 1 repeatp ;
@@ -105,22 +105,22 @@
   | { | ?? }
 } () :grammar
 
-{ input sym expected let input 0 #F #F grammar PStream :ps |
+{ input sym let input 0 #F #F grammar PStream :ps |
   " symbol: " .$ sym .$ "  input: " .$ input .$ .nl
-  [ sym ps .call { | 'parse .$ .nl #T } { | 'no-parse .$ .nl #F } ifelse { | } expected t .testf ] drop
+  [ sym ps .call t .score .$ .nl ] drop
   .nl
 } ::testg // test grammar
 
 
-" thisthenthat0123" 'this  #T testg
-" thisthenthat0123" 'that  #F testg
-'aaaaaa 'repeat #T testg
-'aaaaaa 'star1 #T testg
-'aaaaaa 'plus1 #T testg
-'abcdef 'seq1 #T testg
- 'abc 'alt1 #T testg
- 'def 'alt1 #T testg
-'this 'alt2 #T testg
-'that 'alt2 #T testg
-'this 'alt3 #T testg
-'that 'alt3 #T testg
+'thisthenthat0123   'this     testg
+'that0123           'that     testg
+'aaaaaa             'repeat   testg
+'aaaaaa             'star1    testg
+'aaaaaa             'plus1    testg
+'abcdef             'seq1     testg
+'abc                'alt1     testg
+'def                'alt1     testg
+'this               'alt2     testg
+'that               'alt2     testg
+'this               'alt3     testg
+'that               'alt3     testg
