@@ -18,7 +18,7 @@
   instanceFields:      << fields >> ;
   classFields:         << fields >> ;
   fields:              [ '| << variable >> star '| ] 1 seq1 [] optMap ;
-  method:             [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
+  method:              [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
   pattern:             [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt ;
   unaryPattern:        << unarySelector >> ;
   binaryPattern:       [ << binarySelector >>  << argument >> ] seq ;
@@ -94,7 +94,7 @@
 // !! <name> <body> ;;  ->  name: { o | 'name o .super body mapp () } ;
 { let sym :m ';; readUntil :body |
   ${ {{ m }}: { o | '{{ m }} o .super {{ body }} mapp () } ; }$ emit
-} :!!!
+} :!!! // Immediate function named !!
 
 
 { let _super_: SOMParser ;
@@ -102,21 +102,42 @@
 
   // What each line would like like without the !! macro:
   // fields:              { o | 'fields o .super &joins mapp () } ;
+(*
+
+classdef: [
+  << identifier >> '= << superclass >> '(
+    << instanceFields >>
+    << method >> star
+    [ << Separator >>  << classFields >> opt << method >> star ] seq opt
+  ')
+] seq ;
+*)
+
+  !! program { | joins } ;;
+  !! classdef { a let
+    a 0 @ :identifier
+    a 2 @ :superclass
+    a 4 @ :instanceFields
+    a 5 @ :methods
+    a 6 @ :staticInfo
+  |
+    ${ { {{ instanceFields }} let{{ methods { m | nl "    " m } do }} | { ?? } } ::{{ identifier }} }$
+  } ;;
+
   !! fields &joins ;;
   //   pattern:             [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt ;
-// method:             [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
   !! method { a let
     a 0 @       :pattern
     a 2 @       :body
     pattern 0 @ :name
     pattern 1 @ :args
     |
-      ${ {{ name }}: { {{ args }} self{{ body }}} ; }$
+      ${ {{ name }}: { ---:{{ args }} self{{ body }}} ; }$
   } ;;
   !! STPrimitive         { a | "  { | } " } ;;
   !! localDefs           &joins ;;
   !! blockContents       { a let a 0 @ :defs a 1 @ :body | ${ {{ defs }} | {{ body }} }$ } ;;
-  !! blockBodyReturn     { | "  ---<-" +$ } ;;
+  !! blockBodyReturn     { | " ---<-" +$ } ;;
   !! blockBodyExpression &joins ;;
   !! formula             { a | a 0 @ a 1 @ joins +$ } ;;
   // returns [ methodName$ args$ (space separated) # of args ]
