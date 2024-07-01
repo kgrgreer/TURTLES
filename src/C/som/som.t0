@@ -121,7 +121,14 @@ classdef: [
     a 5 @ :methods
     a 6 @ :staticInfo
   |
-    ${ { {{ instanceFields }} let{{ methods { m | nl "    " m } do }} | { ?? } } ::{{ identifier }} }$
+    ${
+{
+  {{ instanceFields }}
+  let
+  super: {{ superclass }} ; {{
+}}  {{ methods { m | nl "   " m } do }} | { ?? }
+} ::{{ identifier }}
+    }$
   } ;;
 
   !! fields &joins ;;
@@ -137,7 +144,7 @@ classdef: [
   !! STPrimitive         { a | "  { | } " } ;;
   !! localDefs           &joins ;;
   !! blockContents       { a let a 0 @ :defs a 1 @ :body | ${ {{ defs }} | {{ body }} }$ } ;;
-  !! blockBodyReturn     { | " ---<-" +$ } ;;
+  !! blockBodyReturn     { | "  ---<-" +$ } ;;
   !! blockBodyExpression &joins ;;
   !! formula             { a | a 0 @ a 1 @ joins +$ } ;;
   // returns [ methodName$ args$ (space separated) # of args ]
