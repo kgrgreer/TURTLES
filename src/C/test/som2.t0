@@ -1,10 +1,8 @@
 'som/som.t0 require
 
-" SOM Parser Tests" section
+" SOM Compiler Tests" section
 
-// SOMParser :som
 SOMCompiler :som
-
 
 { sym src
   let
@@ -13,7 +11,7 @@ SOMCompiler :som
   " Symbol: " .$ sym .$ .nl
   "  Input: " .$ src .$ .nl
   { let ps sym ps () () :result |
-    result { | result .value $? } && { | " Result1: " .$ result .value .$ .nl } if
+    result { | result .value $? } && { | " Result: " .$ result .value .$ .nl } if
     result { | '1 1 t .test } { | 'syntax-error .$ '0 1 t .test } ifelse .nl
   } ()
 } ::;;
@@ -115,9 +113,13 @@ OperatorSeq: '! !;; // Should fail
 'blockContents " | a b | ^5 " ;;
 
 'methodBlock " () " ;;
+'unaryPattern 'foobar ;;
 'pattern 'foobar ;;
-'method " foobar = ( )" ;;
-
+'keywordPattern " arg1: a1 arg2: a2" ;;
+'pattern " arg1: a1 arg2: a2" ;;
+'method " foobar = ( 42 )" ;;
+'method " at: i = ( 42 )" ;;
+'method " + i = ( 42 )" ;;
 'Number " 0" ;;
 'literalNumber " 0" ;;
 'literal " 0" ;;
@@ -269,8 +271,6 @@ ColourBall = Ball (
 
 'method " || boolean = ( ^self )" ;;
 'method " || boolean = ( ^ 1 + 2 )" ;;
-'pattern " arg1: a1 arg2: a2" ;;
-'keywordPattern " arg1: a1 arg2: a2" ;;
 'keyword " arg1:" ;;
 'method " || boolean = ( ^ true or: false )" ;;
 

@@ -18,8 +18,7 @@
   instanceFields:      << fields >> ;
   classFields:         << fields >> ;
   fields:              [ '| << variable >> star '| ] 1 seq1 [] optMap ;
-  method2:             [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
-  method:              [ << pattern >> '= << methodBlock >> ] seq ;
+  method:             [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
   pattern:             [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt ;
   unaryPattern:        << unarySelector >> ;
   binaryPattern:       [ << binarySelector >>  << argument >> ] seq ;
@@ -104,6 +103,16 @@
   // What each line would like like without the !! macro:
   // fields:              { o | 'fields o .super &joins mapp () } ;
   !! fields &joins ;;
+  //   pattern:             [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt ;
+// method:             [ << pattern >> '= [ << STPrimitive >>  << methodBlock >> ] alt ] seq ;
+  !! method { a let
+    a 0 @       :pattern
+    a 2 @       :body
+    pattern 0 @ :name
+    pattern 1 @ :args
+    |
+      ${ {{ name }}: { {{ args }} self{{ body }}} ; }$
+  } ;;
   !! STPrimitive         { a | "  { | } " } ;;
   !! localDefs           &joins ;;
   !! blockContents       { a let a 0 @ :defs a 1 @ :body | ${ {{ defs }} | {{ body }} }$ } ;;
