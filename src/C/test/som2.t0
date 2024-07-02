@@ -407,12 +407,32 @@ ColourBall = Ball (
 'method " foo = ( a := b := 1 )" ;;
 'method " foo = ( a := b := c:= 1 )" ;;
 
+'nestedBlock " [ 6 neg ]" ;;
+'nestedBlock " [ 5 + 6 neg ]" ;;
+'nestedBlock " [ 5 + ( 6 neg ) ]" ;;
+
+'binaryMessage " + 6 neg" ;;
+'binaryMessage " + ( 6 neg )" ;;
+
+exit
+
+'evaluation " 5 + ( 6 neg ) " ;;
+'evaluation " 5 + 6 neg " ;;
+'messages " + ( 6 neg ) " ;;
+'messages " + 6 neg " ;;
+
+
+'nestedBlock " [ ( self fib ) + ( self fib ) ]" ;;
+'nestedBlock " [ (self fib: 1) + (self fib: 2) ]" ;;
+'nestedBlock " [ (self fib: (n - 1)) + (self fib: (n - 2)) ]" ;;
+'nestedBlock " [ (self fib: n - 1) + (self fib: n - 2) ]" ;;
+
 'program """
 Fibonacci = (          "defines a subclass of Object"
     fib: n = (         "defines the fib method with the argument n"
         ^ n <= 1
             ifTrue:  1
-            ifFalse: [ self fib: (n - 1) + (self fib: (n - 2)) ]
+            ifFalse: [ (self fib: (n - 1)) + (self fib: (n - 2)) ]
     )
 )
 """ ;;
