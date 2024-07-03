@@ -42,6 +42,18 @@
   evaluation:          [ << primary >> << messages >> sp optMap ] seq ;
   primary:             [ << variable >> << nestedTerm >> << nestedBlock >> << literal >> ] alt ;
   variable:            << identifier >> ;
+  /*
+  unaryMessage+ binaryMessage* keywordMessage?
+| binaryMessage+ keywordMessage?
+| keywordMessage;
+*/
+messages2: [
+  [ << unaryMessage >> plus << binaryMessage >> star << keywordMessage >> opt ] seq
+  [ " " [] litMap           << binaryMessage >> plus << keywordMessage >> opt ] seq
+  [ " " [] litMap           " " [] litMap            << keywordMessage >>     ] seq
+] alt ;
+  // Difference between above and below is that below will parse an empty string
+  // but messages is only referenced in evaluation as opt, so it shouldn't matter
   messages:            [ << unaryMessage >> star << binaryMessage >> star << keywordMessage >> opt ] seq ;
   unaryMessage:        << unarySelector >> ;
   binaryMessage:       [ << binarySelector >>  << binaryOperand >> ] seq ;
@@ -126,7 +138,8 @@ classdef: [
   {{ instanceFields }}
   let
   super: {{ superclass }} ; {{
-}}  {{ methods { m | nl "   " m } do }} | { ?? }
+}}  {{ methods { m | nl "   " m } do }}
+  | { ?? }
 } ::{{ identifier }}
     }$
   } ;;
@@ -139,7 +152,7 @@ classdef: [
     pattern 0 @ :name
     pattern 1 @ :args
     |
-      ${ {{ name }}: { ---:{{ args }} self{{ body }}} ; }$
+      ${ {{ name }}: { ---: {{ args }} self{{ body }}} ; }$
   } ;;
   !! STPrimitive         { a | "  { | } " } ;;
   !! localDefs           &joins ;;
@@ -148,23 +161,29 @@ classdef: [
   !! blockBodyExpression &joins ;;
   !! formula             { a | a 0 @ a 1 @ joins +$ } ;;
   // returns [ methodName$ args$ (space separated) # of args ]
-  !! keywordMessage      { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins  a len ] } ;;
-  !! binaryOperand       { a | a 0 @ a 1 @ joins  dup .$ +$ } ;;
+  !! binaryOperand       { a | a 0 @ a 1 @ joins +$ } ;;
   !! evaluation          &joins ;;
   !! unaryPattern        { a | [ a " " ] } ;;
   !! keywordPattern      { a | [ a { i | i 0 @ } map join  a { i | i 1 @ } map joins ] } ;;
   !! assignation         { a let a 0 @ :assignments a 1 @ :evaluation |
     [ evaluation { | " dup " } assignments # 1 - repeat assignments {} do ] join } ;;
-  !! messages            { a let a 0 @ :unary a 1 @ :binary a 2 @ :keyword | [
-    unary   { i | '. i +$ } map joins
-    binary  { i | i 1 @ " swap ." i 0 @ +$  } do
-    keyword { | keyword 1 @  keyword 2 @ #>$ 'pick  '. keyword 0 @ +$ 'drop } if
-  ] joins } ;;
+  !! unaryMessage        { m | "  ." m sp +$ +$ } ;;
+  !! binaryMessage       { i | [ i 1 @ "  swap ." i 0 @ ] join } ;;
+  !! keywordMessage { a let
+    a { e | e 0 @ } map join  :name
+    a { e | e 1 @ } map joins :formulas
+    |
+    // TODO: if length is 1 then pick and drop could be replaced with just a swap
+    [ formulas a len #>$ 'pick '. name +$ 'drop ] joins
+  } ;;
+  !! messages            { a let a 0 @ :unary a 1 @ :binary a 2 @ :keyword |
+    [ unary joins  binary joins  keyword ] joins
+  } ;;
   !! STString            { a | [ '" "  " a '" ] join } ;;
   !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
   !! program             { a | a nl joinWith } ;;
   !! assignment          { a | "  :" a +$ } ;;
-  !! nestedBlock         { a | [ '{ a 1 @ joins '| a 2 @ '} ] joins } ;;
+  !! nestedBlock         { a | [ '{ a 1 @ joins (* '| *) a 2 @ '} ] joins } ;;
   |
   { m | m ?? { | m _super_ () } || }
 } () :SOMCompiler
