@@ -170,8 +170,8 @@ classdef: [
   !! unaryMessage        { m | "  ." m sp +$ +$ } ;;
   !! binaryMessage       { i | [ i 1 @ "  swap ." i 0 @ ] join } ;;
   !! keywordMessage { a let
-    a { e | e 0 @ } map join  :name
-    a { e | e 1 @ } map joins :formulas
+    a { | 0 @ } map join  :name
+    a { | 1 @ } map joins :formulas
     |
     // TODO: if length is 1 then pick and drop could be replaced with just a swap
     [ formulas a len #>$ 'pick '. name +$ 'drop ] joins
@@ -180,7 +180,8 @@ classdef: [
     [ unary joins  binary joins  keyword ] joins
   } ;;
   !! STString            { a | [ '" "  " a '" ] join } ;;
-  !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
+//  !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
+  !! superclass          { a | a || { | 'Object } } ;;
   !! program             { a | a nl joinWith } ;;
   !! assignment          { a | "  :" a +$ } ;;
   !! nestedBlock         { a | [ '{ a 1 @ joins (* '| *) a 2 @ '} ] joins } ;;
