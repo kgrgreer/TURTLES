@@ -381,6 +381,7 @@ ColourBall = Ball (
         next isNil ifTrue: [ ^false ].
         ^next containsValue: value.
     )
+
     keys = (
         next isNil
             ifTrue: [ ^Vector new append: key ]
@@ -439,5 +440,21 @@ Fibonacci = (          "defines a subclass of Object"
             ifTrue:  1
             ifFalse: [ (self fib: (n - 1)) + (self fib: (n - 2)) ]
     )
+)
+""" ;;
+
+
+'program """
+MyClass = SuperClass (
+  | field1 field2 field3 |
+  aUnaryMethod = ( ^ field1 )
+  <<< argument = ( field2 := argument )
+  oneArgumentMethod: argument = ( field3 := argument )
+  twoArgumentMethod: argument1 otherArgument: argument2 = ( field1 := argument1. field2 := argument2 )
+----
+"
+  new = ( ... )
+  new: argument = ( ... )
+  "
 )
 """ ;;

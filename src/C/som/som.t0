@@ -181,7 +181,7 @@ classdef: [
   } ;;
   !! STString            { a | [ '" "  " a '" ] join } ;;
 //  !! superclass          { a | a { | a } { | 'Object } ifelse } ;;
-  !! superclass          { a | a || { | 'Object } } ;;
+  !! superclass          { a | a { | 'Object } || } ;;
   !! program             { a | a nl joinWith } ;;
   !! assignment          { a | "  :" a +$ } ;;
   !! nestedBlock         { a | [ '{ a 1 @ joins (* '| *) a 2 @ '} ] joins } ;;
