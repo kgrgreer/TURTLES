@@ -443,7 +443,6 @@ Fibonacci = (          "defines a subclass of Object"
 )
 """ ;;
 
-
 'program """
 MyClass = SuperClass (
   | field1 field2 field3 |

@@ -131,7 +131,9 @@ classdef: [
     a 2 @ :superclass
     a 4 @ :instanceFields
     a 5 @ :methods
-    a 6 @ :staticInfo
+    a 6 @ { | [ 0 " classFields" [] ] } || :staticInfo
+    staticInfo 1 @ :classFields
+    staticInfo 2 @ :classMethods
   |
     ${
 {
@@ -140,6 +142,12 @@ classdef: [
   super: {{ superclass }} ; {{
 }}  {{ methods { m | nl "   " m } do }}
   | { ?? }
+
+  // Start Static
+  {{ classFields }}
+  {{ (* classMethods { m | nl "   " m } do *) }}
+  // End Static
+
 } ::{{ identifier }}
     }$
   } ;;
