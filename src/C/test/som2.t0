@@ -451,6 +451,8 @@ MyClass = SuperClass (
   oneArgumentMethod: argument = ( field3 := argument )
   twoArgumentMethod: argument1 otherArgument: argument2 = ( field1 := argument1. field2 := argument2 )
 ----
+  | static1 static2 static3 |
+  static = ( ^ 1 + 2 )
 "
   new = ( ... )
   new: argument = ( ... )

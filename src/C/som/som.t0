@@ -131,28 +131,28 @@ classdef: [
     a 2 @ :superclass
     a 4 @ :instanceFields
     a 5 @ :methods
-    a 6 @ { | [ 0 " classFields" [] ] } || :staticInfo
+    a 6 @ { | [ 0 " " [] ] } || :staticInfo
     staticInfo 1 @ :classFields
     staticInfo 2 @ :classMethods
   |
     ${
-{
-  {{ instanceFields }}
-  let
-  super: {{ superclass }} ; {{
-}}  {{ methods { m | nl "   " m } do }}
-  | { ?? }
 
-  // Start Static
+{ let
+  { let
+    {{ instanceFields }}
+    super: {{ superclass }} ; {{
+}}    {{ methods { m | nl "     " m } do }}
+    | { ?? }
+  } :new
   {{ classFields }}
-  {{ (* classMethods { m | nl "   " m } do *) }}
-  // End Static
-
-} ::{{ identifier }}
+    {{ classMethods { m | nl "   " m } do }}
+  }
+  | { ?? }
+} :{{ identifier }}
     }$
   } ;;
 
-  !! fields &joins ;;
+  !! fields { a | [ a { f | " 0 :" f +$ " " } do ] joins } ;;
   //   pattern:             [ << keywordPattern >>  << binaryPattern >>  << unaryPattern >> ] alt ;
   !! method { a let
     a 0 @       :pattern
