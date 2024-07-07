@@ -459,3 +459,9 @@ MyClass = SuperClass (
   "
 )
 """ ;;
+
+'program """
+Object = Object (
+  new = ( ^__new__ )
+)
+""" ;;

@@ -139,11 +139,11 @@ classdef: [
 
 { let
   { let
-    {{ instanceFields }}
-    super: {{ superclass }} ; {{
+    {{ instanceFields }} {{ superclass 'nil =$ ! { | }}
+    super: {{ superclass }} ; {{ } if
 }}    {{ methods { m | nl "     " m } do }}
     | { ?? }
-  } :new
+  } :__new__
   {{ classFields }}
     {{ classMethods { m | nl "   " m } do }}
   }
