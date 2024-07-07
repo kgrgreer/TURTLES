@@ -461,7 +461,7 @@ MyClass = SuperClass (
 """ ;;
 
 'program """
-Object = Object (
-  new = ( ^__new__ )
+Object = nil (
+  new = ( ^internalnew )
 )
 """ ;;

@@ -143,7 +143,7 @@ classdef: [
     super: {{ superclass }} ; {{ } if
 }}    {{ methods { m | nl "     " m } do }}
     | { ?? }
-  } :__new__
+  } :internalnew
   {{ classFields }}
     {{ classMethods { m | nl "   " m } do }}
   }
