@@ -141,7 +141,7 @@ classdef: [
   { let
     {{ instanceFields }} {{ superclass 'nil =$ ! { | }}
     super: {{ superclass }} ; {{ } if
-}}    {{ methods { m | nl "     " m } do }}
+}}    {{ methods { m | m " primitive} ; " endsWith ! } filter { m | nl "     " m } do }}
     | { ?? }
   } :internalnew
   {{ classFields }}
@@ -162,7 +162,7 @@ classdef: [
     |
       ${ {{ name }}: { ---: {{ args }} self{{ body }}} ; }$
   } ;;
-  !! STPrimitive         { a | "  { | } " } ;;
+//  !! STPrimitive         { a | "  { | } " } ;;
   !! localDefs           &joins ;;
   !! blockContents       { a let a 0 @ :defs a 1 @ :body | ${ {{ defs }} | {{ body }} }$ } ;;
   !! blockBodyReturn     { | "  ---<-" +$ } ;;

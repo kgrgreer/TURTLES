@@ -462,6 +462,8 @@ MyClass = SuperClass (
 
 'program """
 Object = nil (
+  foo = primitive
+----
   new = ( ^internalnew )
 )
 """ ;;
