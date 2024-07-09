@@ -42,6 +42,12 @@
 " 'CAT 0 charAt 67 = " #T test
 " 'CAT 1 charAt 65 = " #T test
 " 'CAT 2 charAt 84 = " #T test
+" '012345 0 3 substring '012 =$   " #T test
+" 'hello-there 'hello startsWith  " #T test
+" 'hello-there 'bye   startsWith  " #F test
+" 'hello-there 'there endsWith    " #T test
+" 'hello-there 'where endsWith    " #F test
+
 
 'Characters section
 " 65 charCode 'A =$ " #T test
@@ -313,10 +319,6 @@ MAX . .nl // 10
   MAX . .nl // 20
 } ()
 MAX . .nl // 10
-
-
-'String section
-" '012345 0 3 substring '012 =$ " true test
 
 
 'Cond section

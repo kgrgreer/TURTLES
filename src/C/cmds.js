@@ -63,6 +63,18 @@ if ( a < 1000000000 ) {
   `)],
   [ 'eqStr',     '=$', sf('a,b', '0 == strcmp((char*) a, (char*) b)') ],
   [ 'concatStr', '+$', sf('a,b', 'strAdd((char*) a, (char*) b)') ],
+  [ 'startsWith', 'startsWith', af('a,b', `
+    char *i = (char*) a, *j = (char*) b;
+    for ( ; ; i++, j++ ) {
+      if ( *j == '\\0' ) { push(stack, (long*) true); return; }
+      if ( *i == '\\0' || *i != *j ) { push(stack, (long*) false); return; }
+    }
+  `) ],
+  [ 'endsWith', 'endsWith', af('a,b', `
+    char *i = (char*) a, *j = (char*) b;
+    int  li = strlen(i), lj = strlen(j);
+    push(stack, (void*) (long) (0 == strcmp(i + li - lj, j)));
+  `) ],
   [ 'arrayStart', '[', 'push(stack, &arrayStart);' ],
   [ 'arrayEnd',   ']', `
     long start = stack->ptr-1;
