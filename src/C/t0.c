@@ -736,7 +736,7 @@ void nop() { }
 
 
 void initScope() {
-  scope = addCmd(scope, "????",        &unknownSymbol);
+  scope = addCmd(scope, "????",       &unknownSymbol);
   scope = addCmd(scope, "???",        &unknownSymbol);
   scope = addCmd(scope, "{",          &defun);
   scope = addCmd(scope, "switch",     &switch_);
